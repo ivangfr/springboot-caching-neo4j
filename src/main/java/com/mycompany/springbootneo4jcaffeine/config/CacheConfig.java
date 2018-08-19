@@ -14,12 +14,12 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 public class CacheConfig {
 
-    public static final String MENU = "MENU";
+    public static final String MEALS = "MEALS";
 
     @Bean
     public CacheManager cacheManager() {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager();
-        cacheManager.setCacheNames(Arrays.asList(MENU));
+        cacheManager.setCacheNames(Arrays.asList(MEALS));
         cacheManager.setAllowNullValues(false);
         cacheManager.setCaffeine(caffeineCacheBuilder());
         return cacheManager;
@@ -31,7 +31,7 @@ public class CacheConfig {
                 .maximumSize(1000)
                 .expireAfterWrite(60, TimeUnit.MINUTES)
                 .removalListener((k, v, cause) -> {
-                    log.info("Removal Listener called. key={} value={} cause={}", k, v, cause);
+                    log.info("==> CACHE: Removal Listener called. key={} value={} cause={}", k, v, cause);
                 })
                 .recordStats();
     }
