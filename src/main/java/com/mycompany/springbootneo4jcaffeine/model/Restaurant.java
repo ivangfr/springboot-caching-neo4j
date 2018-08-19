@@ -10,14 +10,11 @@ import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
 import org.neo4j.ogm.id.UuidStrategy;
 
-import java.util.HashSet;
-import java.util.Set;
-
 @Data
-@EqualsAndHashCode(exclude = "restaurants")
-@ToString(exclude = "restaurants")
+@EqualsAndHashCode(exclude = "city")
+@ToString(exclude = "city")
 @NodeEntity
-public class City {
+public class Restaurant {
 
     @Id
     @GeneratedValue(strategy = UuidStrategy.class)
@@ -26,7 +23,7 @@ public class City {
     private String name;
 
     @JsonIgnore
-    @Relationship(type = "LOCATED_IN", direction = Relationship.INCOMING)
-    private Set<Restaurant> restaurants = new HashSet<>();
+    @Relationship(type = "LOCATED_IN")
+    private City city;
 
 }

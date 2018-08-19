@@ -5,13 +5,18 @@ import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.UUID;
 
 @Data
-public class CreateCityDto {
+public class CreateRestaurantDto {
 
-    @ApiModelProperty(value = "the city name", example = "Berlin")
+    @ApiModelProperty(value = "the restaurant name", example = "Pizza Hut")
     @NotNull
     @NotEmpty
     private String name;
+
+    @ApiModelProperty(value = "the city id")
+    @NotNull
+    private UUID cityId;
 
 }

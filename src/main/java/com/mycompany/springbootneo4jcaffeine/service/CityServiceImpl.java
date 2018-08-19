@@ -1,12 +1,13 @@
 package com.mycompany.springbootneo4jcaffeine.service;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.mycompany.springbootneo4jcaffeine.exception.CityNotFoundException;
 import com.mycompany.springbootneo4jcaffeine.model.City;
 import com.mycompany.springbootneo4jcaffeine.repository.CityRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 @Service
 public class CityServiceImpl implements CityService {
@@ -18,23 +19,23 @@ public class CityServiceImpl implements CityService {
     }
 
     @Override
-    public Optional<City> getCityById(String cityId) {
-        return cityRepository.findById(cityId);
-    }
-
-    @Override
     public City saveCity(City city) {
         return cityRepository.save(city);
     }
 
     @Override
-    public List<City> getCities() {
-        return Lists.newArrayList(cityRepository.findAll());
+    public Set<City> getCities() {
+        return Sets.newHashSet(cityRepository.findAll());
     }
 
     @Override
     public void deleteCity(City city) {
         cityRepository.delete(city);
+    }
+
+    @Override
+    public City validateAndGetCityById(UUID cityId) throws CityNotFoundException {
+        return cityRepository.findById(cityId.toString()).orElseThrow(() -> new CityNotFoundException(cityId));
     }
 
 }

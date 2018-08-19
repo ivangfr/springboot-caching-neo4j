@@ -1,6 +1,7 @@
 package com.mycompany.springbootneo4jcaffeine.controller;
 
 import com.mycompany.springbootneo4jcaffeine.dto.CreateCityDto;
+import com.mycompany.springbootneo4jcaffeine.dto.ResponseCityDto;
 import com.mycompany.springbootneo4jcaffeine.dto.UpdateCityDto;
 import com.mycompany.springbootneo4jcaffeine.exception.CityNotFoundException;
 import com.mycompany.springbootneo4jcaffeine.model.City;
@@ -21,8 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/cities")
@@ -38,38 +40,40 @@ public class CityController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{cityId}")
-    public City getCity(@PathVariable UUID cityId) throws CityNotFoundException {
-        return cityService.getCityById(cityId.toString())
-                .orElseThrow(() -> new CityNotFoundException(cityId));
+    public ResponseCityDto getCity(@PathVariable UUID cityId) throws CityNotFoundException {
+        City city = cityService.validateAndGetCityById(cityId);
+        return mapper.map(city, ResponseCityDto.class);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public List<City> getCities() {
-        return cityService.getCities();
+    public Set<ResponseCityDto> getCities() {
+        Set<City> cities = cityService.getCities();
+        return cities.stream().map(c -> mapper.map(c, ResponseCityDto.class)).collect(Collectors.toSet());
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public City createCity(@Valid @RequestBody CreateCityDto createCityDto) {
+    public ResponseCityDto createCity(@Valid @RequestBody CreateCityDto createCityDto) {
         City city = mapper.map(createCityDto, City.class);
-        return cityService.saveCity(city);
+        City citySaved = cityService.saveCity(city);
+        return mapper.map(citySaved, ResponseCityDto.class);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/{cityId}")
-    public City updateCity(@PathVariable UUID cityId, @Valid @RequestBody UpdateCityDto updateCityDto) throws CityNotFoundException {
-        City city = cityService.getCityById(cityId.toString())
-                .orElseThrow(() -> new CityNotFoundException(cityId));
+    public ResponseCityDto updateCity(@PathVariable UUID cityId, @Valid @RequestBody UpdateCityDto updateCityDto)
+            throws CityNotFoundException {
+        City city = cityService.validateAndGetCityById(cityId);
         mapper.map(updateCityDto, city);
-        return cityService.saveCity(city);
+        City citySaved = cityService.saveCity(city);
+        return mapper.map(citySaved, ResponseCityDto.class);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{cityId}")
     public void deleteCity(@PathVariable UUID cityId) throws CityNotFoundException {
-        City city = cityService.getCityById(cityId.toString())
-                .orElseThrow(() -> new CityNotFoundException(cityId));
+        City city = cityService.validateAndGetCityById(cityId);
         cityService.deleteCity(city);
     }
 
