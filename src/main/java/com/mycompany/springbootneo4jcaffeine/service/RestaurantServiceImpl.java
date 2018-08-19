@@ -1,10 +1,12 @@
 package com.mycompany.springbootneo4jcaffeine.service;
 
+import com.google.common.collect.Sets;
 import com.mycompany.springbootneo4jcaffeine.exception.RestaurantNotFoundException;
 import com.mycompany.springbootneo4jcaffeine.model.Restaurant;
 import com.mycompany.springbootneo4jcaffeine.repository.RestaurantRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -14,6 +16,11 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     public RestaurantServiceImpl(RestaurantRepository restaurantRepository) {
         this.restaurantRepository = restaurantRepository;
+    }
+
+    @Override
+    public Set<Restaurant> getRestaurants() {
+        return Sets.newHashSet(restaurantRepository.findAll());
     }
 
     @Override

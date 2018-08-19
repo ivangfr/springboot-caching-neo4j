@@ -1,13 +1,17 @@
 package com.mycompany.springbootneo4jcaffeine.config;
 
 import com.mycompany.springbootneo4jcaffeine.dto.CreateCityDto;
+import com.mycompany.springbootneo4jcaffeine.dto.CreateMealDto;
 import com.mycompany.springbootneo4jcaffeine.dto.CreateRestaurantDto;
 import com.mycompany.springbootneo4jcaffeine.dto.ResponseCityDto;
+import com.mycompany.springbootneo4jcaffeine.dto.ResponseMealDto;
 import com.mycompany.springbootneo4jcaffeine.dto.ResponseRestaurantDto;
 import com.mycompany.springbootneo4jcaffeine.dto.UpdateCityDto;
+import com.mycompany.springbootneo4jcaffeine.dto.UpdateMealDto;
 import com.mycompany.springbootneo4jcaffeine.dto.UpdateRestaurantDto;
 import com.mycompany.springbootneo4jcaffeine.exception.CityNotFoundException;
 import com.mycompany.springbootneo4jcaffeine.model.City;
+import com.mycompany.springbootneo4jcaffeine.model.Meal;
 import com.mycompany.springbootneo4jcaffeine.model.Restaurant;
 import com.mycompany.springbootneo4jcaffeine.service.CityService;
 import ma.glasnost.orika.CustomMapper;
@@ -41,9 +45,7 @@ public class MapperConfig {
 
         defaultMapperFactory.classMap(UpdateCityDto.class, City.class).mapNulls(false).byDefault().register();
 
-        defaultMapperFactory.classMap(City.class, ResponseCityDto.class)
-                .field("restaurants{id}", "restaurants{}")
-                .byDefault().register();
+        defaultMapperFactory.classMap(City.class, ResponseCityDto.class).byDefault().register();
 
         // ---
         // Restaurant
@@ -83,9 +85,16 @@ public class MapperConfig {
                 })
                 .register();
 
-        defaultMapperFactory.classMap(Restaurant.class, ResponseRestaurantDto.class)
-                .field("city.id", "cityId")
-                .byDefault().register();
+        defaultMapperFactory.classMap(Restaurant.class, ResponseRestaurantDto.class).byDefault().register();
+
+        // ---
+        // Meal
+
+        defaultMapperFactory.classMap(CreateMealDto.class, Meal.class).byDefault().register();
+
+        defaultMapperFactory.classMap(UpdateMealDto.class, Meal.class).mapNulls(false).byDefault().register();
+
+        defaultMapperFactory.classMap(Meal.class, ResponseMealDto.class).byDefault().register();
 
         return defaultMapperFactory;
     }

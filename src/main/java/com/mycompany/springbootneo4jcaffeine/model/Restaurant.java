@@ -10,6 +10,9 @@ import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
 import org.neo4j.ogm.id.UuidStrategy;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Data
 @EqualsAndHashCode(exclude = "city")
 @ToString(exclude = "city")
@@ -25,5 +28,8 @@ public class Restaurant {
     @JsonIgnore
     @Relationship(type = "LOCATED_IN")
     private City city;
+
+    @Relationship(type = "HAS")
+    private Set<Meal> meals = new HashSet<>();
 
 }

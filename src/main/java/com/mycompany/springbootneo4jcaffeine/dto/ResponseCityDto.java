@@ -11,6 +11,14 @@ public class ResponseCityDto {
 
     private String name;
 
-    private Set<String> restaurants;
+    private Set<CityRestaurantDto> restaurants;
 
+    @Data
+    public static final class CityRestaurantDto {
+
+        private String id;
+
+        private String name;
+
+    }
 }
