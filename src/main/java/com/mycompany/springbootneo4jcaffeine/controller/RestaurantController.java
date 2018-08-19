@@ -55,11 +55,6 @@ public class RestaurantController {
             throws CityNotFoundException {
         Restaurant restaurant = mapper.map(createRestaurantDto, Restaurant.class);
 
-        // TODO
-        // Is it possible to assign the city inside the mapper?
-        City city = cityService.validateAndGetCityById(createRestaurantDto.getCityId());
-        restaurant.setCity(city);
-
         Restaurant restaurantSaved = restaurantService.saveRestaurant(restaurant);
         return mapper.map(restaurantSaved, ResponseRestaurantDto.class);
     }
@@ -70,14 +65,6 @@ public class RestaurantController {
             throws CityNotFoundException, RestaurantNotFoundException {
         Restaurant restaurant = restaurantService.validateAndGetRestaurantById(restaurantId);
         mapper.map(updateRestaurantDto, restaurant);
-
-        // TODO
-        // Is it possible to assign the city inside the mapper?
-        UUID updateRestaurantDtoCityId = updateRestaurantDto.getCityId();
-        if (!StringUtils.isEmpty(updateRestaurantDtoCityId)) {
-            City city = cityService.validateAndGetCityById(updateRestaurantDtoCityId);
-            restaurant.setCity(city);
-        }
 
         Restaurant restaurantSaved = restaurantService.saveRestaurant(restaurant);
         return mapper.map(restaurantSaved, ResponseRestaurantDto.class);
