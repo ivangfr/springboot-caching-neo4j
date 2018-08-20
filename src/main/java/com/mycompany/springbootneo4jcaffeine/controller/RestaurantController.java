@@ -3,10 +3,8 @@ package com.mycompany.springbootneo4jcaffeine.controller;
 import com.mycompany.springbootneo4jcaffeine.dto.CreateRestaurantDto;
 import com.mycompany.springbootneo4jcaffeine.dto.ResponseRestaurantDto;
 import com.mycompany.springbootneo4jcaffeine.dto.UpdateRestaurantDto;
-import com.mycompany.springbootneo4jcaffeine.exception.CityNotFoundException;
 import com.mycompany.springbootneo4jcaffeine.exception.RestaurantNotFoundException;
 import com.mycompany.springbootneo4jcaffeine.model.Restaurant;
-import com.mycompany.springbootneo4jcaffeine.service.CityService;
 import com.mycompany.springbootneo4jcaffeine.service.RestaurantService;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.http.HttpStatus;
@@ -22,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -30,18 +27,16 @@ import java.util.stream.Collectors;
 public class RestaurantController {
 
     private final MapperFacade mapper;
-    private final CityService cityService;
     private final RestaurantService restaurantService;
 
-    public RestaurantController(MapperFacade mapper, CityService cityService, RestaurantService restaurantService) {
+    public RestaurantController(MapperFacade mapper, RestaurantService restaurantService) {
         this.mapper = mapper;
-        this.cityService = cityService;
         this.restaurantService = restaurantService;
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{restaurantId}")
-    public ResponseRestaurantDto getRestaurant(@PathVariable UUID restaurantId) throws RestaurantNotFoundException {
+    public ResponseRestaurantDto getRestaurant(@PathVariable String restaurantId) throws RestaurantNotFoundException {
         Restaurant restaurant = restaurantService.validateAndGetRestaurantById(restaurantId);
         return mapper.map(restaurant, ResponseRestaurantDto.class);
     }
@@ -54,8 +49,7 @@ public class RestaurantController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ResponseRestaurantDto createRestaurant(@Valid @RequestBody CreateRestaurantDto createRestaurantDto)
-            throws CityNotFoundException {
+    public ResponseRestaurantDto createRestaurant(@Valid @RequestBody CreateRestaurantDto createRestaurantDto) {
         Restaurant restaurant = mapper.map(createRestaurantDto, Restaurant.class);
 
         restaurant = restaurantService.saveRestaurant(restaurant);
@@ -64,8 +58,8 @@ public class RestaurantController {
 
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/{restaurantId}")
-    public ResponseRestaurantDto updateRestaurant(@PathVariable UUID restaurantId, @Valid @RequestBody UpdateRestaurantDto updateRestaurantDto)
-            throws CityNotFoundException, RestaurantNotFoundException {
+    public ResponseRestaurantDto updateRestaurant(@PathVariable String restaurantId, @Valid @RequestBody UpdateRestaurantDto updateRestaurantDto)
+            throws RestaurantNotFoundException {
         Restaurant restaurant = restaurantService.validateAndGetRestaurantById(restaurantId);
         mapper.map(updateRestaurantDto, restaurant);
 
@@ -75,7 +69,7 @@ public class RestaurantController {
 
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{restaurantId}")
-    public void deleteRestaurant(@PathVariable UUID restaurantId) throws RestaurantNotFoundException {
+    public void deleteRestaurant(@PathVariable String restaurantId) throws RestaurantNotFoundException {
         Restaurant restaurant = restaurantService.validateAndGetRestaurantById(restaurantId);
         restaurantService.deleteRestaurant(restaurant);
     }

@@ -9,9 +9,7 @@ import com.mycompany.springbootneo4jcaffeine.model.Meal;
 import com.mycompany.springbootneo4jcaffeine.model.Restaurant;
 import com.mycompany.springbootneo4jcaffeine.service.MealService;
 import com.mycompany.springbootneo4jcaffeine.service.RestaurantService;
-import lombok.extern.slf4j.Slf4j;
 import ma.glasnost.orika.MapperFacade;
-import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -30,55 +28,49 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.mycompany.springbootneo4jcaffeine.config.CacheConfig.MEALS;
 
-@Slf4j
 @CacheConfig(cacheNames = MEALS)
 @RestController
 @RequestMapping("/api/v1/restaurants/{restaurantId}/meals")
 public class MealController {
 
-    private final CacheManager cacheManager;
     private final MapperFacade mapper;
     private final RestaurantService restaurantService;
     private final MealService mealService;
 
-    public MealController(CacheManager cacheManager, MapperFacade mapper, RestaurantService restaurantService, MealService mealService) {
-        this.cacheManager = cacheManager;
+    public MealController(MapperFacade mapper, RestaurantService restaurantService, MealService mealService) {
         this.mapper = mapper;
         this.restaurantService = restaurantService;
         this.mealService = mealService;
     }
 
-    @Cacheable(key = "{#restaurantId.toString(),#mealId.toString()}")
+    @Cacheable(key = "{#restaurantId,#mealId}")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{mealId}")
-    public ResponseMealDto getMealInRestaurant(@PathVariable UUID restaurantId, @PathVariable UUID mealId) throws RestaurantNotFoundException, MealNotFoundException {
-        log.info("==> CACHE: Meal id '{}' of the restaurant id '{}' is not cached.", mealId, restaurantId);
+    public ResponseMealDto getMealInRestaurant(@PathVariable String restaurantId, @PathVariable String mealId) throws RestaurantNotFoundException, MealNotFoundException {
         Restaurant restaurant = restaurantService.validateAndGetRestaurantById(restaurantId);
-        Meal meal = restaurant.getMeals().stream().filter(m -> m.getId().equals(mealId.toString())).findFirst().orElseThrow(() -> new MealNotFoundException(mealId));
+        Meal meal = restaurant.getMeals().stream().filter(m -> m.getId().equals(mealId)).findFirst().orElseThrow(() -> new MealNotFoundException(mealId));
         return mapper.map(meal, ResponseMealDto.class);
     }
 
-    @Cacheable(key = "#restaurantId.toString()")
+    @Cacheable(key = "#restaurantId")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public Set<ResponseMealDto> getMealsInRestaurant(@PathVariable UUID restaurantId) throws RestaurantNotFoundException {
-        log.info("==> CACHE: List of Meals of the restaurant id '{}' is not cached.", restaurantId);
+    public Set<ResponseMealDto> getMealsInRestaurant(@PathVariable String restaurantId) throws RestaurantNotFoundException {
         Restaurant restaurant = restaurantService.validateAndGetRestaurantById(restaurantId);
         return restaurant.getMeals().stream().map(m -> mapper.map(m, ResponseMealDto.class)).collect(Collectors.toSet());
     }
 
     @Caching(
-            put = {@CachePut(key = "{#restaurantId.toString(),#result.id}")},
+            put = {@CachePut(key = "{#restaurantId,#result.id}")},
             evict = {@CacheEvict(key = "#restaurantId")}
     )
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ResponseMealDto createMealInRestaurant(@PathVariable UUID restaurantId, @Valid @RequestBody CreateMealDto createMealDto) throws RestaurantNotFoundException {
+    public ResponseMealDto createMealInRestaurant(@PathVariable String restaurantId, @Valid @RequestBody CreateMealDto createMealDto) throws RestaurantNotFoundException {
         Restaurant restaurant = restaurantService.validateAndGetRestaurantById(restaurantId);
         Meal meal = mapper.map(createMealDto, Meal.class);
         meal = mealService.saveMeal(meal);
@@ -88,15 +80,15 @@ public class MealController {
         return mapper.map(meal, ResponseMealDto.class);
     }
 
-    @Caching(evict = {
-            @CacheEvict(key = "{#restaurantId.toString(),#mealId.toString()}"),
-            @CacheEvict(key = "#restaurantId.toString()")
-    })
+    @Caching(
+            put = {@CachePut(key = "{#restaurantId,#mealId}")},
+            evict = {@CacheEvict(key = "#restaurantId")}
+    )
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/{mealId}")
-    public ResponseMealDto updateMealInRestaurant(@PathVariable UUID restaurantId, @PathVariable UUID mealId, @Valid @RequestBody UpdateMealDto updateMealDto) throws RestaurantNotFoundException, MealNotFoundException {
+    public ResponseMealDto updateMealInRestaurant(@PathVariable String restaurantId, @PathVariable String mealId, @Valid @RequestBody UpdateMealDto updateMealDto) throws RestaurantNotFoundException, MealNotFoundException {
         Restaurant restaurant = restaurantService.validateAndGetRestaurantById(restaurantId);
-        Meal meal = restaurant.getMeals().stream().filter(m -> m.getId().equals(mealId.toString())).findFirst().orElseThrow(() -> new MealNotFoundException(mealId));
+        Meal meal = restaurant.getMeals().stream().filter(m -> m.getId().equals(mealId)).findFirst().orElseThrow(() -> new MealNotFoundException(mealId));
 
         mapper.map(updateMealDto, meal);
         meal = mealService.saveMeal(meal);
@@ -104,14 +96,14 @@ public class MealController {
     }
 
     @Caching(evict = {
-            @CacheEvict(key = "{#restaurantId.toString(),#mealId.toString()}"),
-            @CacheEvict(key = "#restaurantId.toString()")
+            @CacheEvict(key = "{#restaurantId,#mealId}"),
+            @CacheEvict(key = "#restaurantId")
     })
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{mealId}")
-    public void deleteMealInRestaurant(@PathVariable UUID restaurantId, @PathVariable UUID mealId) throws RestaurantNotFoundException, MealNotFoundException {
+    public void deleteMealInRestaurant(@PathVariable String restaurantId, @PathVariable String mealId) throws RestaurantNotFoundException, MealNotFoundException {
         Restaurant restaurant = restaurantService.validateAndGetRestaurantById(restaurantId);
-        Meal meal = restaurant.getMeals().stream().filter(m -> m.getId().equals(mealId.toString())).findFirst().orElseThrow(() -> new MealNotFoundException(mealId));
+        Meal meal = restaurant.getMeals().stream().filter(m -> m.getId().equals(mealId)).findFirst().orElseThrow(() -> new MealNotFoundException(mealId));
         mealService.deleteMeal(meal);
     }
 

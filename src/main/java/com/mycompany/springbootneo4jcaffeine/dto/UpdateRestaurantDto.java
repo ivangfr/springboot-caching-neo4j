@@ -3,8 +3,6 @@ package com.mycompany.springbootneo4jcaffeine.dto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.util.UUID;
-
 @Data
 public class UpdateRestaurantDto {
 
@@ -12,6 +10,6 @@ public class UpdateRestaurantDto {
     private String name;
 
     @ApiModelProperty(value = "the city id")
-    private UUID cityId;
+    private String cityId;
 
 }

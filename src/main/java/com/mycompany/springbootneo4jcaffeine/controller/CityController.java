@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -37,7 +36,7 @@ public class CityController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{cityId}")
-    public ResponseCityDto getCity(@PathVariable UUID cityId) throws CityNotFoundException {
+    public ResponseCityDto getCity(@PathVariable String cityId) throws CityNotFoundException {
         City city = cityService.validateAndGetCityById(cityId);
         return mapper.map(city, ResponseCityDto.class);
     }
@@ -58,7 +57,7 @@ public class CityController {
 
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/{cityId}")
-    public ResponseCityDto updateCity(@PathVariable UUID cityId, @Valid @RequestBody UpdateCityDto updateCityDto)
+    public ResponseCityDto updateCity(@PathVariable String cityId, @Valid @RequestBody UpdateCityDto updateCityDto)
             throws CityNotFoundException {
         City city = cityService.validateAndGetCityById(cityId);
         mapper.map(updateCityDto, city);
@@ -69,7 +68,7 @@ public class CityController {
 
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{cityId}")
-    public void deleteCity(@PathVariable UUID cityId) throws CityNotFoundException {
+    public void deleteCity(@PathVariable String cityId) throws CityNotFoundException {
         City city = cityService.validateAndGetCityById(cityId);
         cityService.deleteCity(city);
     }

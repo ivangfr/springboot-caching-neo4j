@@ -4,3 +4,18 @@ spring:
       uri: bolt://localhost
       username: neo4j
       password: neo4j
+
+management:
+  security:
+    enabled: false
+  endpoints:
+    web:
+      base-path: /
+      exposure.include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    org.springframework.cache: TRACE

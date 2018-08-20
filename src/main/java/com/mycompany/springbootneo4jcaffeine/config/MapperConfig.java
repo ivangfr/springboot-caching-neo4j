@@ -23,8 +23,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
-import java.util.UUID;
-
 @Configuration
 public class MapperConfig {
 
@@ -42,9 +40,7 @@ public class MapperConfig {
         // City
 
         defaultMapperFactory.classMap(CreateCityDto.class, City.class).byDefault().register();
-
         defaultMapperFactory.classMap(UpdateCityDto.class, City.class).mapNulls(false).byDefault().register();
-
         defaultMapperFactory.classMap(City.class, ResponseCityDto.class).byDefault().register();
 
         // ---
@@ -72,10 +68,10 @@ public class MapperConfig {
                     public void mapAtoB(UpdateRestaurantDto updateRestaurantDto, Restaurant restaurant, MappingContext context) {
                         super.mapAtoB(updateRestaurantDto, restaurant, context);
 
-                        UUID updateRestaurantDtoCityId = updateRestaurantDto.getCityId();
-                        if (!StringUtils.isEmpty(updateRestaurantDtoCityId)) {
+                        String newCityId = updateRestaurantDto.getCityId();
+                        if (!StringUtils.isEmpty(newCityId)) {
                             try {
-                                City city = cityService.validateAndGetCityById(updateRestaurantDtoCityId);
+                                City city = cityService.validateAndGetCityById(newCityId);
                                 restaurant.setCity(city);
                             } catch (CityNotFoundException e) {
                                 throw new RuntimeException(e);
@@ -91,9 +87,7 @@ public class MapperConfig {
         // Meal
 
         defaultMapperFactory.classMap(CreateMealDto.class, Meal.class).byDefault().register();
-
         defaultMapperFactory.classMap(UpdateMealDto.class, Meal.class).mapNulls(false).byDefault().register();
-
         defaultMapperFactory.classMap(Meal.class, ResponseMealDto.class).byDefault().register();
 
         return defaultMapperFactory;

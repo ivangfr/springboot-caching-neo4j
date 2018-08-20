@@ -23,8 +23,4 @@ public class MealServiceImpl implements MealService {
         mealRepository.delete(meal);
     }
 
-//    @Override
-//    public Meal validateAndGetMealById(UUID mealId) throws MealNotFoundException {
-//        return mealRepository.findById(mealId.toString()).orElseThrow(() -> new MealNotFoundException(mealId));
-//    }
 }

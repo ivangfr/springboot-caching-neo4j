@@ -8,6 +8,4 @@ public interface MealService {
 
     void deleteMeal(Meal meal);
 
-//    Meal validateAndGetMealById(UUID mealId) throws MealNotFoundException;
-
 }

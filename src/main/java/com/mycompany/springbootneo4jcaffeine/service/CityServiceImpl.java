@@ -7,7 +7,6 @@ import com.mycompany.springbootneo4jcaffeine.repository.CityRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
-import java.util.UUID;
 
 @Service
 public class CityServiceImpl implements CityService {
@@ -34,8 +33,8 @@ public class CityServiceImpl implements CityService {
     }
 
     @Override
-    public City validateAndGetCityById(UUID cityId) throws CityNotFoundException {
-        return cityRepository.findById(cityId.toString()).orElseThrow(() -> new CityNotFoundException(cityId));
+    public City validateAndGetCityById(String cityId) throws CityNotFoundException {
+        return cityRepository.findById(cityId).orElseThrow(() -> new CityNotFoundException(cityId));
     }
 
 }

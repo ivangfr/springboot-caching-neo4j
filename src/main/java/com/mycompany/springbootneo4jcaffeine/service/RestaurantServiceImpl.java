@@ -7,7 +7,6 @@ import com.mycompany.springbootneo4jcaffeine.repository.RestaurantRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
-import java.util.UUID;
 
 @Service
 public class RestaurantServiceImpl implements RestaurantService {
@@ -34,8 +33,8 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
-    public Restaurant validateAndGetRestaurantById(UUID restaurantId) throws RestaurantNotFoundException {
-        return restaurantRepository.findById(restaurantId.toString()).orElseThrow(() -> new RestaurantNotFoundException(restaurantId));
+    public Restaurant validateAndGetRestaurantById(String restaurantId) throws RestaurantNotFoundException {
+        return restaurantRepository.findById(restaurantId).orElseThrow(() -> new RestaurantNotFoundException(restaurantId));
     }
 
 }

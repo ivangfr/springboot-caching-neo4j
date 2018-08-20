@@ -4,7 +4,6 @@ import com.mycompany.springbootneo4jcaffeine.exception.RestaurantNotFoundExcepti
 import com.mycompany.springbootneo4jcaffeine.model.Restaurant;
 
 import java.util.Set;
-import java.util.UUID;
 
 public interface RestaurantService {
 
@@ -14,5 +13,5 @@ public interface RestaurantService {
 
     void deleteRestaurant(Restaurant restaurant);
 
-    Restaurant validateAndGetRestaurantById(UUID restaurantId) throws RestaurantNotFoundException;
+    Restaurant validateAndGetRestaurantById(String restaurantId) throws RestaurantNotFoundException;
 }
