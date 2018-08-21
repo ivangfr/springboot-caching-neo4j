@@ -9,12 +9,12 @@ import javax.validation.constraints.NotNull;
 @Data
 public class CreateRestaurantDto {
 
-    @ApiModelProperty(value = "the restaurant name", example = "Pizza Hut")
+    @ApiModelProperty(value = "restaurant name", example = "Pizza Hut")
     @NotNull
     @NotEmpty
     private String name;
 
-    @ApiModelProperty(value = "the city id")
+    @ApiModelProperty(value = "city id", example = "cityId")
     @NotNull
     private String cityId;
 

@@ -13,7 +13,7 @@ public class ResponseRestaurantDto {
 
     private RestaurantCityDto city;
 
-    private Set<RestaurantMealDto> meals;
+    private Set<RestaurantDishDto> dishes;
 
     @Data
     public static final class RestaurantCityDto {
@@ -25,7 +25,7 @@ public class ResponseRestaurantDto {
     }
 
     @Data
-    public static final class RestaurantMealDto {
+    public static final class RestaurantDishDto {
 
         private String id;
 

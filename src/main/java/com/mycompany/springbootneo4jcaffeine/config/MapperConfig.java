@@ -1,17 +1,18 @@
 package com.mycompany.springbootneo4jcaffeine.config;
 
 import com.mycompany.springbootneo4jcaffeine.dto.CreateCityDto;
-import com.mycompany.springbootneo4jcaffeine.dto.CreateMealDto;
+import com.mycompany.springbootneo4jcaffeine.dto.CreateDishDto;
 import com.mycompany.springbootneo4jcaffeine.dto.CreateRestaurantDto;
 import com.mycompany.springbootneo4jcaffeine.dto.ResponseCityDto;
-import com.mycompany.springbootneo4jcaffeine.dto.ResponseMealDto;
+import com.mycompany.springbootneo4jcaffeine.dto.ResponseDishDto;
 import com.mycompany.springbootneo4jcaffeine.dto.ResponseRestaurantDto;
 import com.mycompany.springbootneo4jcaffeine.dto.UpdateCityDto;
-import com.mycompany.springbootneo4jcaffeine.dto.UpdateMealDto;
+import com.mycompany.springbootneo4jcaffeine.dto.UpdateDishDto;
 import com.mycompany.springbootneo4jcaffeine.dto.UpdateRestaurantDto;
 import com.mycompany.springbootneo4jcaffeine.exception.CityNotFoundException;
+import com.mycompany.springbootneo4jcaffeine.exception.MapperException;
 import com.mycompany.springbootneo4jcaffeine.model.City;
-import com.mycompany.springbootneo4jcaffeine.model.Meal;
+import com.mycompany.springbootneo4jcaffeine.model.Dish;
 import com.mycompany.springbootneo4jcaffeine.model.Restaurant;
 import com.mycompany.springbootneo4jcaffeine.service.CityService;
 import ma.glasnost.orika.CustomMapper;
@@ -52,11 +53,13 @@ public class MapperConfig {
                     public void mapAtoB(CreateRestaurantDto createRestaurantDto, Restaurant restaurant, MappingContext context) {
                         super.mapAtoB(createRestaurantDto, restaurant, context);
 
+                        String cityId = createRestaurantDto.getCityId();
                         try {
-                            City city = cityService.validateAndGetCityById(createRestaurantDto.getCityId());
+                            City city = cityService.validateAndGetCityById(cityId);
                             restaurant.setCity(city);
                         } catch (CityNotFoundException e) {
-                            throw new RuntimeException(e);
+                            String message = String.format("Unable to map city id '%s' to restaurant", cityId);
+                            throw new MapperException(message, e);
                         }
                     }
                 })
@@ -74,7 +77,8 @@ public class MapperConfig {
                                 City city = cityService.validateAndGetCityById(newCityId);
                                 restaurant.setCity(city);
                             } catch (CityNotFoundException e) {
-                                throw new RuntimeException(e);
+                                String message = String.format("Unable to map city id '%s' to restaurant", newCityId);
+                                throw new MapperException(message, e);
                             }
                         }
                     }
@@ -84,11 +88,11 @@ public class MapperConfig {
         defaultMapperFactory.classMap(Restaurant.class, ResponseRestaurantDto.class).byDefault().register();
 
         // ---
-        // Meal
+        // Dish
 
-        defaultMapperFactory.classMap(CreateMealDto.class, Meal.class).byDefault().register();
-        defaultMapperFactory.classMap(UpdateMealDto.class, Meal.class).mapNulls(false).byDefault().register();
-        defaultMapperFactory.classMap(Meal.class, ResponseMealDto.class).byDefault().register();
+        defaultMapperFactory.classMap(CreateDishDto.class, Dish.class).byDefault().register();
+        defaultMapperFactory.classMap(UpdateDishDto.class, Dish.class).mapNulls(false).byDefault().register();
+        defaultMapperFactory.classMap(Dish.class, ResponseDishDto.class).byDefault().register();
 
         return defaultMapperFactory;
     }

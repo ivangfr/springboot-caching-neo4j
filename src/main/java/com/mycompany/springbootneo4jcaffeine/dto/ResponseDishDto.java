@@ -5,7 +5,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
-public class ResponseMealDto {
+public class ResponseDishDto {
 
     private String id;
 

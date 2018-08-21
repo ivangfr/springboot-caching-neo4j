@@ -6,12 +6,12 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
-public class UpdateMealDto {
+public class UpdateDishDto {
 
-    @ApiModelProperty(value = "the meal name", example = "Pizza Peperoni")
+    @ApiModelProperty(value = "dish name", example = "Pizza Peperoni")
     private String name;
 
-    @ApiModelProperty(value = "the meal price", example = "6.50")
+    @ApiModelProperty(value = "dish price", example = "6.50")
     private BigDecimal price;
 
 }

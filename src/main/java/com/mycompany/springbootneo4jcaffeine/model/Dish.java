@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 
 @Data
 @NodeEntity
-public class Meal {
+public class Dish {
 
     @Id
     @GeneratedValue(strategy = UuidStrategy.class)

@@ -6,10 +6,10 @@ import lombok.Data;
 @Data
 public class UpdateRestaurantDto {
 
-    @ApiModelProperty(value = "the restaurant name", example = "Mcdonald's")
+    @ApiModelProperty(value = "restaurant name", example = "Mcdonald's")
     private String name;
 
-    @ApiModelProperty(value = "the city id")
+    @ApiModelProperty(value = "city id", example = "cityId")
     private String cityId;
 
 }

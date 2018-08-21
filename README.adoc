@@ -1,8 +1,18 @@
 = springboot-neo4j-caffeine
 
-== TODO
+== Goal
 
-- Replace the name Meal by Dish (every where)
+== Start Environment
+
+== Bug
+
+During the startup you can see a lot of
+----
+WARN ... o.s.d.n.mapping.Neo4jPersistentProperty : No identity field found for class of type ...
+----
+It is a bug know by Spring Data Neo4j team: https://jira.spring.io/browse/DATAGRAPH-1076
+
+== TODO
 
 == Reference
 https://graphaware.com/neo4j/2015/09/03/sdn-4-object-model.html

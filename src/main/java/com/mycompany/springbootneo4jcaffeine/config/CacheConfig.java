@@ -7,19 +7,19 @@ import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Configuration
 public class CacheConfig {
 
-    public static final String MEALS = "MEALS";
+    public static final String DISHES = "DISHES";
 
     @Bean
     public CacheManager cacheManager() {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager();
-        cacheManager.setCacheNames(Arrays.asList(MEALS));
+        cacheManager.setCacheNames(Collections.singletonList(DISHES));
         cacheManager.setAllowNullValues(false);
         cacheManager.setCaffeine(caffeineCacheBuilder());
         return cacheManager;

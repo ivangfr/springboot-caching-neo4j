@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 @Data
 public class CreateCityDto {
 
-    @ApiModelProperty(value = "the city name", example = "Berlin")
+    @ApiModelProperty(value = "city name", example = "Berlin")
     @NotNull
     @NotEmpty
     private String name;

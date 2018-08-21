@@ -8,14 +8,14 @@ import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 @Data
-public class CreateMealDto {
+public class CreateDishDto {
 
-    @ApiModelProperty(value = "the meal name", example = "Pizza Salami")
+    @ApiModelProperty(value = "dish name", example = "Pizza Salami")
     @NotNull
     @NotEmpty
     private String name;
 
-    @ApiModelProperty(value = "the meal price", example = "5.50")
+    @ApiModelProperty(value = "dish price", example = "5.50")
     @NotNull
     private BigDecimal price;
 

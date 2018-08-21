@@ -30,6 +30,6 @@ public class Restaurant {
     private City city;
 
     @Relationship(type = "HAS")
-    private Set<Meal> meals = new HashSet<>();
+    private Set<Dish> dishes = new HashSet<>();
 
 }

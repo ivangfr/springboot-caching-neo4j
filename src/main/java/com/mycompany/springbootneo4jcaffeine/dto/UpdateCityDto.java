@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class UpdateCityDto {
 
-    @ApiModelProperty(value = "the city name", example = "Porto")
+    @ApiModelProperty(value = "city name", example = "Porto")
     private String name;
 
 }
