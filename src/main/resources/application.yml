@@ -19,3 +19,4 @@ management:
 logging:
   level:
     org.springframework.cache: TRACE
+    org.springframework.transaction.interceptor: TRACE
