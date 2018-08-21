@@ -13,6 +13,10 @@ public class ResponseRestaurantDto {
 
     private RestaurantCityDto city;
 
+    private String address;
+
+    private String email;
+
     private Set<RestaurantDishDto> dishes;
 
     @Data

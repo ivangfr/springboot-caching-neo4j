@@ -14,5 +14,7 @@ It is a bug know by Spring Data Neo4j team: https://jira.spring.io/browse/DATAGR
 
 == TODO
 
+- Add: whenever a restaurant is deleted, delete all its dishes. (deletion with transaction)
+
 == Reference
 https://graphaware.com/neo4j/2015/09/03/sdn-4-object-model.html
