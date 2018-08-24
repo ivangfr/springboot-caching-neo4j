@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: springboot-neo4j-caffeine
   data:
     neo4j:
       uri: bolt://localhost

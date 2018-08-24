@@ -6,7 +6,6 @@ import com.mycompany.springbootneo4jcaffeine.dto.CreateRestaurantDto;
 import com.mycompany.springbootneo4jcaffeine.dto.ResponseCityDto;
 import com.mycompany.springbootneo4jcaffeine.dto.ResponseDishDto;
 import com.mycompany.springbootneo4jcaffeine.dto.ResponseRestaurantDto;
-import com.mycompany.springbootneo4jcaffeine.dto.UpdateCityDto;
 import com.mycompany.springbootneo4jcaffeine.dto.UpdateDishDto;
 import com.mycompany.springbootneo4jcaffeine.dto.UpdateRestaurantDto;
 import com.mycompany.springbootneo4jcaffeine.exception.CityNotFoundException;
@@ -41,7 +40,6 @@ public class MapperConfig {
         // City
 
         defaultMapperFactory.classMap(CreateCityDto.class, City.class).byDefault().register();
-        defaultMapperFactory.classMap(UpdateCityDto.class, City.class).mapNulls(false).byDefault().register();
         defaultMapperFactory.classMap(City.class, ResponseCityDto.class).byDefault().register();
 
         // ---

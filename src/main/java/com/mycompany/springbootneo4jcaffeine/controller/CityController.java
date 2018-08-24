@@ -2,7 +2,6 @@ package com.mycompany.springbootneo4jcaffeine.controller;
 
 import com.mycompany.springbootneo4jcaffeine.dto.CreateCityDto;
 import com.mycompany.springbootneo4jcaffeine.dto.ResponseCityDto;
-import com.mycompany.springbootneo4jcaffeine.dto.UpdateCityDto;
 import com.mycompany.springbootneo4jcaffeine.exception.CityNotFoundException;
 import com.mycompany.springbootneo4jcaffeine.model.City;
 import com.mycompany.springbootneo4jcaffeine.service.CityService;
@@ -10,7 +9,6 @@ import ma.glasnost.orika.MapperFacade;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -51,17 +49,6 @@ public class CityController {
     @PostMapping
     public ResponseCityDto createCity(@Valid @RequestBody CreateCityDto createCityDto) {
         City city = mapper.map(createCityDto, City.class);
-        city = cityService.saveCity(city);
-        return mapper.map(city, ResponseCityDto.class);
-    }
-
-    @ResponseStatus(HttpStatus.OK)
-    @PatchMapping("/{cityId}")
-    public ResponseCityDto updateCity(@PathVariable String cityId, @Valid @RequestBody UpdateCityDto updateCityDto)
-            throws CityNotFoundException {
-        City city = cityService.validateAndGetCityById(cityId);
-        mapper.map(updateCityDto, city);
-
         city = cityService.saveCity(city);
         return mapper.map(city, ResponseCityDto.class);
     }
