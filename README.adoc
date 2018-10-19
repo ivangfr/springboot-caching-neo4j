@@ -60,6 +60,7 @@ It is a bug know by Spring Data Neo4j team: https://jira.spring.io/browse/DATAGR
 
 == TODO
 
+- *Implement test cases*
 - Create a bash script that uses Neo4j API to insert some data.
 
 == Reference
