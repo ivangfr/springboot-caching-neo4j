@@ -2,14 +2,14 @@ package com.mycompany.springbootneo4jcaffeine.rest.dto;
 
 import lombok.Data;
 
-import java.util.Set;
+import java.util.List;
 
 @Data
 public class CityDto {
 
     private String id;
     private String name;
-    private Set<Restaurant> restaurants;
+    private List<Restaurant> restaurants;
 
     @Data
     public static final class Restaurant {

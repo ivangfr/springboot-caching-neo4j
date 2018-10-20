@@ -1,19 +1,15 @@
 package com.mycompany.springbootneo4jcaffeine.rest;
 
-import com.mycompany.springbootneo4jcaffeine.rest.dto.CreateDishDto;
-import com.mycompany.springbootneo4jcaffeine.rest.dto.DishDto;
-import com.mycompany.springbootneo4jcaffeine.rest.dto.UpdateDishDto;
 import com.mycompany.springbootneo4jcaffeine.exception.DishNotFoundException;
 import com.mycompany.springbootneo4jcaffeine.exception.RestaurantNotFoundException;
 import com.mycompany.springbootneo4jcaffeine.model.Dish;
 import com.mycompany.springbootneo4jcaffeine.model.Restaurant;
+import com.mycompany.springbootneo4jcaffeine.rest.dto.CreateDishDto;
+import com.mycompany.springbootneo4jcaffeine.rest.dto.DishDto;
+import com.mycompany.springbootneo4jcaffeine.rest.dto.UpdateDishDto;
 import com.mycompany.springbootneo4jcaffeine.service.DishService;
 import com.mycompany.springbootneo4jcaffeine.service.RestaurantService;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import ma.glasnost.orika.MapperFacade;
-import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -34,8 +30,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.mycompany.springbootneo4jcaffeine.config.CacheConfig.DISHES;
+import static com.mycompany.springbootneo4jcaffeine.config.CacheConfig.RESTAURANTS;
 
-@CacheConfig(cacheNames = DISHES)
 @RestController
 @RequestMapping("/api/restaurants/{restaurantId}/dishes")
 public class RestaurantDishController {
@@ -50,13 +46,7 @@ public class RestaurantDishController {
         this.dishService = dishService;
     }
 
-    @ApiOperation(value = "Get restaurant dish")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 404, message = "Not Found"),
-            @ApiResponse(code = 500, message = "Internal Server Error")
-    })
-    @Cacheable(key = "{#restaurantId,#dishId}")
+    @Cacheable(cacheNames = DISHES, key = "{#restaurantId,#dishId}")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{dishId}")
     public DishDto getRestaurantDish(@PathVariable String restaurantId, @PathVariable String dishId)
@@ -67,13 +57,7 @@ public class RestaurantDishController {
         return mapper.map(dish, DishDto.class);
     }
 
-    @ApiOperation(value = "Get restaurant dishes")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 404, message = "Not Found"),
-            @ApiResponse(code = 500, message = "Internal Server Error")
-    })
-    @Cacheable(key = "#restaurantId")
+    @Cacheable(cacheNames = DISHES, key = "#restaurantId")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public Set<DishDto> getRestaurantDishes(@PathVariable String restaurantId) throws RestaurantNotFoundException {
@@ -81,16 +65,12 @@ public class RestaurantDishController {
         return restaurant.getDishes().stream().map(m -> mapper.map(m, DishDto.class)).collect(Collectors.toSet());
     }
 
-    @ApiOperation(value = "Create restaurant dish", code = 201)
-    @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Created"),
-            @ApiResponse(code = 400, message = "Bad Request"),
-            @ApiResponse(code = 404, message = "Not Found"),
-            @ApiResponse(code = 500, message = "Internal Server Error")
-    })
     @Caching(
-            put = {@CachePut(key = "{#restaurantId,#result.id}")},
-            evict = {@CacheEvict(key = "#restaurantId")}
+            put = @CachePut(cacheNames = DISHES, key = "{#restaurantId,#result.id}"),
+            evict = {
+                    @CacheEvict(cacheNames = DISHES, key = "#restaurantId"),
+                    @CacheEvict(cacheNames = RESTAURANTS, key = "#restaurantId")
+            }
     )
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
@@ -105,16 +85,12 @@ public class RestaurantDishController {
         return mapper.map(dish, DishDto.class);
     }
 
-    @ApiOperation(value = "Update restaurant dish")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 400, message = "Bad Request"),
-            @ApiResponse(code = 404, message = "Not Found"),
-            @ApiResponse(code = 500, message = "Internal Server Error")
-    })
     @Caching(
-            put = {@CachePut(key = "{#restaurantId,#dishId}")},
-            evict = {@CacheEvict(key = "#restaurantId")}
+            put = @CachePut(cacheNames = DISHES, key = "{#restaurantId,#dishId}"),
+            evict = {
+                    @CacheEvict(cacheNames = DISHES, key = "#restaurantId"),
+                    @CacheEvict(cacheNames = RESTAURANTS, key = "#restaurantId")
+            }
     )
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/{dishId}")
@@ -130,15 +106,10 @@ public class RestaurantDishController {
         return mapper.map(dish, DishDto.class);
     }
 
-    @ApiOperation(value = "Delete restaurant dish")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 404, message = "Not Found"),
-            @ApiResponse(code = 500, message = "Internal Server Error")
-    })
     @Caching(evict = {
-            @CacheEvict(key = "{#restaurantId,#dishId}"),
-            @CacheEvict(key = "#restaurantId")
+            @CacheEvict(cacheNames = DISHES, key = "{#restaurantId,#dishId}"),
+            @CacheEvict(cacheNames = DISHES, key = "#restaurantId"),
+            @CacheEvict(cacheNames = RESTAURANTS, key = "#restaurantId")
     })
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{dishId}")

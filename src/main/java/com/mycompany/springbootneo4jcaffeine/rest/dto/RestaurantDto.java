@@ -2,7 +2,7 @@ package com.mycompany.springbootneo4jcaffeine.rest.dto;
 
 import lombok.Data;
 
-import java.util.Set;
+import java.util.List;
 
 @Data
 public class RestaurantDto {
@@ -12,7 +12,7 @@ public class RestaurantDto {
     private City city;
     private String address;
     private String email;
-    private Set<Dish> dishes;
+    private List<Dish> dishes;
 
     @Data
     public static final class City {

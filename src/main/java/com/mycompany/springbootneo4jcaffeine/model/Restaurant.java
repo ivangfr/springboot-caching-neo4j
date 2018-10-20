@@ -10,7 +10,7 @@ import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
 import org.neo4j.ogm.id.UuidStrategy;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Data
@@ -34,6 +34,6 @@ public class Restaurant {
     private String email;
 
     @Relationship(type = "HAS")
-    private Set<Dish> dishes = new HashSet<>();
+    private Set<Dish> dishes = new LinkedHashSet<>();
 
 }

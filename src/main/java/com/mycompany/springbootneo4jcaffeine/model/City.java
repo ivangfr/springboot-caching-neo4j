@@ -10,7 +10,7 @@ import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
 import org.neo4j.ogm.id.UuidStrategy;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Data
@@ -27,6 +27,6 @@ public class City {
 
     @JsonIgnore
     @Relationship(type = "LOCATED_IN", direction = Relationship.INCOMING)
-    private Set<Restaurant> restaurants = new HashSet<>();
+    private Set<Restaurant> restaurants = new LinkedHashSet<>();
 
 }

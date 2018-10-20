@@ -34,9 +34,7 @@ public class CacheConfig {
                 .initialCapacity(100)
                 .maximumSize(1000)
                 .expireAfterWrite(60, TimeUnit.MINUTES)
-                .removalListener((k, v, cause) -> {
-                    log.info("==> CACHE: Removal Listener called. key={} value={} cause={}", k, v, cause);
-                })
+                .removalListener((k, v, cause) -> log.info("==> CACHE: Removal Listener called. key={} value={} cause={}", k, v, cause))
                 .recordStats();
     }
 
