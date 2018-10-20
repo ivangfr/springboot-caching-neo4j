@@ -1,4 +1,4 @@
-package com.mycompany.springbootneo4jcaffeine.dto;
+package com.mycompany.springbootneo4jcaffeine.rest.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

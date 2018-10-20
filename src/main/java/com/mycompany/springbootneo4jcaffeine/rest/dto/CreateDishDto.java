@@ -1,4 +1,4 @@
-package com.mycompany.springbootneo4jcaffeine.dto;
+package com.mycompany.springbootneo4jcaffeine.rest.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -15,7 +15,7 @@ public class CreateDishDto {
     @NotEmpty
     private String name;
 
-    @ApiModelProperty(position = 1, value = "dish price", example = "5.50")
+    @ApiModelProperty(position = 2, value = "dish price", example = "5.50")
     @NotNull
     private BigDecimal price;
 

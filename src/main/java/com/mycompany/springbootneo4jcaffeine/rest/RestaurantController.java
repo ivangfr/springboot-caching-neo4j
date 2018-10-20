@@ -1,8 +1,8 @@
-package com.mycompany.springbootneo4jcaffeine.controller;
+package com.mycompany.springbootneo4jcaffeine.rest;
 
-import com.mycompany.springbootneo4jcaffeine.dto.CreateRestaurantDto;
-import com.mycompany.springbootneo4jcaffeine.dto.ResponseRestaurantDto;
-import com.mycompany.springbootneo4jcaffeine.dto.UpdateRestaurantDto;
+import com.mycompany.springbootneo4jcaffeine.rest.dto.CreateRestaurantDto;
+import com.mycompany.springbootneo4jcaffeine.rest.dto.RestaurantDto;
+import com.mycompany.springbootneo4jcaffeine.rest.dto.UpdateRestaurantDto;
 import com.mycompany.springbootneo4jcaffeine.exception.RestaurantNotFoundException;
 import com.mycompany.springbootneo4jcaffeine.model.Restaurant;
 import com.mycompany.springbootneo4jcaffeine.service.RestaurantService;
@@ -33,7 +33,7 @@ import static com.mycompany.springbootneo4jcaffeine.config.CacheConfig.RESTAURAN
 
 @CacheConfig(cacheNames = RESTAURANTS)
 @RestController
-@RequestMapping("/api/v1/restaurants")
+@RequestMapping("/api/restaurants")
 public class RestaurantController {
 
     private final MapperFacade mapper;
@@ -53,9 +53,9 @@ public class RestaurantController {
     @Cacheable(key = "#restaurantId")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{restaurantId}")
-    public ResponseRestaurantDto getRestaurant(@PathVariable String restaurantId) throws RestaurantNotFoundException {
+    public RestaurantDto getRestaurant(@PathVariable String restaurantId) throws RestaurantNotFoundException {
         Restaurant restaurant = restaurantService.validateAndGetRestaurantById(restaurantId);
-        return mapper.map(restaurant, ResponseRestaurantDto.class);
+        return mapper.map(restaurant, RestaurantDto.class);
     }
 
     @ApiOperation(value = "Get restaurants")
@@ -65,8 +65,8 @@ public class RestaurantController {
     })
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public Set<ResponseRestaurantDto> getRestaurants() {
-        return restaurantService.getRestaurants().stream().map(r -> mapper.map(r, ResponseRestaurantDto.class)).collect(Collectors.toSet());
+    public Set<RestaurantDto> getRestaurants() {
+        return restaurantService.getRestaurants().stream().map(r -> mapper.map(r, RestaurantDto.class)).collect(Collectors.toSet());
     }
 
     @ApiOperation(value = "Create restaurant", code = 201)
@@ -78,11 +78,11 @@ public class RestaurantController {
     @CachePut(key = "#result.id")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ResponseRestaurantDto createRestaurant(@Valid @RequestBody CreateRestaurantDto createRestaurantDto) {
+    public RestaurantDto createRestaurant(@Valid @RequestBody CreateRestaurantDto createRestaurantDto) {
         Restaurant restaurant = mapper.map(createRestaurantDto, Restaurant.class);
 
         restaurant = restaurantService.saveRestaurant(restaurant);
-        return mapper.map(restaurant, ResponseRestaurantDto.class);
+        return mapper.map(restaurant, RestaurantDto.class);
     }
 
     @ApiOperation(value = "Update restaurant")
@@ -95,13 +95,13 @@ public class RestaurantController {
     @CachePut(key = "#restaurantId")
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/{restaurantId}")
-    public ResponseRestaurantDto updateRestaurant(@PathVariable String restaurantId, @Valid @RequestBody UpdateRestaurantDto updateRestaurantDto)
+    public RestaurantDto updateRestaurant(@PathVariable String restaurantId, @Valid @RequestBody UpdateRestaurantDto updateRestaurantDto)
             throws RestaurantNotFoundException {
         Restaurant restaurant = restaurantService.validateAndGetRestaurantById(restaurantId);
         mapper.map(updateRestaurantDto, restaurant);
 
         restaurant = restaurantService.saveRestaurant(restaurant);
-        return mapper.map(restaurant, ResponseRestaurantDto.class);
+        return mapper.map(restaurant, RestaurantDto.class);
     }
 
     @ApiOperation(value = "Delete restaurant")

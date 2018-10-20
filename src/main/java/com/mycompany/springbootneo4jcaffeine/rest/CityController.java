@@ -1,7 +1,7 @@
-package com.mycompany.springbootneo4jcaffeine.controller;
+package com.mycompany.springbootneo4jcaffeine.rest;
 
-import com.mycompany.springbootneo4jcaffeine.dto.CreateCityDto;
-import com.mycompany.springbootneo4jcaffeine.dto.ResponseCityDto;
+import com.mycompany.springbootneo4jcaffeine.rest.dto.CreateCityDto;
+import com.mycompany.springbootneo4jcaffeine.rest.dto.CityDto;
 import com.mycompany.springbootneo4jcaffeine.exception.CityNotFoundException;
 import com.mycompany.springbootneo4jcaffeine.model.City;
 import com.mycompany.springbootneo4jcaffeine.service.CityService;
@@ -31,7 +31,7 @@ import static com.mycompany.springbootneo4jcaffeine.config.CacheConfig.CITIES;
 
 @CacheConfig(cacheNames = CITIES)
 @RestController
-@RequestMapping("/api/v1/cities")
+@RequestMapping("/api/cities")
 public class CityController {
 
     private final MapperFacade mapper;
@@ -51,9 +51,9 @@ public class CityController {
     @Cacheable(key = "#cityId")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{cityId}")
-    public ResponseCityDto getCity(@PathVariable String cityId) throws CityNotFoundException {
+    public CityDto getCity(@PathVariable String cityId) throws CityNotFoundException {
         City city = cityService.validateAndGetCityById(cityId);
-        return mapper.map(city, ResponseCityDto.class);
+        return mapper.map(city, CityDto.class);
     }
 
     @ApiOperation(value = "Get cities")
@@ -63,8 +63,8 @@ public class CityController {
     })
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public Set<ResponseCityDto> getCities() {
-        return cityService.getCities().stream().map(c -> mapper.map(c, ResponseCityDto.class)).collect(Collectors.toSet());
+    public Set<CityDto> getCities() {
+        return cityService.getCities().stream().map(c -> mapper.map(c, CityDto.class)).collect(Collectors.toSet());
     }
 
     @ApiOperation(value = "Create city", code = 201)
@@ -76,10 +76,10 @@ public class CityController {
     @CachePut(key = "#result.id")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ResponseCityDto createCity(@Valid @RequestBody CreateCityDto createCityDto) {
+    public CityDto createCity(@Valid @RequestBody CreateCityDto createCityDto) {
         City city = mapper.map(createCityDto, City.class);
         city = cityService.saveCity(city);
-        return mapper.map(city, ResponseCityDto.class);
+        return mapper.map(city, CityDto.class);
     }
 
     @ApiOperation(value = "Delete city")
