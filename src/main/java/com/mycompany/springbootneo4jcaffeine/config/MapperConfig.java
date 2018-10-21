@@ -1,5 +1,6 @@
 package com.mycompany.springbootneo4jcaffeine.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mycompany.springbootneo4jcaffeine.exception.CityNotFoundException;
 import com.mycompany.springbootneo4jcaffeine.exception.MapperException;
 import com.mycompany.springbootneo4jcaffeine.model.City;
@@ -77,6 +78,11 @@ public class MapperConfig {
     @Bean
     MapperFacade mapperFacade() {
         return mapperFactory().getMapperFacade();
+    }
+
+    @Bean
+    ObjectMapper objectMapper() {
+        return new ObjectMapper();
     }
 
 }

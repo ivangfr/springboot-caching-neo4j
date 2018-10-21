@@ -10,12 +10,12 @@ import java.math.BigDecimal;
 @Data
 public class CreateDishDto {
 
-    @ApiModelProperty(value = "dish name", example = "Pizza Salami")
+    @ApiModelProperty(example = "Pizza Salami")
     @NotNull
     @NotEmpty
     private String name;
 
-    @ApiModelProperty(position = 2, value = "dish price", example = "5.50")
+    @ApiModelProperty(position = 2, example = "5.50")
     @NotNull
     private BigDecimal price;
 

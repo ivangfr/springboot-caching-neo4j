@@ -38,10 +38,11 @@ class CityControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @MockBean
     private CityService cityService;
-
-    private static ObjectMapper objectMapper = new ObjectMapper();
 
     @TestConfiguration
     static class Neo4jConfig {

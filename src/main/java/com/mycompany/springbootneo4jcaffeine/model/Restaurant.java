@@ -29,10 +29,6 @@ public class Restaurant {
     @Relationship(type = "LOCATED_IN")
     private City city;
 
-    private String address;
-
-    private String email;
-
     @JsonIgnore
     @Relationship(type = "HAS")
     private Set<Dish> dishes = new LinkedHashSet<>();

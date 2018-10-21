@@ -2,8 +2,8 @@
 
 == Goal
 
-The goal of this project is to implement a simple application that handles restaurant. There are some endpoints to
-manage cities where the restaurants are, other to manage restaurants and, finally, some endpoints to handle the restaurant
+The goal of this project is to implement a simple application that handles restaurants. There are some endpoints to
+manage cities where the restaurants are, others to manage restaurants and, finally, some endpoints to handle the restaurant
 dishes. https://neo4j.com[Neo4j] was the chosen storage. We are using also https://github.com/ben-manes/caffeine[Caffeine]
 for caching.
 

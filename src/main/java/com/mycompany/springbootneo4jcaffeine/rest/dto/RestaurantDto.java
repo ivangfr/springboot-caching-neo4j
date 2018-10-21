@@ -10,8 +10,6 @@ public class RestaurantDto {
     private String id;
     private String name;
     private City city;
-    private String address;
-    private String email;
     private List<Dish> dishes;
 
     @Data
