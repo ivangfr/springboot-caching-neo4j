@@ -33,6 +33,7 @@ public class Restaurant {
 
     private String email;
 
+    @JsonIgnore
     @Relationship(type = "HAS")
     private Set<Dish> dishes = new LinkedHashSet<>();
 

@@ -1,14 +1,13 @@
 package com.mycompany.springbootneo4jcaffeine.service;
 
-import com.google.common.collect.Sets;
 import com.mycompany.springbootneo4jcaffeine.exception.RestaurantNotFoundException;
 import com.mycompany.springbootneo4jcaffeine.model.Restaurant;
 import com.mycompany.springbootneo4jcaffeine.repository.DishRepository;
 import com.mycompany.springbootneo4jcaffeine.repository.RestaurantRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Set;
 
 @Service
 public class RestaurantServiceImpl implements RestaurantService {
@@ -22,8 +21,8 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
-    public Set<Restaurant> getRestaurants() {
-        return Sets.newHashSet(restaurantRepository.findAll());
+    public Page<Restaurant> getRestaurants(Pageable pageable) {
+        return restaurantRepository.findAll(pageable);
     }
 
     @Override

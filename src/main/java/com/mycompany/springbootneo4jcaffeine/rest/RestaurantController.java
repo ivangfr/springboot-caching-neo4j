@@ -11,6 +11,8 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,8 +25,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static com.mycompany.springbootneo4jcaffeine.config.CacheConfig.CITIES;
 import static com.mycompany.springbootneo4jcaffeine.config.CacheConfig.RESTAURANTS;
@@ -51,8 +51,8 @@ public class RestaurantController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public Set<RestaurantDto> getRestaurants() {
-        return restaurantService.getRestaurants().stream().map(r -> mapper.map(r, RestaurantDto.class)).collect(Collectors.toSet());
+    public Page<Restaurant> getRestaurants(Pageable pageable) {
+        return restaurantService.getRestaurants(pageable);
     }
 
     @Caching(

@@ -1,12 +1,11 @@
 package com.mycompany.springbootneo4jcaffeine.service;
 
-import com.google.common.collect.Sets;
 import com.mycompany.springbootneo4jcaffeine.exception.CityNotFoundException;
 import com.mycompany.springbootneo4jcaffeine.model.City;
 import com.mycompany.springbootneo4jcaffeine.repository.CityRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.Set;
 
 @Service
 public class CityServiceImpl implements CityService {
@@ -23,8 +22,8 @@ public class CityServiceImpl implements CityService {
     }
 
     @Override
-    public Set<City> getCities() {
-        return Sets.newHashSet(cityRepository.findAll());
+    public Page<City> getCities(Pageable pageable) {
+        return cityRepository.findAll(pageable);
     }
 
     @Override
