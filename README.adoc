@@ -9,7 +9,7 @@ for storage.
 
 image::images/neo4j-ui.png[]
 
-== Cache
+== Caching
 
 The application uses 3 caches: `CITIES`, `RESTAURANTS` and `DISHES`.
 
