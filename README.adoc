@@ -2,10 +2,40 @@
 
 == Goal
 
-The goal of this project is to implement a simple application that handles restaurants. There are some endpoints to
-manage cities where the restaurants are, others to manage restaurants and, finally, some endpoints to handle the restaurant
-dishes. https://neo4j.com[Neo4j] was the chosen storage. We are using also https://github.com/ben-manes/caffeine[Caffeine]
-for caching.
+The goal of this project is to implement a simple application that handles restaurants and explore how caching works.
+The application has some endpoints to manage restaurants, cities (where the restaurants are located in) and dishes
+the restaurants have. We are using https://github.com/ben-manes/caffeine[Caffeine] for caching and https://neo4j.com[Neo4j]
+for storage.
+
+image::images/neo4j-ui.png[]
+
+== Cache
+
+The application uses 3 caches: `CITIES`, `RESTAURANTS` and `DISHES`.
+
+The cache is applied on controller level. For instance, if you call `GET /api/restaurants/123` for the first time,
+the application will check whether the key `123` is present in the `RESTAURANTS` cache. If not, it must go to DB
+in order to get the information about the restaurant (payload), let's say that the payload is
+```
+{
+    "name": "Happy Pizza", "city": {"id": 1, "name": "Berlin"}, "dishes": []
+}
+```
+
+Before the endpoint finishes and returns the result, the key and its payload are saved in `RESTAURANTS` cache:
+```
+{
+    "123" = {"name": "Happy Pizza", "city": {"id": 1, "name": "Berlin"}, "dishes": []}
+}
+```
+
+On subsequents calls to `GET /api/restaurants/123` (and as far as the data is not evicted), the application just needs
+to go to cache the get the value.
+
+By the way, we've implemented more advanced caching logic as the one presented above like, for example, imagine that you
+have a city cached in `CITIES` cache and a new restaurant is created for that city. In this case, the cache of the city
+is evicted of `CITIES` (because the list of restaurants in the city changed) and a new cache for the restaurant is put in
+RESTAURANTS cache. The same happens when a restaurant is deleted/update or a restaurant dish is added/deleted/updated.
 
 == Start Environment
 
@@ -60,7 +90,7 @@ It is a bug know by Spring Data Neo4j team: https://jira.spring.io/browse/DATAGR
 
 == TODO
 
-- *Implement test cases*
+- Add AOP to log whenever the endpoint is called;
 - Create a bash script that uses Neo4j API to insert some data.
 
 == Reference
