@@ -13,6 +13,6 @@ public interface CityService {
 
     void deleteCity(City city);
 
-    City validateAndGetCityById(String cityId) throws CityNotFoundException;
+    City validateAndGetCity(String cityId) throws CityNotFoundException;
 
 }

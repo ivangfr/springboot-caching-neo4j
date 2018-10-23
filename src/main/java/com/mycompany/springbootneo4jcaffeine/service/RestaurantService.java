@@ -1,6 +1,8 @@
 package com.mycompany.springbootneo4jcaffeine.service;
 
+import com.mycompany.springbootneo4jcaffeine.exception.DishNotFoundException;
 import com.mycompany.springbootneo4jcaffeine.exception.RestaurantNotFoundException;
+import com.mycompany.springbootneo4jcaffeine.model.Dish;
 import com.mycompany.springbootneo4jcaffeine.model.Restaurant;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,5 +15,8 @@ public interface RestaurantService {
 
     void deleteRestaurant(Restaurant restaurant);
 
-    Restaurant validateAndGetRestaurantById(String restaurantId) throws RestaurantNotFoundException;
+    Restaurant validateAndGetRestaurant(String restaurantId) throws RestaurantNotFoundException;
+
+    Dish validateAndGetDish(Restaurant restaurant, String dishId) throws DishNotFoundException;
+
 }

@@ -32,7 +32,7 @@ public class CityServiceImpl implements CityService {
     }
 
     @Override
-    public City validateAndGetCityById(String cityId) throws CityNotFoundException {
+    public City validateAndGetCity(String cityId) throws CityNotFoundException {
         return cityRepository.findById(cityId).orElseThrow(() -> new CityNotFoundException(cityId));
     }
 

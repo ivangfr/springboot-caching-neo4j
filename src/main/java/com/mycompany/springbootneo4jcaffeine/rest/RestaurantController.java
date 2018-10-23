@@ -16,9 +16,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -45,7 +45,7 @@ public class RestaurantController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{restaurantId}")
     public RestaurantDto getRestaurant(@PathVariable String restaurantId) throws RestaurantNotFoundException {
-        Restaurant restaurant = restaurantService.validateAndGetRestaurantById(restaurantId);
+        Restaurant restaurant = restaurantService.validateAndGetRestaurant(restaurantId);
         return mapper.map(restaurant, RestaurantDto.class);
     }
 
@@ -73,10 +73,10 @@ public class RestaurantController {
             evict = @CacheEvict(cacheNames = CITIES, key = "#result.city.id")
     )
     @ResponseStatus(HttpStatus.OK)
-    @PatchMapping("/{restaurantId}")
+    @PutMapping("/{restaurantId}")
     public RestaurantDto updateRestaurant(@PathVariable String restaurantId, @Valid @RequestBody UpdateRestaurantDto updateRestaurantDto)
             throws RestaurantNotFoundException {
-        Restaurant restaurant = restaurantService.validateAndGetRestaurantById(restaurantId);
+        Restaurant restaurant = restaurantService.validateAndGetRestaurant(restaurantId);
         mapper.map(updateRestaurantDto, restaurant);
 
         restaurant = restaurantService.saveRestaurant(restaurant);
@@ -91,7 +91,7 @@ public class RestaurantController {
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{restaurantId}")
     public RestaurantDto deleteRestaurant(@PathVariable String restaurantId) throws RestaurantNotFoundException {
-        Restaurant restaurant = restaurantService.validateAndGetRestaurantById(restaurantId);
+        Restaurant restaurant = restaurantService.validateAndGetRestaurant(restaurantId);
         restaurantService.deleteRestaurant(restaurant);
         return mapper.map(restaurant, RestaurantDto.class);
     }

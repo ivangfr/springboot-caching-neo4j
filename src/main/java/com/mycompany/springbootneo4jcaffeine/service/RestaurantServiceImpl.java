@@ -1,6 +1,8 @@
 package com.mycompany.springbootneo4jcaffeine.service;
 
+import com.mycompany.springbootneo4jcaffeine.exception.DishNotFoundException;
 import com.mycompany.springbootneo4jcaffeine.exception.RestaurantNotFoundException;
+import com.mycompany.springbootneo4jcaffeine.model.Dish;
 import com.mycompany.springbootneo4jcaffeine.model.Restaurant;
 import com.mycompany.springbootneo4jcaffeine.repository.DishRepository;
 import com.mycompany.springbootneo4jcaffeine.repository.RestaurantRepository;
@@ -38,8 +40,17 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
-    public Restaurant validateAndGetRestaurantById(String restaurantId) throws RestaurantNotFoundException {
+    public Restaurant validateAndGetRestaurant(String restaurantId) throws RestaurantNotFoundException {
         return restaurantRepository.findById(restaurantId).orElseThrow(() -> new RestaurantNotFoundException(restaurantId));
+    }
+
+    @Override
+    public Dish validateAndGetDish(Restaurant restaurant, String dishId) throws DishNotFoundException {
+        return restaurant.getDishes()
+                .stream()
+                .filter(m -> m.getId().equals(dishId))
+                .findFirst()
+                .orElseThrow(() -> new DishNotFoundException(dishId));
     }
 
 }

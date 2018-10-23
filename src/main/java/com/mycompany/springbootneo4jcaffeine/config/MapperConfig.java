@@ -40,7 +40,7 @@ public class MapperConfig {
 
                         String cityId = createRestaurantDto.getCityId();
                         try {
-                            City city = cityService.validateAndGetCityById(cityId);
+                            City city = cityService.validateAndGetCity(cityId);
                             restaurant.setCity(city);
                         } catch (CityNotFoundException e) {
                             String message = String.format("Unable to map city id '%s' to restaurant", cityId);
@@ -59,7 +59,7 @@ public class MapperConfig {
                         String newCityId = updateRestaurantDto.getCityId();
                         if (!StringUtils.isEmpty(newCityId)) {
                             try {
-                                City city = cityService.validateAndGetCityById(newCityId);
+                                City city = cityService.validateAndGetCity(newCityId);
                                 restaurant.setCity(city);
                             } catch (CityNotFoundException e) {
                                 String message = String.format("Unable to map city id '%s' to restaurant", newCityId);

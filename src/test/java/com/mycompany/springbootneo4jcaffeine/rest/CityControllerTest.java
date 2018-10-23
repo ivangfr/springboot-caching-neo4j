@@ -56,7 +56,7 @@ class CityControllerTest {
     @Test
     void testGetCityCaching() throws Exception {
         City city = getDefaultCity();
-        given(cityService.validateAndGetCityById(city.getId())).willReturn(city);
+        given(cityService.validateAndGetCity(city.getId())).willReturn(city);
 
         //-- cityId cached in CITIES
         mockMvc.perform(get("/api/cities/{cityId}", city.getId())).andExpect(status().isOk());
@@ -64,7 +64,7 @@ class CityControllerTest {
         //-- cityId already cached in CITIES
         mockMvc.perform(get("/api/cities/{cityId}", city.getId())).andExpect(status().isOk());
 
-        verify(cityService, times(1)).validateAndGetCityById(city.getId());
+        verify(cityService, times(1)).validateAndGetCity(city.getId());
     }
 
     @Test
@@ -72,7 +72,7 @@ class CityControllerTest {
         City city = getDefaultCity();
         CreateCityDto createCityDto = getDefaultCreateCityDto();
 
-        given(cityService.validateAndGetCityById(city.getId())).willReturn(city);
+        given(cityService.validateAndGetCity(city.getId())).willReturn(city);
         given(cityService.saveCity(any(City.class))).willReturn(city);
 
         //-- create city and put cityId in CITIES
@@ -84,14 +84,14 @@ class CityControllerTest {
         //-- cityId already cached in CITIES
         mockMvc.perform(get("/api/cities/{cityId}", city.getId())).andExpect(status().isOk());
 
-        verify(cityService, times(0)).validateAndGetCityById(city.getId());
+        verify(cityService, times(0)).validateAndGetCity(city.getId());
     }
 
     @Test
     void testDeleteCityCaching() throws Exception {
         City city = getDefaultCity();
 
-        given(cityService.validateAndGetCityById(city.getId())).willReturn(city);
+        given(cityService.validateAndGetCity(city.getId())).willReturn(city);
 
         //-- cityId cached in CITIES
         mockMvc.perform(get("/api/cities/{cityId}", city.getId())).andExpect(status().isOk());
@@ -105,7 +105,7 @@ class CityControllerTest {
         //-- cityId already cached in CITIES
         mockMvc.perform(get("/api/cities/{cityId}", city.getId())).andExpect(status().isOk());
 
-        verify(cityService, times(3)).validateAndGetCityById(city.getId());
+        verify(cityService, times(3)).validateAndGetCity(city.getId());
     }
 
     private City getDefaultCity() {

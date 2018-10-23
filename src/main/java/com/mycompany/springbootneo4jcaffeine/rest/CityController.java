@@ -43,7 +43,7 @@ public class CityController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{cityId}")
     public CityDto getCity(@PathVariable String cityId) throws CityNotFoundException {
-        City city = cityService.validateAndGetCityById(cityId);
+        City city = cityService.validateAndGetCity(cityId);
         return mapper.map(city, CityDto.class);
     }
 
@@ -66,7 +66,7 @@ public class CityController {
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{cityId}")
     public void deleteCity(@PathVariable String cityId) throws CityNotFoundException {
-        City city = cityService.validateAndGetCityById(cityId);
+        City city = cityService.validateAndGetCity(cityId);
         cityService.deleteCity(city);
     }
 

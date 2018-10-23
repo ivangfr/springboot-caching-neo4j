@@ -31,11 +31,11 @@ class CityIntegrationTest {
 
     @Test
     void testGetCity() {
-        City city = getDefaultCity();
-        city = cityRepository.save(city);
+        City city = saveDefaultCity();
 
         String url = String.format("/api/cities/%s", city.getId());
         ResponseEntity<CityDto> responseEntity = testRestTemplate.getForEntity(url, CityDto.class);
+
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertNotNull(responseEntity.getBody());
         assertNotNull(responseEntity.getBody().getId());
@@ -48,6 +48,7 @@ class CityIntegrationTest {
         CreateCityDto createCityDto = getDefaultCreateCityDto();
 
         ResponseEntity<CityDto> responseEntity = testRestTemplate.postForEntity("/api/cities", createCityDto, CityDto.class);
+
         assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
         assertNotNull(responseEntity.getBody());
         assertNotNull(responseEntity.getBody().getId());
@@ -57,23 +58,23 @@ class CityIntegrationTest {
 
     @Test
     void testDeleteCity() {
-        City city = getDefaultCity();
-        city = cityRepository.save(city);
+        City city = saveDefaultCity();
 
         String url = String.format("/api/cities/%s", city.getId());
         ResponseEntity<Void> responseEntity = testRestTemplate.exchange(url, HttpMethod.DELETE, null, Void.class);
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-    }
 
-    private City getDefaultCity() {
-        City city = new City();
-        city.setName("Porto");
-        return city;
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     }
 
     private CreateCityDto getDefaultCreateCityDto() {
         CreateCityDto createCityDto = new CreateCityDto();
         createCityDto.setName("Porto");
         return createCityDto;
+    }
+
+    private City saveDefaultCity() {
+        City city = new City();
+        city.setName("Porto");
+        return cityRepository.save(city);
     }
 }
