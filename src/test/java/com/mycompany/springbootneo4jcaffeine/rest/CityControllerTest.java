@@ -58,7 +58,10 @@ class CityControllerTest {
         City city = getDefaultCity();
         given(cityService.validateAndGetCityById(city.getId())).willReturn(city);
 
+        //-- cityId cached in CITIES
         mockMvc.perform(get("/api/cities/{cityId}", city.getId())).andExpect(status().isOk());
+
+        //-- cityId already cached in CITIES
         mockMvc.perform(get("/api/cities/{cityId}", city.getId())).andExpect(status().isOk());
 
         verify(cityService, times(1)).validateAndGetCityById(city.getId());
@@ -72,10 +75,13 @@ class CityControllerTest {
         given(cityService.validateAndGetCityById(city.getId())).willReturn(city);
         given(cityService.saveCity(any(City.class))).willReturn(city);
 
+        //-- create city and put cityId in CITIES
         mockMvc.perform(post("/api/cities")
                 .contentType((MediaType.APPLICATION_JSON))
                 .content(objectMapper.writeValueAsString(createCityDto)))
                 .andExpect(status().isCreated());
+
+        //-- cityId already cached in CITIES
         mockMvc.perform(get("/api/cities/{cityId}", city.getId())).andExpect(status().isOk());
 
         verify(cityService, times(0)).validateAndGetCityById(city.getId());
@@ -87,8 +93,16 @@ class CityControllerTest {
 
         given(cityService.validateAndGetCityById(city.getId())).willReturn(city);
 
+        //-- cityId cached in CITIES
         mockMvc.perform(get("/api/cities/{cityId}", city.getId())).andExpect(status().isOk());
+
+        //-- evict cityId of CITIES
         mockMvc.perform(delete("/api/cities/{id}", city.getId())).andExpect(status().isOk());
+
+        //-- cityId cached in CITIES
+        mockMvc.perform(get("/api/cities/{cityId}", city.getId())).andExpect(status().isOk());
+
+        //-- cityId already cached in CITIES
         mockMvc.perform(get("/api/cities/{cityId}", city.getId())).andExpect(status().isOk());
 
         verify(cityService, times(3)).validateAndGetCityById(city.getId());
