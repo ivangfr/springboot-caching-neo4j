@@ -3,7 +3,7 @@ package com.mycompany.springbootneo4jcaffeine.rest.dto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
@@ -14,8 +14,7 @@ public class CreateRestaurantDto {
     private String cityId;
 
     @ApiModelProperty(position = 2, example = "Happy Pizza")
-    @NotNull
-    @NotEmpty
+    @NotBlank
     private String name;
 
 }

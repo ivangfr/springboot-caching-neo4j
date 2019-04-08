@@ -42,14 +42,12 @@ public class RestaurantController {
     }
 
     @Cacheable(cacheNames = RESTAURANTS, key = "#restaurantId")
-    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{restaurantId}")
     public RestaurantDto getRestaurant(@PathVariable String restaurantId) throws RestaurantNotFoundException {
         Restaurant restaurant = restaurantService.validateAndGetRestaurant(restaurantId);
         return mapper.map(restaurant, RestaurantDto.class);
     }
 
-    @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public Page<Restaurant> getRestaurants(Pageable pageable) {
         return restaurantService.getRestaurants(pageable);
@@ -72,7 +70,6 @@ public class RestaurantController {
             put = @CachePut(cacheNames = RESTAURANTS, key = "#restaurantId"),
             evict = @CacheEvict(cacheNames = CITIES, key = "#result.city.id")
     )
-    @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{restaurantId}")
     public RestaurantDto updateRestaurant(@PathVariable String restaurantId, @Valid @RequestBody UpdateRestaurantDto updateRestaurantDto)
             throws RestaurantNotFoundException {
@@ -88,7 +85,6 @@ public class RestaurantController {
             @CacheEvict(cacheNames = RESTAURANTS, key = "#restaurantId"),
             @CacheEvict(cacheNames = CITIES, key = "#result.city.id")
     })
-    @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{restaurantId}")
     public RestaurantDto deleteRestaurant(@PathVariable String restaurantId) throws RestaurantNotFoundException {
         Restaurant restaurant = restaurantService.validateAndGetRestaurant(restaurantId);

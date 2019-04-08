@@ -1,6 +1,4 @@
-= springboot-neo4j-caffeine
-
-== Goal
+= `springboot-neo4j-caffeine`
 
 The goal of this project is to implement a simple application that handles restaurants and explore how caching works.
 The application has some endpoints to manage restaurants, cities (where the restaurants are located in) and dishes
@@ -13,9 +11,9 @@ image::images/neo4j-ui.png[]
 
 The application uses 3 caches: `CITIES`, `RESTAURANTS` and `DISHES`.
 
-The cache is applied on controller level. For instance, if you call `GET /api/restaurants/123` for the first time,
-the application will check whether the key `123` is present in the `RESTAURANTS` cache. If not, it must go to DB
-in order to get the information about the restaurant (payload), let's say that the payload is
+The caching is applied at controller level. For instance, if you call `GET /api/restaurants/123` for the first time,
+the application will check whether the key `123` is present in the `RESTAURANTS` cache; if not, it must go to DB
+in order to get the information about the restaurant (payload). Let's say that the payload is
 ```
 {
     "name": "Happy Pizza", "city": {"id": 1, "name": "Berlin"}, "dishes": []
@@ -30,27 +28,25 @@ Before the endpoint finishes and returns the result, the key and its payload are
 ```
 
 On subsequents calls to `GET /api/restaurants/123` (and as far as the data is not evicted), the application just needs
-to go to cache the get the value.
+to go to the cache and get the value.
 
-By the way, we've implemented more advanced caching logic as the one presented above like, for example, imagine that you
-have a city cached in `CITIES` cache and a new restaurant is created for that city. In this case, the cache of the city
+By the way, we have implemented more advanced caching logic as the one presented above. For example, imagine that you
+have a city cached in `CITIES` cache and a new restaurant is created in that city. In this case, the cache of the city
 is evicted of `CITIES` (because the list of restaurants in the city changed) and a new cache for the restaurant is put in
 RESTAURANTS cache. The same happens when a restaurant is deleted/update or a restaurant dish is added/deleted/updated.
 
 == Start Environment
 
-==== Docker Compose
-
 - Open one terminal
 
-- In `/springboot-neo4j-caffeine` root folder run
+- In `springboot-neo4j-caffeine` root folder run
 ----
 docker-compose up -d
 ----
 
 [NOTE]
 ====
-To stop and remove containers, networks, images, and volumes
+To stop and remove containers, networks and volumes
 ```
 docker-compose down -v
 ```
@@ -61,15 +57,11 @@ docker-compose down -v
 docker-compose ps
 ----
 
-==== Insert some cities, restaurants and dishes in Neo4j
-
-TODO
-
 == Start application using Maven
 
-In `/springboot-neo4j-caffeine` root folder run
+In `springboot-neo4j-caffeine` root folder run
 ----
-mvn spring-boot:run
+./mvnw spring-boot:run
 ----
 
 == Using application
@@ -79,14 +71,6 @@ In order to interact with the application, you can access `Swagger` website: htt
 == Neo4j
 
 You can access the UI of Neo4j running in the docker container at http://localhost:7474/browser
-
-== Bug
-
-During the startup you can see a lot of
-----
-WARN ... o.s.d.n.mapping.Neo4jPersistentProperty : No identity field found for class of type ...
-----
-It is a bug know by Spring Data Neo4j team: https://jira.spring.io/browse/DATAGRAPH-1076
 
 == TODO
 

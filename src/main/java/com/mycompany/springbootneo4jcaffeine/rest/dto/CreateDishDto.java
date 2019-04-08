@@ -3,7 +3,7 @@ package com.mycompany.springbootneo4jcaffeine.rest.dto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
@@ -11,8 +11,7 @@ import java.math.BigDecimal;
 public class CreateDishDto {
 
     @ApiModelProperty(example = "Pizza Salami")
-    @NotNull
-    @NotEmpty
+    @NotBlank
     private String name;
 
     @ApiModelProperty(position = 2, example = "5.50")

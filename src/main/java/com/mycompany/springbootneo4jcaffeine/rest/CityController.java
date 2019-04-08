@@ -40,14 +40,12 @@ public class CityController {
     }
 
     @Cacheable(key = "#cityId")
-    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{cityId}")
     public CityDto getCity(@PathVariable String cityId) throws CityNotFoundException {
         City city = cityService.validateAndGetCity(cityId);
         return mapper.map(city, CityDto.class);
     }
 
-    @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public Page<City> getCities(Pageable pageable) {
         return cityService.getCities(pageable);
@@ -63,7 +61,6 @@ public class CityController {
     }
 
     @CacheEvict(key = "#cityId")
-    @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{cityId}")
     public void deleteCity(@PathVariable String cityId) throws CityNotFoundException {
         City city = cityService.validateAndGetCity(cityId);

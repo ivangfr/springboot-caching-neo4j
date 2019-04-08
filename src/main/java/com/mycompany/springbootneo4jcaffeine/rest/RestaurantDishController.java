@@ -46,7 +46,6 @@ public class RestaurantDishController {
     }
 
     @Cacheable(cacheNames = DISHES, key = "{#restaurantId,#dishId}")
-    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{dishId}")
     public DishDto getRestaurantDish(@PathVariable String restaurantId, @PathVariable String dishId)
             throws RestaurantNotFoundException, DishNotFoundException {
@@ -56,7 +55,6 @@ public class RestaurantDishController {
     }
 
     @Cacheable(cacheNames = DISHES, key = "#restaurantId")
-    @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public RestaurantMenu getRestaurantDishes(@PathVariable String restaurantId) throws RestaurantNotFoundException {
         Restaurant restaurant = restaurantService.validateAndGetRestaurant(restaurantId);
@@ -93,7 +91,6 @@ public class RestaurantDishController {
                     @CacheEvict(cacheNames = RESTAURANTS, key = "#restaurantId")
             }
     )
-    @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{dishId}")
     public DishDto updateRestaurantDish(@PathVariable String restaurantId, @PathVariable String dishId,
                                         @Valid @RequestBody UpdateDishDto updateDishDto)
@@ -111,7 +108,6 @@ public class RestaurantDishController {
             @CacheEvict(cacheNames = DISHES, key = "#restaurantId"),
             @CacheEvict(cacheNames = RESTAURANTS, key = "#restaurantId")
     })
-    @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{dishId}")
     public DishDto deleteRestaurantDish(@PathVariable String restaurantId, @PathVariable String dishId)
             throws RestaurantNotFoundException, DishNotFoundException {
