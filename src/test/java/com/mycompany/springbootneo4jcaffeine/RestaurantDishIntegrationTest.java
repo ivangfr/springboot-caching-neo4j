@@ -8,10 +8,8 @@ import com.mycompany.springbootneo4jcaffeine.repository.DishRepository;
 import com.mycompany.springbootneo4jcaffeine.repository.RestaurantRepository;
 import com.mycompany.springbootneo4jcaffeine.rest.dto.CreateDishDto;
 import com.mycompany.springbootneo4jcaffeine.rest.dto.DishDto;
-import com.mycompany.springbootneo4jcaffeine.rest.dto.RestaurantDto;
 import com.mycompany.springbootneo4jcaffeine.rest.dto.RestaurantMenu;
 import com.mycompany.springbootneo4jcaffeine.rest.dto.UpdateDishDto;
-import com.mycompany.springbootneo4jcaffeine.rest.dto.UpdateRestaurantDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -143,43 +141,43 @@ class RestaurantDishIntegrationTest {
     private CreateDishDto getDefaultCreateDishDto() {
         CreateDishDto createDishDto = new CreateDishDto();
         createDishDto.setName("Pizza Salami");
-        createDishDto.setPrice(new BigDecimal(7.5));
+        createDishDto.setPrice(BigDecimal.valueOf(7.5));
         return createDishDto;
     }
 
     private UpdateDishDto getDefaultUpdateDishDto() {
         UpdateDishDto updateDishDto = new UpdateDishDto();
         updateDishDto.setName("Pizza Tuna");
-        updateDishDto.setPrice(new BigDecimal(8.5));
+        updateDishDto.setPrice(BigDecimal.valueOf(8.5));
         return updateDishDto;
     }
 
     private Dish saveDefaultDish() {
-        Dish dish = new Dish();
-        dish.setName("Pizza Salami");
-        dish.setPrice(new BigDecimal(7.5));
-        dish = dishRepository.save(dish);
+        Dish defaultDish = new Dish();
+        defaultDish.setName("Pizza Salami");
+        defaultDish.setPrice(BigDecimal.valueOf(7.5));
+        defaultDish = dishRepository.save(defaultDish);
 
-        restaurant.getDishes().add(dish);
+        restaurant.getDishes().add(defaultDish);
         restaurantRepository.save(restaurant);
-        return dish;
+        return defaultDish;
     }
 
     private Restaurant saveDefaultRestaurant() {
-        Restaurant restaurant = new Restaurant();
-        restaurant.setName("Happy Pizza");
-        restaurant.setCity(city);
+        Restaurant defaultRestaurant = new Restaurant();
+        defaultRestaurant.setName("Happy Pizza");
+        defaultRestaurant.setCity(city);
 
-        city.getRestaurants().add(restaurant);
+        city.getRestaurants().add(defaultRestaurant);
         cityRepository.save(city);
 
-        return restaurantRepository.save(restaurant);
+        return restaurantRepository.save(defaultRestaurant);
     }
 
     private City saveDefaultCity() {
-        City city = new City();
-        city.setName("Porto");
-        return cityRepository.save(city);
+        City defaultCity = new City();
+        defaultCity.setName("Porto");
+        return cityRepository.save(defaultCity);
     }
 
 }

@@ -144,26 +144,26 @@ class RestaurantIntegrationTest {
     }
 
     private City saveDefaultCity() {
-        City city = new City();
-        city.setName("Porto");
-        return cityRepository.save(city);
+        City defaultCity = new City();
+        defaultCity.setName("Porto");
+        return cityRepository.save(defaultCity);
     }
 
     private City saveDefaultCity2() {
-        City city = new City();
-        city.setName("Berlin");
-        return cityRepository.save(city);
+        City defaultCity2 = new City();
+        defaultCity2.setName("Berlin");
+        return cityRepository.save(defaultCity2);
     }
 
     private Restaurant saveDefaultRestaurant() {
-        Restaurant restaurant = new Restaurant();
-        restaurant.setName("Happy Pizza");
-        restaurant.setCity(city);
+        Restaurant defaultRestaurant = new Restaurant();
+        defaultRestaurant.setName("Happy Pizza");
+        defaultRestaurant.setCity(city);
 
-        city.getRestaurants().add(restaurant);
+        city.getRestaurants().add(defaultRestaurant);
         cityRepository.save(city);
 
-        return restaurantRepository.save(restaurant);
+        return restaurantRepository.save(defaultRestaurant);
     }
 
 }

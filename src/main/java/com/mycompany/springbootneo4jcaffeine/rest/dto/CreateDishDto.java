@@ -14,7 +14,7 @@ public class CreateDishDto {
     @NotBlank
     private String name;
 
-    @ApiModelProperty(position = 2, example = "5.50")
+    @ApiModelProperty(position = 1, example = "5.50")
     @NotNull
     private BigDecimal price;
 

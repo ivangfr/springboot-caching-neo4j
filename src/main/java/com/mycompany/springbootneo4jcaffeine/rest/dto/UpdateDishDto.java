@@ -11,7 +11,7 @@ public class UpdateDishDto {
     @ApiModelProperty(example = "Pizza Peperoni")
     private String name;
 
-    @ApiModelProperty(position = 2, example = "6.50")
+    @ApiModelProperty(position = 1, example = "6.50")
     private BigDecimal price;
 
 }

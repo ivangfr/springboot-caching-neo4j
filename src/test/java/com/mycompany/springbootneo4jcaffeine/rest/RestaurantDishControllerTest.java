@@ -252,21 +252,21 @@ class RestaurantDishControllerTest {
         Dish dish = new Dish();
         dish.setId("f3e53136-4c34-484b-8d9e-128264707c66");
         dish.setName("Pizza Salami");
-        dish.setPrice(new BigDecimal(7.5));
+        dish.setPrice(BigDecimal.valueOf(7.5));
         return dish;
     }
 
     private CreateDishDto getDefaultCreateDishDto() {
         CreateDishDto createDishDto = new CreateDishDto();
         createDishDto.setName("Pizza Salami");
-        createDishDto.setPrice(new BigDecimal(7.5));
+        createDishDto.setPrice(BigDecimal.valueOf(7.5));
         return createDishDto;
     }
 
     private UpdateDishDto getDefaultUpdateDishDto() {
         UpdateDishDto updateDishDto = new UpdateDishDto();
         updateDishDto.setName("Pizza Pepperoni");
-        updateDishDto.setPrice(new BigDecimal(6.5));
+        updateDishDto.setPrice(BigDecimal.valueOf(6.5));
         return updateDishDto;
     }
 

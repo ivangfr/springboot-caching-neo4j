@@ -13,7 +13,7 @@ public class CreateRestaurantDto {
     @NotNull
     private String cityId;
 
-    @ApiModelProperty(position = 2, example = "Happy Pizza")
+    @ApiModelProperty(position = 1, example = "Happy Pizza")
     @NotBlank
     private String name;
 

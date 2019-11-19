@@ -1,9 +1,9 @@
 = `springboot-neo4j-caffeine`
 
-The goal of this project is to implement a simple application that handles restaurants and explore how caching works.
-The application has some endpoints to manage restaurants, cities (where the restaurants are located in) and dishes
-the restaurants have. We are using https://github.com/ben-manes/caffeine[Caffeine] for caching and https://neo4j.com[Neo4j]
-for storage.
+The goal of this project is to implement a simple https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/[`Spring Boot`]
+Web Java application that handles restaurants and explore how caching works. The application has some endpoints to manage
+restaurants, cities (where the restaurants are located in) and dishes the restaurants have. We are using
+https://github.com/ben-manes/caffeine[`Caffeine`] for caching and https://neo4j.com[`Neo4j`] for storage.
 
 image::images/neo4j-ui.png[]
 
@@ -12,20 +12,24 @@ image::images/neo4j-ui.png[]
 The application uses 3 caches: `CITIES`, `RESTAURANTS` and `DISHES`.
 
 The caching is applied at controller level. For instance, if you call `GET /api/restaurants/123` for the first time,
-the application will check whether the key `123` is present in the `RESTAURANTS` cache; if not, it must go to DB
-in order to get the information about the restaurant (payload). Let's say that the payload is
-```
+the application will check whether the key `123` is present in the `RESTAURANTS` cache; if not, it must go to DB to
+get the information about the restaurant (payload). Let's say that the payload is
+
+[source]
+----
 {
     "name": "Happy Pizza", "city": {"id": 1, "name": "Berlin"}, "dishes": []
 }
-```
+----
 
-Before the endpoint finishes and returns the result, the key and its payload are saved in `RESTAURANTS` cache:
-```
+Before the endpoint finishes and returns the result, the key and its payload are saved in `RESTAURANTS` cache
+
+[source]
+----
 {
     "123" = {"name": "Happy Pizza", "city": {"id": 1, "name": "Berlin"}, "dishes": []}
 }
-```
+----
 
 On subsequents calls to `GET /api/restaurants/123` (and as far as the data is not evicted), the application just needs
 to go to the cache and get the value.
@@ -33,26 +37,20 @@ to go to the cache and get the value.
 By the way, we have implemented more advanced caching logic as the one presented above. For example, imagine that you
 have a city cached in `CITIES` cache and a new restaurant is created in that city. In this case, the cache of the city
 is evicted of `CITIES` (because the list of restaurants in the city changed) and a new cache for the restaurant is put in
-RESTAURANTS cache. The same happens when a restaurant is deleted/update or a restaurant dish is added/deleted/updated.
+`RESTAURANTS` cache. The same happens when a restaurant is deleted/update or a restaurant dish is added/deleted/updated.
 
 == Start Environment
 
-- Open one terminal
+Open a terminal and, inside `springboot-neo4j-caffeine` root folder, run
 
-- In `springboot-neo4j-caffeine` root folder run
+[source]
 ----
 docker-compose up -d
 ----
 
-[NOTE]
-====
-To stop and remove containers, networks and volumes
-```
-docker-compose down -v
-```
-====
+Wait a little bit to docker containers be up and healthy. To check it, run
 
-- Wait a little bit to docker containers be up and healthy. To check it, run
+[source]
 ----
 docker-compose ps
 ----
@@ -60,17 +58,39 @@ docker-compose ps
 == Start application using Maven
 
 In `springboot-neo4j-caffeine` root folder run
+
+[source]
 ----
 ./mvnw spring-boot:run
 ----
 
 == Using application
 
-In order to interact with the application, you can access `Swagger` website: http://localhost:8080/swagger-ui.html
+In order to interact with the application, you can access `Swagger` website http://localhost:8080/swagger-ui.html
 
 == Neo4j
 
-You can access the UI of Neo4j running in the docker container at http://localhost:7474/browser
+You can access the UI of `Neo4j` running in the docker container at http://localhost:7474/browser
+
+== Shutdown
+
+Go to `springboot-neo4j-caffeine` terminal and press `ctrl-c`
+
+Then, to stop and remove containers, networks and volumes
+
+[source]
+----
+docker-compose down -v
+----
+
+== Running Test Cases
+
+Execute to command below to run some test cases
+
+[source]
+----
+./mvnw test
+----
 
 == TODO
 
@@ -78,4 +98,5 @@ You can access the UI of Neo4j running in the docker container at http://localho
 - Create a bash script that uses Neo4j API to insert some data.
 
 == Reference
+
 https://graphaware.com/neo4j/2015/09/03/sdn-4-object-model.html

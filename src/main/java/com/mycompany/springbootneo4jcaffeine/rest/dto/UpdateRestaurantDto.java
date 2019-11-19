@@ -9,7 +9,7 @@ public class UpdateRestaurantDto {
     @ApiModelProperty(example = "cityId")
     private String cityId;
 
-    @ApiModelProperty(position = 2, example = "Happy Sushi")
+    @ApiModelProperty(position = 1, example = "Happy Sushi")
     private String name;
 
 }
