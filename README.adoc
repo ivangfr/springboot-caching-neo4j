@@ -106,6 +106,10 @@ docker-compose down -v
 * Add AOP to log whenever the endpoint is called;
 * Create a bash script that uses Neo4j API to insert some data.
 
+== Issues
+
+- Issue that appeared after update from `Spring Boot` version `2.2.8` to `2.3.1`: https://jira.spring.io/browse/DATAGRAPH-1329[Single relationship difference between versions 5.2.8 and 5.3.1]
+
 == Reference
 
 * https://graphaware.com/neo4j/2015/09/03/sdn-4-object-model.html

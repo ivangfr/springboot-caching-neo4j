@@ -81,7 +81,7 @@ class RestaurantIntegrationTest {
         optionalCity.ifPresent(c -> assertEquals(1, c.getRestaurants().size()));
     }
 
-    @Disabled("There is a problem on performing the cities swap. In the end, the restaurant ends up in both cities")
+    @Disabled("https://jira.spring.io/browse/DATAGRAPH-1329. There is a problem on performing the cities swap. In the end, the restaurant ends up in both cities.")
     @Test
     void testUpdateRestaurant() {
         Restaurant restaurant = saveDefaultRestaurant();
