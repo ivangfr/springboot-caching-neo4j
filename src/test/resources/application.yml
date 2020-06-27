@@ -1,9 +1,0 @@
-spring:
-  application:
-    name: springboot-neo4j-caffeine
-
-## You can enable persistence for the embedded mode by providing a path to a database file in your configuration
-## ---
-#  data:
-#    neo4j:
-#      uri: file://${user.dir}/target/neo4j-embedded/graph.db
