@@ -1,6 +1,6 @@
 package com.mycompany.springbootneo4jcaffeine.rest.dto;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -9,11 +9,11 @@ import javax.validation.constraints.NotNull;
 @Data
 public class CreateRestaurantDto {
 
-    @ApiModelProperty(example = "cityId")
+    @Schema(example = "cityId")
     @NotNull
     private String cityId;
 
-    @ApiModelProperty(position = 1, example = "Happy Pizza")
+    @Schema(example = "Happy Pizza")
     @NotBlank
     private String name;
 

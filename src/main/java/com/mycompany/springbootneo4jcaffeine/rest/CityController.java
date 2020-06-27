@@ -1,11 +1,12 @@
 package com.mycompany.springbootneo4jcaffeine.rest;
 
-import com.mycompany.springbootneo4jcaffeine.exception.CityNotFoundException;
+import com.mycompany.springbootneo4jcaffeine.mapper.CityMapper;
 import com.mycompany.springbootneo4jcaffeine.model.City;
 import com.mycompany.springbootneo4jcaffeine.rest.dto.CityDto;
 import com.mycompany.springbootneo4jcaffeine.rest.dto.CreateCityDto;
 import com.mycompany.springbootneo4jcaffeine.service.CityService;
-import ma.glasnost.orika.MapperFacade;
+import lombok.RequiredArgsConstructor;
+import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -26,28 +27,24 @@ import javax.validation.Valid;
 
 import static com.mycompany.springbootneo4jcaffeine.config.CacheConfig.CITIES;
 
+@RequiredArgsConstructor
 @CacheConfig(cacheNames = CITIES)
 @RestController
 @RequestMapping("/api/cities")
 public class CityController {
 
-    private final MapperFacade mapper;
     private final CityService cityService;
-
-    public CityController(MapperFacade mapper, CityService cityService) {
-        this.mapper = mapper;
-        this.cityService = cityService;
-    }
+    private final CityMapper cityMapper;
 
     @Cacheable(key = "#cityId")
     @GetMapping("/{cityId}")
-    public CityDto getCity(@PathVariable String cityId) throws CityNotFoundException {
+    public CityDto getCity(@PathVariable String cityId) {
         City city = cityService.validateAndGetCity(cityId);
-        return mapper.map(city, CityDto.class);
+        return cityMapper.toCityDto(city);
     }
 
     @GetMapping
-    public Page<City> getCities(Pageable pageable) {
+    public Page<City> getCities(@ParameterObject Pageable pageable) {
         return cityService.getCities(pageable);
     }
 
@@ -55,14 +52,14 @@ public class CityController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public CityDto createCity(@Valid @RequestBody CreateCityDto createCityDto) {
-        City city = mapper.map(createCityDto, City.class);
+        City city = cityMapper.toCity(createCityDto);
         city = cityService.saveCity(city);
-        return mapper.map(city, CityDto.class);
+        return cityMapper.toCityDto(city);
     }
 
     @CacheEvict(key = "#cityId")
     @DeleteMapping("/{cityId}")
-    public void deleteCity(@PathVariable String cityId) throws CityNotFoundException {
+    public void deleteCity(@PathVariable String cityId) {
         City city = cityService.validateAndGetCity(cityId);
         cityService.deleteCity(city);
     }

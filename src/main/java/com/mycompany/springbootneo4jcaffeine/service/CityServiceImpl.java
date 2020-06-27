@@ -3,18 +3,16 @@ package com.mycompany.springbootneo4jcaffeine.service;
 import com.mycompany.springbootneo4jcaffeine.exception.CityNotFoundException;
 import com.mycompany.springbootneo4jcaffeine.model.City;
 import com.mycompany.springbootneo4jcaffeine.repository.CityRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+@RequiredArgsConstructor
 @Service
 public class CityServiceImpl implements CityService {
 
     private final CityRepository cityRepository;
-
-    public CityServiceImpl(CityRepository cityRepository) {
-        this.cityRepository = cityRepository;
-    }
 
     @Override
     public City saveCity(City city) {
@@ -32,7 +30,7 @@ public class CityServiceImpl implements CityService {
     }
 
     @Override
-    public City validateAndGetCity(String cityId) throws CityNotFoundException {
+    public City validateAndGetCity(String cityId) {
         return cityRepository.findById(cityId).orElseThrow(() -> new CityNotFoundException(cityId));
     }
 

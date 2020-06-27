@@ -1,7 +1,6 @@
 package com.mycompany.springbootneo4jcaffeine.config;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -9,6 +8,7 @@ import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -23,7 +23,7 @@ public class CacheConfig {
     @Bean
     public CacheManager cacheManager() {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager();
-        cacheManager.setCacheNames(Lists.newArrayList(CITIES, RESTAURANTS, DISHES));
+        cacheManager.setCacheNames(Arrays.asList(CITIES, RESTAURANTS, DISHES));
         cacheManager.setAllowNullValues(false);
         cacheManager.setCaffeine(caffeineCacheBuilder());
         return cacheManager;

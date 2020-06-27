@@ -2,7 +2,7 @@ package com.mycompany.springbootneo4jcaffeine.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mycompany.springbootneo4jcaffeine.config.CacheConfig;
-import com.mycompany.springbootneo4jcaffeine.config.MapperConfig;
+import com.mycompany.springbootneo4jcaffeine.mapper.CityMapperImpl;
 import com.mycompany.springbootneo4jcaffeine.model.City;
 import com.mycompany.springbootneo4jcaffeine.rest.dto.CreateCityDto;
 import com.mycompany.springbootneo4jcaffeine.service.CityService;
@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(CityController.class)
-@Import({MapperConfig.class, CacheConfig.class})
+@Import({CityMapperImpl.class, CacheConfig.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class CityControllerTest {
 

@@ -1,15 +1,15 @@
 package com.mycompany.springbootneo4jcaffeine.rest.dto;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
 public class UpdateRestaurantDto {
 
-    @ApiModelProperty(example = "cityId")
+    @Schema(example = "cityId")
     private String cityId;
 
-    @ApiModelProperty(position = 1, example = "Happy Sushi")
+    @Schema(example = "Happy Sushi")
     private String name;
 
 }

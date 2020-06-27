@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-@EnableNeo4jRepositories("com.mycompany.springbootneo4jcaffeine.repository")
+@EnableNeo4jRepositories
 @EnableTransactionManagement
 @SpringBootApplication
 public class SpringbootNeo4jCaffeineApplication {

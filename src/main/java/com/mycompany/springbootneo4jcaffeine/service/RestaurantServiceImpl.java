@@ -6,21 +6,18 @@ import com.mycompany.springbootneo4jcaffeine.model.Dish;
 import com.mycompany.springbootneo4jcaffeine.model.Restaurant;
 import com.mycompany.springbootneo4jcaffeine.repository.DishRepository;
 import com.mycompany.springbootneo4jcaffeine.repository.RestaurantRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@RequiredArgsConstructor
 @Service
 public class RestaurantServiceImpl implements RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
     private final DishRepository dishRepository;
-
-    public RestaurantServiceImpl(RestaurantRepository restaurantRepository, DishRepository dishRepository) {
-        this.restaurantRepository = restaurantRepository;
-        this.dishRepository = dishRepository;
-    }
 
     @Override
     public Page<Restaurant> getRestaurants(Pageable pageable) {
@@ -40,12 +37,13 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
-    public Restaurant validateAndGetRestaurant(String restaurantId) throws RestaurantNotFoundException {
-        return restaurantRepository.findById(restaurantId).orElseThrow(() -> new RestaurantNotFoundException(restaurantId));
+    public Restaurant validateAndGetRestaurant(String restaurantId) {
+        return restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new RestaurantNotFoundException(restaurantId));
     }
 
     @Override
-    public Dish validateAndGetDish(Restaurant restaurant, String dishId) throws DishNotFoundException {
+    public Dish validateAndGetDish(Restaurant restaurant, String dishId) {
         return restaurant.getDishes()
                 .stream()
                 .filter(m -> m.getId().equals(dishId))

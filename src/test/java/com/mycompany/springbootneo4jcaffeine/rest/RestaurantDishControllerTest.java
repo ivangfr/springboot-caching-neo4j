@@ -2,7 +2,8 @@ package com.mycompany.springbootneo4jcaffeine.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mycompany.springbootneo4jcaffeine.config.CacheConfig;
-import com.mycompany.springbootneo4jcaffeine.config.MapperConfig;
+import com.mycompany.springbootneo4jcaffeine.mapper.DishMapperImpl;
+import com.mycompany.springbootneo4jcaffeine.mapper.RestaurantMapperImpl;
 import com.mycompany.springbootneo4jcaffeine.model.City;
 import com.mycompany.springbootneo4jcaffeine.model.Dish;
 import com.mycompany.springbootneo4jcaffeine.model.Restaurant;
@@ -40,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = {RestaurantDishController.class, RestaurantController.class})
-@Import({MapperConfig.class, CacheConfig.class})
+@Import({RestaurantMapperImpl.class, DishMapperImpl.class, CacheConfig.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class RestaurantDishControllerTest {
 

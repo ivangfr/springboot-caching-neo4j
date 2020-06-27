@@ -1,6 +1,6 @@
 package com.mycompany.springbootneo4jcaffeine.rest.dto;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -10,11 +10,11 @@ import java.math.BigDecimal;
 @Data
 public class CreateDishDto {
 
-    @ApiModelProperty(example = "Pizza Salami")
+    @Schema(example = "Pizza Salami")
     @NotBlank
     private String name;
 
-    @ApiModelProperty(position = 1, example = "5.50")
+    @Schema(example = "5.50")
     @NotNull
     private BigDecimal price;
 

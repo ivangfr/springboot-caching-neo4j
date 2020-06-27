@@ -1,12 +1,13 @@
 package com.mycompany.springbootneo4jcaffeine.rest;
 
-import com.mycompany.springbootneo4jcaffeine.exception.RestaurantNotFoundException;
+import com.mycompany.springbootneo4jcaffeine.mapper.RestaurantMapper;
 import com.mycompany.springbootneo4jcaffeine.model.Restaurant;
 import com.mycompany.springbootneo4jcaffeine.rest.dto.CreateRestaurantDto;
 import com.mycompany.springbootneo4jcaffeine.rest.dto.RestaurantDto;
 import com.mycompany.springbootneo4jcaffeine.rest.dto.UpdateRestaurantDto;
 import com.mycompany.springbootneo4jcaffeine.service.RestaurantService;
-import ma.glasnost.orika.MapperFacade;
+import lombok.RequiredArgsConstructor;
+import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -29,27 +30,23 @@ import javax.validation.Valid;
 import static com.mycompany.springbootneo4jcaffeine.config.CacheConfig.CITIES;
 import static com.mycompany.springbootneo4jcaffeine.config.CacheConfig.RESTAURANTS;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/restaurants")
 public class RestaurantController {
 
-    private final MapperFacade mapper;
     private final RestaurantService restaurantService;
-
-    public RestaurantController(MapperFacade mapper, RestaurantService restaurantService) {
-        this.mapper = mapper;
-        this.restaurantService = restaurantService;
-    }
+    private final RestaurantMapper restaurantMapper;
 
     @Cacheable(cacheNames = RESTAURANTS, key = "#restaurantId")
     @GetMapping("/{restaurantId}")
-    public RestaurantDto getRestaurant(@PathVariable String restaurantId) throws RestaurantNotFoundException {
+    public RestaurantDto getRestaurant(@PathVariable String restaurantId) {
         Restaurant restaurant = restaurantService.validateAndGetRestaurant(restaurantId);
-        return mapper.map(restaurant, RestaurantDto.class);
+        return restaurantMapper.toRestaurantDto(restaurant);
     }
 
     @GetMapping
-    public Page<Restaurant> getRestaurants(Pageable pageable) {
+    public Page<Restaurant> getRestaurants(@ParameterObject Pageable pageable) {
         return restaurantService.getRestaurants(pageable);
     }
 
@@ -60,10 +57,10 @@ public class RestaurantController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public RestaurantDto createRestaurant(@Valid @RequestBody CreateRestaurantDto createRestaurantDto) {
-        Restaurant restaurant = mapper.map(createRestaurantDto, Restaurant.class);
+        Restaurant restaurant = restaurantMapper.toRestaurant(createRestaurantDto);
 
         restaurant = restaurantService.saveRestaurant(restaurant);
-        return mapper.map(restaurant, RestaurantDto.class);
+        return restaurantMapper.toRestaurantDto(restaurant);
     }
 
     @Caching(
@@ -71,13 +68,12 @@ public class RestaurantController {
             evict = @CacheEvict(cacheNames = CITIES, key = "#result.city.id")
     )
     @PutMapping("/{restaurantId}")
-    public RestaurantDto updateRestaurant(@PathVariable String restaurantId, @Valid @RequestBody UpdateRestaurantDto updateRestaurantDto)
-            throws RestaurantNotFoundException {
+    public RestaurantDto updateRestaurant(@PathVariable String restaurantId, @Valid @RequestBody UpdateRestaurantDto updateRestaurantDto) {
         Restaurant restaurant = restaurantService.validateAndGetRestaurant(restaurantId);
-        mapper.map(updateRestaurantDto, restaurant);
+        restaurantMapper.updateRestaurantFromDto(updateRestaurantDto, restaurant);
 
         restaurant = restaurantService.saveRestaurant(restaurant);
-        return mapper.map(restaurant, RestaurantDto.class);
+        return restaurantMapper.toRestaurantDto(restaurant);
     }
 
     @Caching(evict = {
@@ -86,10 +82,10 @@ public class RestaurantController {
             @CacheEvict(cacheNames = CITIES, key = "#result.city.id")
     })
     @DeleteMapping("/{restaurantId}")
-    public RestaurantDto deleteRestaurant(@PathVariable String restaurantId) throws RestaurantNotFoundException {
+    public RestaurantDto deleteRestaurant(@PathVariable String restaurantId) {
         Restaurant restaurant = restaurantService.validateAndGetRestaurant(restaurantId);
         restaurantService.deleteRestaurant(restaurant);
-        return mapper.map(restaurant, RestaurantDto.class);
+        return restaurantMapper.toRestaurantDto(restaurant);
     }
 
 }

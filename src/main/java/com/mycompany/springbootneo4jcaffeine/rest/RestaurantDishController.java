@@ -1,7 +1,7 @@
 package com.mycompany.springbootneo4jcaffeine.rest;
 
 import com.mycompany.springbootneo4jcaffeine.exception.DishNotFoundException;
-import com.mycompany.springbootneo4jcaffeine.exception.RestaurantNotFoundException;
+import com.mycompany.springbootneo4jcaffeine.mapper.DishMapper;
 import com.mycompany.springbootneo4jcaffeine.model.Dish;
 import com.mycompany.springbootneo4jcaffeine.model.Restaurant;
 import com.mycompany.springbootneo4jcaffeine.rest.dto.CreateDishDto;
@@ -10,7 +10,7 @@ import com.mycompany.springbootneo4jcaffeine.rest.dto.RestaurantMenu;
 import com.mycompany.springbootneo4jcaffeine.rest.dto.UpdateDishDto;
 import com.mycompany.springbootneo4jcaffeine.service.DishService;
 import com.mycompany.springbootneo4jcaffeine.service.RestaurantService;
-import ma.glasnost.orika.MapperFacade;
+import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -31,36 +31,30 @@ import javax.validation.Valid;
 import static com.mycompany.springbootneo4jcaffeine.config.CacheConfig.DISHES;
 import static com.mycompany.springbootneo4jcaffeine.config.CacheConfig.RESTAURANTS;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/restaurants/{restaurantId}/dishes")
 public class RestaurantDishController {
 
-    private final MapperFacade mapper;
     private final RestaurantService restaurantService;
     private final DishService dishService;
-
-    public RestaurantDishController(MapperFacade mapper, RestaurantService restaurantService, DishService dishService) {
-        this.mapper = mapper;
-        this.restaurantService = restaurantService;
-        this.dishService = dishService;
-    }
+    private final DishMapper dishMapper;
 
     @Cacheable(cacheNames = DISHES, key = "{#restaurantId,#dishId}")
     @GetMapping("/{dishId}")
-    public DishDto getRestaurantDish(@PathVariable String restaurantId, @PathVariable String dishId)
-            throws RestaurantNotFoundException, DishNotFoundException {
+    public DishDto getRestaurantDish(@PathVariable String restaurantId, @PathVariable String dishId) {
         Restaurant restaurant = restaurantService.validateAndGetRestaurant(restaurantId);
         Dish dish = restaurantService.validateAndGetDish(restaurant, dishId);
-        return mapper.map(dish, DishDto.class);
+        return dishMapper.toDishDto(dish);
     }
 
     @Cacheable(cacheNames = DISHES, key = "#restaurantId")
     @GetMapping
-    public RestaurantMenu getRestaurantDishes(@PathVariable String restaurantId) throws RestaurantNotFoundException {
+    public RestaurantMenu getRestaurantDishes(@PathVariable String restaurantId) {
         Restaurant restaurant = restaurantService.validateAndGetRestaurant(restaurantId);
 
         RestaurantMenu restaurantMenu = new RestaurantMenu();
-        restaurant.getDishes().forEach(dish -> restaurantMenu.getDishes().add(mapper.map(dish, DishDto.class)));
+        restaurant.getDishes().forEach(dish -> restaurantMenu.getDishes().add(dishMapper.toDishDto(dish)));
         return restaurantMenu;
     }
 
@@ -73,15 +67,14 @@ public class RestaurantDishController {
     )
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public DishDto createRestaurantDish(@PathVariable String restaurantId, @Valid @RequestBody CreateDishDto createDishDto)
-            throws RestaurantNotFoundException {
+    public DishDto createRestaurantDish(@PathVariable String restaurantId, @Valid @RequestBody CreateDishDto createDishDto) {
         Restaurant restaurant = restaurantService.validateAndGetRestaurant(restaurantId);
-        Dish dish = mapper.map(createDishDto, Dish.class);
+        Dish dish = dishMapper.toDish(createDishDto);
         dish = dishService.saveDish(dish);
 
         restaurant.getDishes().add(dish);
         restaurantService.saveRestaurant(restaurant);
-        return mapper.map(dish, DishDto.class);
+        return dishMapper.toDishDto(dish);
     }
 
     @Caching(
@@ -93,14 +86,13 @@ public class RestaurantDishController {
     )
     @PutMapping("/{dishId}")
     public DishDto updateRestaurantDish(@PathVariable String restaurantId, @PathVariable String dishId,
-                                        @Valid @RequestBody UpdateDishDto updateDishDto)
-            throws RestaurantNotFoundException, DishNotFoundException {
+                                        @Valid @RequestBody UpdateDishDto updateDishDto) {
         Restaurant restaurant = restaurantService.validateAndGetRestaurant(restaurantId);
         Dish dish = restaurantService.validateAndGetDish(restaurant, dishId);
 
-        mapper.map(updateDishDto, dish);
+        dishMapper.updateDishFromDto(updateDishDto, dish);
         dish = dishService.saveDish(dish);
-        return mapper.map(dish, DishDto.class);
+        return dishMapper.toDishDto(dish);
     }
 
     @Caching(evict = {
@@ -109,13 +101,12 @@ public class RestaurantDishController {
             @CacheEvict(cacheNames = RESTAURANTS, key = "#restaurantId")
     })
     @DeleteMapping("/{dishId}")
-    public DishDto deleteRestaurantDish(@PathVariable String restaurantId, @PathVariable String dishId)
-            throws RestaurantNotFoundException, DishNotFoundException {
+    public DishDto deleteRestaurantDish(@PathVariable String restaurantId, @PathVariable String dishId) {
         Restaurant restaurant = restaurantService.validateAndGetRestaurant(restaurantId);
         Dish dish = restaurant.getDishes().stream()
                 .filter(m -> m.getId().equals(dishId)).findFirst().orElseThrow(() -> new DishNotFoundException(dishId));
         dishService.deleteDish(dish);
-        return mapper.map(dish, DishDto.class);
+        return dishMapper.toDishDto(dish);
     }
 
 }
