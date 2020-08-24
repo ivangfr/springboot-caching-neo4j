@@ -1,10 +1,10 @@
-version: '3.7'
+version: '3.8'
 
 services:
 
   neo4j:
     container_name: neo4j
-    image: neo4j:3.5.19 # version 4.x.x doesn't work with current spring boot version
+    image: neo4j:3.5.20 # version 4.x.x doesn't work with current spring boot version
     ports:
       - "7474:7474"
       - "7687:7687"
