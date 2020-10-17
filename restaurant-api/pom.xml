@@ -15,7 +15,7 @@
     <description>Demo project for Spring Boot</description>
 
     <properties>
-		<org.mapstruct.version>1.3.1.Final</org.mapstruct.version>
+		<org.mapstruct.version>1.4.1.Final</org.mapstruct.version>
 		<springdoc.openapi.version>1.4.8</springdoc.openapi.version>
 		<neo4j.version>3.5.22</neo4j.version>
 		<neo4j-ogm.version>3.2.17</neo4j-ogm.version>
