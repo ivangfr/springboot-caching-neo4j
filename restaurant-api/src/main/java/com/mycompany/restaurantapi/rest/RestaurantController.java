@@ -15,6 +15,7 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -63,6 +64,7 @@ public class RestaurantController {
         return restaurantMapper.toRestaurantDto(restaurant);
     }
 
+    @Transactional
     @Caching(
             put = @CachePut(cacheNames = RESTAURANTS, key = "#restaurantId"),
             evict = @CacheEvict(cacheNames = CITIES, key = "#result.city.id")

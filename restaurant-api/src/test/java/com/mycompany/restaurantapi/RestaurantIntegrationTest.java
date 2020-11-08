@@ -8,7 +8,6 @@ import com.mycompany.restaurantapi.rest.dto.CreateRestaurantDto;
 import com.mycompany.restaurantapi.rest.dto.RestaurantDto;
 import com.mycompany.restaurantapi.rest.dto.UpdateRestaurantDto;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -81,7 +80,6 @@ class RestaurantIntegrationTest {
         optionalCity.ifPresent(c -> assertEquals(1, c.getRestaurants().size()));
     }
 
-    @Disabled("https://jira.spring.io/browse/DATAGRAPH-1329. There is a problem on performing the cities swap. In the end, the restaurant ends up in both cities.")
     @Test
     void testUpdateRestaurant() {
         Restaurant restaurant = saveDefaultRestaurant();
