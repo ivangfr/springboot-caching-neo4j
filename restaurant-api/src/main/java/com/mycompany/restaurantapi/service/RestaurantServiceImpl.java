@@ -10,7 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -29,7 +30,6 @@ public class RestaurantServiceImpl implements RestaurantService {
         return restaurantRepository.save(restaurant);
     }
 
-    @Transactional
     @Override
     public void deleteRestaurant(Restaurant restaurant) {
         restaurant.getDishes().forEach(dishRepository::delete);
@@ -37,13 +37,13 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
-    public Restaurant validateAndGetRestaurant(String restaurantId) {
+    public Restaurant validateAndGetRestaurant(UUID restaurantId) {
         return restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new RestaurantNotFoundException(restaurantId));
     }
 
     @Override
-    public Dish validateAndGetDish(Restaurant restaurant, String dishId) {
+    public Dish validateAndGetDish(Restaurant restaurant, UUID dishId) {
         return restaurant.getDishes()
                 .stream()
                 .filter(m -> m.getId().equals(dishId))

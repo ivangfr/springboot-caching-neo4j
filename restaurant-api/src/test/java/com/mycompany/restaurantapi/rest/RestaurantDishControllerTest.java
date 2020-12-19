@@ -15,12 +15,10 @@ import com.mycompany.restaurantapi.service.RestaurantService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.neo4j.ogm.session.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.data.neo4j.AutoConfigureDataNeo4j;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
@@ -28,6 +26,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -39,6 +38,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+// The @AutoConfigureDataNeo4j annotation is used instead of @DataNeo4jTest because both @DataNeo4jTest and @WebMvcTest
+// define a @BootstrapWith annotation and having two @BootstrapWith annotations in a test class is not supported.
+@AutoConfigureDataNeo4j
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = {RestaurantDishController.class, RestaurantController.class})
 @Import({RestaurantMapperImpl.class, DishMapperImpl.class, CacheConfig.class})
@@ -59,15 +61,6 @@ class RestaurantDishControllerTest {
 
     @MockBean
     private DishService dishService;
-
-    @TestConfiguration
-    static class Neo4jConfig {
-
-        @Bean
-        SessionFactory sessionFactory() {
-            return new SessionFactory(Dish.class.getPackageName());
-        }
-    }
 
     private static City city;
     private static Restaurant restaurant;
@@ -251,7 +244,7 @@ class RestaurantDishControllerTest {
 
     private Dish getDefaultDish() {
         Dish dish = new Dish();
-        dish.setId("f3e53136-4c34-484b-8d9e-128264707c66");
+        dish.setId(UUID.fromString("f3e53136-4c34-484b-8d9e-128264707c66"));
         dish.setName("Pizza Salami");
         dish.setPrice(BigDecimal.valueOf(7.5));
         return dish;
@@ -273,14 +266,14 @@ class RestaurantDishControllerTest {
 
     private static City getDefaultCity() {
         City city = new City();
-        city.setId("c0b8602c-225e-4995-8724-035c504f8c84");
+        city.setId(UUID.fromString("c0b8602c-225e-4995-8724-035c504f8c84"));
         city.setName("Porto");
         return city;
     }
 
     private static Restaurant getDefaultRestaurant() {
         Restaurant restaurant = new Restaurant();
-        restaurant.setId("7ee00128-6f10-49ae-9edf-72495e77adf6");
+        restaurant.setId(UUID.fromString("7ee00128-6f10-49ae-9edf-72495e77adf6"));
         restaurant.setName("Happy Pizza");
         restaurant.setCity(city);
         return restaurant;

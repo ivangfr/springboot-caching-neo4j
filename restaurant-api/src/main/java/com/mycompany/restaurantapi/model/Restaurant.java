@@ -4,24 +4,24 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.neo4j.ogm.annotation.GeneratedValue;
-import org.neo4j.ogm.annotation.Id;
-import org.neo4j.ogm.annotation.NodeEntity;
-import org.neo4j.ogm.annotation.Relationship;
-import org.neo4j.ogm.id.UuidStrategy;
+import org.springframework.data.neo4j.core.schema.GeneratedValue;
+import org.springframework.data.neo4j.core.schema.Id;
+import org.springframework.data.neo4j.core.schema.Node;
+import org.springframework.data.neo4j.core.schema.Relationship;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Data
 @EqualsAndHashCode(exclude = "city")
 @ToString(exclude = "city")
-@NodeEntity
+@Node
 public class Restaurant {
 
     @Id
-    @GeneratedValue(strategy = UuidStrategy.class)
-    private String id;
+    @GeneratedValue
+    private UUID id;
 
     private String name;
 

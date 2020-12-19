@@ -2,8 +2,8 @@ spring:
   application:
     name: restaurant-api
 
-## You can enable persistence for the embedded mode by providing a path to a database file in your configuration
-## ---
-#  data:
-#    neo4j:
-#      uri: file://${user.dir}/target/neo4j-embedded/graph.db
+logging:
+  level:
+    org.springframework.cache: TRACE
+    org.springframework.transaction.interceptor: TRACE
+    org.springframework.data.neo4j.cypher: TRACE

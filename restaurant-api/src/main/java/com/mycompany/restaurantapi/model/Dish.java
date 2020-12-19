@@ -1,20 +1,20 @@
 package com.mycompany.restaurantapi.model;
 
 import lombok.Data;
-import org.neo4j.ogm.annotation.GeneratedValue;
-import org.neo4j.ogm.annotation.Id;
-import org.neo4j.ogm.annotation.NodeEntity;
-import org.neo4j.ogm.id.UuidStrategy;
+import org.springframework.data.neo4j.core.schema.GeneratedValue;
+import org.springframework.data.neo4j.core.schema.Id;
+import org.springframework.data.neo4j.core.schema.Node;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Data
-@NodeEntity
+@Node
 public class Dish {
 
     @Id
-    @GeneratedValue(strategy = UuidStrategy.class)
-    private String id;
+    @GeneratedValue
+    private UUID id;
 
     private String name;
 

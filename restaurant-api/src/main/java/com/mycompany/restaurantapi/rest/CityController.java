@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
+import java.util.UUID;
+
 import static com.mycompany.restaurantapi.config.CacheConfig.CITIES;
 
 @RequiredArgsConstructor
@@ -38,7 +40,7 @@ public class CityController {
 
     @Cacheable(key = "#cityId")
     @GetMapping("/{cityId}")
-    public CityDto getCity(@PathVariable String cityId) {
+    public CityDto getCity(@PathVariable UUID cityId) {
         City city = cityService.validateAndGetCity(cityId);
         return cityMapper.toCityDto(city);
     }
@@ -59,7 +61,7 @@ public class CityController {
 
     @CacheEvict(key = "#cityId")
     @DeleteMapping("/{cityId}")
-    public void deleteCity(@PathVariable String cityId) {
+    public void deleteCity(@PathVariable UUID cityId) {
         City city = cityService.validateAndGetCity(cityId);
         cityService.deleteCity(city);
     }

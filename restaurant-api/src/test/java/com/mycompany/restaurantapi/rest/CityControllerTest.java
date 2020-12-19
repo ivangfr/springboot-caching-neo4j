@@ -8,17 +8,17 @@ import com.mycompany.restaurantapi.rest.dto.CreateCityDto;
 import com.mycompany.restaurantapi.service.CityService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.neo4j.ogm.session.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.data.neo4j.AutoConfigureDataNeo4j;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -29,6 +29,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+// The @AutoConfigureDataNeo4j annotation is used instead of @DataNeo4jTest because both @DataNeo4jTest and @WebMvcTest
+// define a @BootstrapWith annotation and having two @BootstrapWith annotations in a test class is not supported.
+@AutoConfigureDataNeo4j
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(CityController.class)
 @Import({CityMapperImpl.class, CacheConfig.class})
@@ -43,15 +46,6 @@ class CityControllerTest {
 
     @MockBean
     private CityService cityService;
-
-    @TestConfiguration
-    static class Neo4jConfig {
-
-        @Bean
-        SessionFactory sessionFactory() {
-            return new SessionFactory(City.class.getPackageName());
-        }
-    }
 
     @Test
     void testGetCityCaching() throws Exception {
@@ -110,7 +104,7 @@ class CityControllerTest {
 
     private City getDefaultCity() {
         City city = new City();
-        city.setId("c0b8602c-225e-4995-8724-035c504f8c84");
+        city.setId(UUID.fromString("c0b8602c-225e-4995-8724-035c504f8c84"));
         city.setName("Porto");
         return city;
     }

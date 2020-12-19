@@ -4,6 +4,8 @@ import com.mycompany.restaurantapi.model.City;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.UUID;
+
 public interface CityService {
 
     City saveCity(City city);
@@ -12,6 +14,6 @@ public interface CityService {
 
     void deleteCity(City city);
 
-    City validateAndGetCity(String cityId);
+    City validateAndGetCity(UUID cityId);
 
 }

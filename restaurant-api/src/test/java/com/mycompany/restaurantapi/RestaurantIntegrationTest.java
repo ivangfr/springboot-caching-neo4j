@@ -21,12 +21,13 @@ import org.springframework.test.annotation.DirtiesContext;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-class RestaurantIntegrationTest {
+class RestaurantIntegrationTest extends AbstractTestcontainers {
 
     @Autowired
     private TestRestTemplate testRestTemplate;
@@ -75,6 +76,10 @@ class RestaurantIntegrationTest {
         assertEquals(createRestaurantDto.getCityId(), responseEntity.getBody().getCity().getId());
         assertEquals(0, responseEntity.getBody().getDishes().size());
 
+        Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(responseEntity.getBody().getId());
+        assertTrue(optionalRestaurant.isPresent());
+        optionalRestaurant.ifPresent(r -> assertNotNull(r.getCity()));
+
         Optional<City> optionalCity = cityRepository.findById(city.getId());
         assertTrue(optionalCity.isPresent());
         optionalCity.ifPresent(c -> assertEquals(1, c.getRestaurants().size()));
@@ -96,6 +101,10 @@ class RestaurantIntegrationTest {
         assertEquals(updateRestaurantDto.getName(), responseEntity.getBody().getName());
         assertEquals(updateRestaurantDto.getCityId(), responseEntity.getBody().getCity().getId());
         assertEquals(0, responseEntity.getBody().getDishes().size());
+
+        Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(restaurant.getId());
+        assertTrue(optionalRestaurant.isPresent());
+        optionalRestaurant.ifPresent(r -> assertNotNull(r.getCity()));
 
         Optional<City> optionalCity = cityRepository.findById(city.getId());
         assertTrue(optionalCity.isPresent());
@@ -120,6 +129,9 @@ class RestaurantIntegrationTest {
         assertEquals(restaurant.getCity().getId(), responseEntity.getBody().getCity().getId());
         assertEquals(restaurant.getCity().getName(), responseEntity.getBody().getCity().getName());
         assertEquals(0, responseEntity.getBody().getDishes().size());
+
+        Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(restaurant.getId());
+        assertFalse(optionalRestaurant.isPresent());
 
         Optional<City> optionalCity = cityRepository.findById(city.getId());
         assertTrue(optionalCity.isPresent());

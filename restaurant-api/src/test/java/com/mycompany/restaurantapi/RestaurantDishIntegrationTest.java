@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-class RestaurantDishIntegrationTest {
+class RestaurantDishIntegrationTest extends AbstractTestcontainers {
 
     @Autowired
     private TestRestTemplate testRestTemplate;
@@ -97,7 +97,10 @@ class RestaurantDishIntegrationTest {
 
         Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(restaurant.getId());
         assertTrue(optionalRestaurant.isPresent());
-        optionalRestaurant.ifPresent(r -> assertEquals(1, r.getDishes().size()));
+        optionalRestaurant.ifPresent(r -> {
+            assertEquals(1, r.getDishes().size());
+            assertNotNull(r.getCity());
+        });
     }
 
     @Test
@@ -115,6 +118,14 @@ class RestaurantDishIntegrationTest {
         assertEquals(dish.getId(), responseEntity.getBody().getId());
         assertEquals(updateDishDto.getName(), responseEntity.getBody().getName());
         assertEquals(updateDishDto.getPrice(), responseEntity.getBody().getPrice());
+
+        Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(restaurant.getId());
+        assertTrue(optionalRestaurant.isPresent());
+        optionalRestaurant.ifPresent(r -> {
+            assertEquals(1, r.getDishes().size());
+            assertNotNull(r.getCity());
+            assertEquals(1, r.getCity().getRestaurants().size());
+        });
     }
 
     @Test
@@ -132,7 +143,11 @@ class RestaurantDishIntegrationTest {
 
         Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(restaurant.getId());
         assertTrue(optionalRestaurant.isPresent());
-        optionalRestaurant.ifPresent(r -> assertEquals(0, r.getDishes().size()));
+        optionalRestaurant.ifPresent(r -> {
+            assertEquals(0, r.getDishes().size());
+            assertNotNull(r.getCity());
+            assertEquals(1, r.getCity().getRestaurants().size());
+        });
     }
 
     private CreateDishDto getDefaultCreateDishDto() {

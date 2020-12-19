@@ -13,12 +13,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-class CityIntegrationTest {
+class CityIntegrationTest extends AbstractTestcontainers {
 
     @Autowired
     private TestRestTemplate testRestTemplate;
@@ -51,6 +55,9 @@ class CityIntegrationTest {
         assertNotNull(responseEntity.getBody().getId());
         assertEquals(createCityDto.getName(), responseEntity.getBody().getName());
         assertEquals(0, responseEntity.getBody().getRestaurants().size());
+
+        Optional<City> optionalCity = cityRepository.findById(responseEntity.getBody().getId());
+        assertTrue(optionalCity.isPresent());
     }
 
     @Test
@@ -61,6 +68,9 @@ class CityIntegrationTest {
         ResponseEntity<Void> responseEntity = testRestTemplate.exchange(url, HttpMethod.DELETE, null, Void.class);
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+
+        Optional<City> optionalCity = cityRepository.findById(city.getId());
+        assertFalse(optionalCity.isPresent());
     }
 
     private CreateCityDto getDefaultCreateCityDto() {

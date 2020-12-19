@@ -13,18 +13,17 @@ import com.mycompany.restaurantapi.service.RestaurantService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.neo4j.ogm.session.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.data.neo4j.AutoConfigureDataNeo4j;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.neo4j.transaction.Neo4jTransactionManager;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -36,9 +35,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+// The @AutoConfigureDataNeo4j annotation is used instead of @DataNeo4jTest because both @DataNeo4jTest and @WebMvcTest
+// define a @BootstrapWith annotation and having two @BootstrapWith annotations in a test class is not supported.
+@AutoConfigureDataNeo4j
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = {RestaurantController.class, CityController.class})
-@Import({CityMapperImpl.class, RestaurantMapperImpl.class, CacheConfig.class, Neo4jTransactionManager.class})
+@Import({CityMapperImpl.class, RestaurantMapperImpl.class, CacheConfig.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class RestaurantControllerTest {
 
@@ -53,15 +55,6 @@ class RestaurantControllerTest {
 
     @MockBean
     private RestaurantService restaurantService;
-
-    @TestConfiguration
-    static class Neo4jConfig {
-
-        @Bean
-        SessionFactory sessionFactory() {
-            return new SessionFactory(Restaurant.class.getPackageName());
-        }
-    }
 
     private static City city;
 
@@ -183,7 +176,7 @@ class RestaurantControllerTest {
 
     private Restaurant getDefaultRestaurant() {
         Restaurant restaurant = new Restaurant();
-        restaurant.setId("7ee00128-6f10-49ae-9edf-72495e77adf6");
+        restaurant.setId(UUID.fromString("7ee00128-6f10-49ae-9edf-72495e77adf6"));
         restaurant.setName("Happy Pizza");
         restaurant.setCity(city);
         return restaurant;
@@ -205,7 +198,7 @@ class RestaurantControllerTest {
 
     private static City getDefaultCity() {
         City city = new City();
-        city.setId("c0b8602c-225e-4995-8724-035c504f8c84");
+        city.setId(UUID.fromString("c0b8602c-225e-4995-8724-035c504f8c84"));
         city.setName("Porto");
         return city;
     }
