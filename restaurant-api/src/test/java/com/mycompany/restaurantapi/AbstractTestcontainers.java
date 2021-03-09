@@ -10,7 +10,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 public abstract class AbstractTestcontainers {
 
-    private static final Neo4jContainer<?> neo4jContainer = new Neo4jContainer<>("neo4j:4.2.1")
+    private static final Neo4jContainer<?> neo4jContainer = new Neo4jContainer<>("neo4j:4.2.3")
             .withoutAuthentication();
 
     @DynamicPropertySource
