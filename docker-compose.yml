@@ -13,3 +13,20 @@ services:
     healthcheck:
       test: "wget --quiet --tries=1 --spider http://localhost:7474 || exit 1"
       start_period: 10s
+
+  redis:
+    container_name: redis
+    image: redis:6.2.1
+    ports:
+      - "6379:6379"
+
+  redis-commander:
+    container_name: redis-commander
+    image: rediscommander/redis-commander:latest
+    restart: always
+    depends_on:
+      - redis
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - "8081:8081"

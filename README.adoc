@@ -1,12 +1,12 @@
 = springboot-neo4j-caffeine
 
-The goal of this project is to explore how caching works. For it, we are going to implement a simple https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/[`Spring Boot`] application called `restaurant-api`. We are using https://github.com/ben-manes/caffeine[`Caffeine`] for caching and https://neo4j.com[`Neo4j`] for storage.
+The goal of this project is to explore how caching works. For it, we are going to implement a simple https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/[`Spring Boot`] application called `restaurant-api`. We are using https://neo4j.com[`Neo4j`] for storage and, for caching, we can pick one of the following providers: https://docs.spring.io/spring-boot/docs/current/reference/html/spring-boot-features.html#boot-features-caching-provider-simple[`Simple`], https://github.com/ben-manes/caffeine[`Caffeine`] or https://redis.io/[`Redis`].
 
 == Applications
 
 * **restaurant-api**
 +
-`Spring Boot` Web Java application that has endpoints to manage restaurants, cities (where the restaurants are located in) and dishes that restaurants have. Data is stored in `Neo4j` and caching handled by `Caffeine`.
+`Spring Boot` Web Java application that has endpoints to manage restaurants, cities (where the restaurants are located in) and dishes that restaurants have. Data is stored in `Neo4j` and caching handled by `Caffeine` or `Redis`.
 +
 image::images/restaurant-api-swagger.png[]
 
@@ -41,6 +41,7 @@ By the way, we have implemented more advanced caching logic as the one presented
 * https://www.oracle.com/java/technologies/javase-jdk11-downloads.html[`Java 11+`]
 * https://www.docker.com/[`Docker`]
 * https://docs.docker.com/compose/install/[`Docker-Compose`]
+* https://stedolan.github.io/jq[`jq`]
 
 == Start Environment
 
@@ -51,7 +52,7 @@ By the way, we have implemented more advanced caching logic as the one presented
 docker-compose up -d
 ----
 
-* Wait until `neo4j` docker container be up and healthy. To check it, run
+* Wait until docker containers be up and healthy. To check it, run
 +
 [source]
 ----
@@ -62,14 +63,54 @@ docker-compose ps
 
 * In a terminal, make sure you are inside `springboot-neo4j-caffeine` root folder
 
-* Run the following command
+* Run one of the following command
++
+|===
+|Profile |Cache Provider |Command
+
+|default
+|Simple
+|./mvnw clean spring-boot:run --projects restaurant-api
+
+|caffeine
+|Caffeine
+|./mvnw clean spring-boot:run --projects restaurant-api -Dspring-boot.run.profiles=caffeine
+
+|redis
+|Redis
+|./mvnw clean spring-boot:run --projects restaurant-api -Dspring-boot.run.profiles=redis
+|===
+
+* In order to interact with the application, you can access `Swagger` at http://localhost:8080/swagger-ui.html
+
+== Simulation
+
+* Create a city
 +
 [source]
 ----
-./mvnw clean spring-boot:run --projects restaurant-api
+CITY_ID=$(curl -s -X POST http://localhost:8080/api/cities -H  "Content-Type: application/json" -d '{"name":"Berlin"}' | jq -r .id)
+
+curl -i http://localhost:8080/api/cities/$CITY_ID
 ----
 
-* In order to interact with the application, you can access `Swagger` at http://localhost:8080/swagger-ui.html
+* Create a restaurant in the city
++
+[source]
+----
+RESTAURANT_ID=$(curl -s -X POST http://localhost:8080/api/restaurants -H  "Content-Type: application/json" -d '{"cityId":"'$CITY_ID'", "name":"Happy Burger"}' | jq -r .id)
+
+curl -i http://localhost:8080/api/restaurants/$RESTAURANT_ID
+----
+
+* Create a dish for the restaurant
++
+[source]
+----
+DISH_ID=$(curl -s -X POST http://localhost:8080/api/restaurants/$RESTAURANT_ID/dishes -H  "Content-Type: application/json" -d '{"name":"Cheese Burger", "price":9.99}' | jq -r .id)
+
+curl -i http://localhost:8080/api/restaurants/$RESTAURANT_ID/dishes/$DISH_ID
+----
 
 == Useful Links
 
@@ -78,6 +119,12 @@ docker-compose ps
 `Neo4j` UI can be accessed at http://localhost:7474/browser
 +
 image::images/neo4j-ui.png[]
+
+* **redis-commander**
++
+`redis-commander` UI can be accessed at http://localhost:8081
++
+image::images/redis-commander-ui.png[]
 
 == Shutdown
 
@@ -90,23 +137,36 @@ image::images/neo4j-ui.png[]
 docker-compose down -v
 ----
 
-== Running Test Cases
+== Running Unit And Integration Test Cases
 
 * In a terminal, make sure you are inside `springboot-neo4j-caffeine` root folder
 
-* Execute to command below to run some test cases
+* Execute one of the commands below
 +
-[source]
-----
-./mvnw clean test
-----
+|===
+|Profile |Cache Provider |Command
+
+|default
+|Simple
+|./mvnw clean verify
+
+|caffeine
+|Caffeine
+|./mvnw clean verify -DargLine="-Dspring.profiles.active=caffeine"
+
+|redis
+|Redis
+|./mvnw clean verify -DargLine="-Dspring.profiles.active=redis"
+|===
 
 == TODO
 
+* Add cache statistics in a Grafana Dashboard;
 * Add AOP to log whenever the endpoint is called;
 * Create a bash script that uses Neo4j API to insert some data.
 
 == Reference
 
+* https://docs.spring.io/spring-boot/docs/current/reference/html/spring-boot-features.html#boot-features-caching
 * https://github.com/spring-projects/spring-data-neo4j
 * https://neo4j.com/developer/spring-data-neo4j/

@@ -1,7 +1,6 @@
 package com.mycompany.restaurantapi.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mycompany.restaurantapi.config.CacheConfig;
 import com.mycompany.restaurantapi.mapper.DishMapperImpl;
 import com.mycompany.restaurantapi.mapper.RestaurantMapperImpl;
 import com.mycompany.restaurantapi.model.City;
@@ -22,6 +21,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.junit.jupiter.DisabledIf;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -38,12 +38,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-// The @AutoConfigureDataNeo4j annotation is used instead of @DataNeo4jTest because both @DataNeo4jTest and @WebMvcTest
-// define a @BootstrapWith annotation and having two @BootstrapWith annotations in a test class is not supported.
-@AutoConfigureDataNeo4j
+@DisabledIf(expression = "#{environment.acceptsProfiles('redis')}", loadContext = true)
+@AutoConfigureDataNeo4j /* The @AutoConfigureDataNeo4j annotation is used instead of @DataNeo4jTest because both
+                           @DataNeo4jTest and @WebMvcTest set @BootstrapWith annotation and having two @BootstrapWith
+                           annotations in a test class is not supported. */
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = {RestaurantDishController.class, RestaurantController.class})
-@Import({RestaurantMapperImpl.class, DishMapperImpl.class, CacheConfig.class})
+@Import({RestaurantMapperImpl.class, DishMapperImpl.class, CachingTestConfig.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class RestaurantDishControllerTest {
 

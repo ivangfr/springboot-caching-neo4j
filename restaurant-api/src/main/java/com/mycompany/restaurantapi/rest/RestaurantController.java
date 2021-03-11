@@ -30,8 +30,8 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.UUID;
 
-import static com.mycompany.restaurantapi.config.CacheConfig.CITIES;
-import static com.mycompany.restaurantapi.config.CacheConfig.RESTAURANTS;
+import static com.mycompany.restaurantapi.config.CachingConfig.CITIES;
+import static com.mycompany.restaurantapi.config.CachingConfig.RESTAURANTS;
 
 @RequiredArgsConstructor
 @RestController

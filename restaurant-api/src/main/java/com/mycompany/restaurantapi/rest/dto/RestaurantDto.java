@@ -2,11 +2,12 @@ package com.mycompany.restaurantapi.rest.dto;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
 @Data
-public class RestaurantDto {
+public class RestaurantDto implements Serializable {
 
     private UUID id;
     private String name;
@@ -14,13 +15,13 @@ public class RestaurantDto {
     private List<Dish> dishes;
 
     @Data
-    public static final class City {
+    public static final class City implements Serializable {
         private UUID id;
         private String name;
     }
 
     @Data
-    public static final class Dish {
+    public static final class Dish implements Serializable {
         private UUID id;
         private String name;
     }

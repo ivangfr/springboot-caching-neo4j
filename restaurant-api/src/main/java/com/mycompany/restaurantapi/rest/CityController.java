@@ -24,10 +24,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-
 import java.util.UUID;
 
-import static com.mycompany.restaurantapi.config.CacheConfig.CITIES;
+import static com.mycompany.restaurantapi.config.CachingConfig.CITIES;
 
 @RequiredArgsConstructor
 @CacheConfig(cacheNames = CITIES)

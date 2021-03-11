@@ -6,11 +6,14 @@ spring:
     authentication:
       username: neo4j
       password: neo4j
+  cache:
+    type: simple
+    cache-names: CITIES, RESTAURANTS, DISHES
 
 management:
   endpoints:
     web:
-      exposure.include: beans, env, health, info, metrics, mappings
+      exposure.include: beans, env, health, info, metrics, mappings, prometheus
   endpoint:
     health:
       show-details: always
@@ -25,3 +28,27 @@ logging:
     org.springframework.cache: TRACE
     org.springframework.transaction.interceptor: TRACE
     org.springframework.data.neo4j.cypher: TRACE
+
+---
+spring:
+  config:
+    activate:
+      on-profile: caffeine
+  cache:
+    type: caffeine
+    caffeine:
+      spec: initialCapacity=100, maximumSize=1000, expireAfterAccess=1h, recordStats
+
+---
+spring:
+  config:
+    activate:
+      on-profile: redis
+  redis:
+    host: localhost
+    port: 6379
+  cache:
+    type: redis
+    redis:
+      time-to-live: 1h
+      enable-statistics: true

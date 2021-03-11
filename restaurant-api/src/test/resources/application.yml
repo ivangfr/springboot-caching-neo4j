@@ -1,9 +1,0 @@
-spring:
-  application:
-    name: restaurant-api
-
-logging:
-  level:
-    org.springframework.cache: TRACE
-    org.springframework.transaction.interceptor: TRACE
-    org.springframework.data.neo4j.cypher: TRACE
