@@ -4,11 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.mycompany</groupId>
-    <artifactId>springboot-neo4j-caffeine</artifactId>
+    <artifactId>springboot-caching-neo4j</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
 
-    <name>springboot-neo4j-caffeine</name>
+    <name>springboot-caching-neo4j</name>
     <description>Demo project for Spring Boot</description>
 
     <parent>

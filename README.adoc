@@ -1,4 +1,4 @@
-= springboot-neo4j-caffeine
+= springboot-caching-neo4j
 
 The goal of this project is to explore how caching works. For it, we are going to implement a simple https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/[`Spring Boot`] application called `restaurant-api`. We are using https://neo4j.com[`Neo4j`] for storage and, for caching, we can pick one of the following providers: https://docs.spring.io/spring-boot/docs/current/reference/html/spring-boot-features.html#boot-features-caching-provider-simple[`Simple`], https://github.com/ben-manes/caffeine[`Caffeine`] or https://redis.io/[`Redis`].
 
@@ -45,7 +45,7 @@ By the way, we have implemented more advanced caching logic as the one presented
 
 == Start Environment
 
-* Open a terminal and, inside `springboot-neo4j-caffeine` root folder, run
+* Open a terminal and, inside `springboot-caching-neo4j` root folder, run
 +
 [source]
 ----
@@ -61,7 +61,7 @@ docker-compose ps
 
 == Running application using Maven
 
-* In a terminal, make sure you are inside `springboot-neo4j-caffeine` root folder
+* In a terminal, make sure you are inside `springboot-caching-neo4j` root folder
 
 * Run one of the following command
 +
@@ -117,7 +117,7 @@ docker-compose ps
 ----
 docker run -d --rm -p 8080:8080 --name restaurant-api \
   --env NEO4J_HOST=neo4j --env REDIS_HOST=redis --env SPRING_PROFILES_ACTIVE=redis \
-  --network=springboot-neo4j-caffeine_default \
+  --network=springboot-caching-neo4j_default \
   docker.mycompany.com/restaurant-api:1.0.0
 ----
 
@@ -196,7 +196,7 @@ image::images/redis-commander-ui.png[]
 docker stop simple-service
 ----
 
-* To stop and remove docker-compose containers, networks and volumes, in a terminal and inside `springboot-neo4j-caffeine` root folder, run the following command
+* To stop and remove docker-compose containers, networks and volumes, in a terminal and inside `springboot-caching-neo4j` root folder, run the following command
 +
 [source]
 ----
@@ -205,7 +205,7 @@ docker-compose down -v
 
 == Running Unit And Integration Test Cases
 
-* In a terminal, make sure you are inside `springboot-neo4j-caffeine` root folder
+* In a terminal, make sure you are inside `springboot-caching-neo4j` root folder
 
 * Execute one of the commands below
 +
