@@ -116,8 +116,8 @@ docker-compose ps
 [source]
 ----
 docker run -d --rm -p 8080:8080 --name restaurant-api \
-  --network=springboot-neo4j-caffeine_default \
   --env NEO4J_HOST=neo4j --env REDIS_HOST=redis --env SPRING_PROFILES_ACTIVE=redis \
+  --network=springboot-neo4j-caffeine_default \
   docker.mycompany.com/restaurant-api:1.0.0
 ----
 
@@ -159,6 +159,15 @@ curl -i http://localhost:8080/api/restaurants/$RESTAURANT_ID
 DISH_ID=$(curl -s -X POST http://localhost:8080/api/restaurants/$RESTAURANT_ID/dishes -H  "Content-Type: application/json" -d '{"name":"Cheese Burger", "price":9.99}' | jq -r .id)
 
 curl -i http://localhost:8080/api/restaurants/$RESTAURANT_ID/dishes/$DISH_ID
+----
+
+== Checking Caching Statistics
+
+Caching statistics can be obtained by calling `/actuator/prometheus` endpoint
+
+[source]
+----
+curl -s http://localhost:8080/actuator/prometheus | grep cacheManager
 ----
 
 == Useful Links
@@ -218,7 +227,6 @@ docker-compose down -v
 
 == TODO
 
-* Add cache statistics in a Grafana Dashboard;
 * Add AOP to log whenever the endpoint is called;
 * Create a bash script that uses Neo4j API to insert some data.
 
