@@ -5,7 +5,7 @@
 
     <groupId>com.mycompany</groupId>
     <artifactId>springboot-neo4j-caffeine</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>pom</packaging>
 
     <name>springboot-neo4j-caffeine</name>
@@ -20,10 +20,27 @@
 
     <properties>
         <java.version>11</java.version>
+        <jib.maven-plugin.version>2.8.0</jib.maven-plugin.version>
+        <docker.image.prefix>docker.mycompany.com</docker.image.prefix>
     </properties>
 
     <modules>
         <module>restaurant-api</module>
     </modules>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>${jib.maven-plugin.version}</version>
+                <configuration>
+                    <to>
+                        <image>${docker.image.prefix}/${project.artifactId}:${project.version}</image>
+                    </to>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

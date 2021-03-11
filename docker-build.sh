@@ -1,0 +1,1 @@
+./mvnw clean compile jib:dockerBuild --projects restaurant-api

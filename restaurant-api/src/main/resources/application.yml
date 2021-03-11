@@ -2,7 +2,7 @@ spring:
   application:
     name: restaurant-api
   neo4j:
-    uri: bolt://localhost:7687
+    uri: bolt://${NEO4J_HOST:localhost}:${NEO4J_PORT:7687}
     authentication:
       username: neo4j
       password: neo4j
@@ -45,8 +45,8 @@ spring:
     activate:
       on-profile: redis
   redis:
-    host: localhost
-    port: 6379
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
   cache:
     type: redis
     redis:
