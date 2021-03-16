@@ -64,6 +64,15 @@ class RestaurantIT extends AbstractTestcontainers {
     }
 
     @Test
+    void testGetRestaurants() {
+        ResponseEntity<String> responseEntity = testRestTemplate.getForEntity(API_RESTAURANTS_URL, String.class);
+
+        // Expected to be HttpStatus.INTERNAL_SERVER_ERROR because there is a bug https://github.com/spring-projects/spring-data-neo4j/issues/2175
+        // Once it's solved, should get http status HttpStatus.OK
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+    }
+
+    @Test
     void testCreateRestaurant() {
         CreateRestaurantDto createRestaurantDto = getDefaultCreateRestaurantDto();
 

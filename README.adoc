@@ -63,31 +63,45 @@ docker-compose ps
 
 * In a terminal, make sure you are inside `springboot-caching-neo4j` root folder
 
-* Run one of the following command
+* Start the application by picking one on the following cache providers
 +
-|===
-|Profile |Cache Provider |Command
-
-|default
-|Simple
-|./mvnw clean spring-boot:run --projects restaurant-api
-
-|caffeine
-|Caffeine
-|./mvnw clean spring-boot:run --projects restaurant-api -Dspring-boot.run.profiles=caffeine
-
-|redis
-|Redis
-|./mvnw clean spring-boot:run --projects restaurant-api -Dspring-boot.run.profiles=redis
-|===
+** `Simple` cache provider
++
+[source]
+----
+./mvnw clean spring-boot:run --projects restaurant-api
+----
++
+** `Caffeine` cache provider
++
+[source]
+----
+./mvnw clean spring-boot:run --projects restaurant-api -Dspring-boot.run.profiles=caffeine
+----
++
+** `Redis` cache provider
++
+[source]
+----
+./mvnw clean spring-boot:run --projects restaurant-api -Dspring-boot.run.profiles=redis
+----
 
 == Running application as a Docker container
 
 * Build Docker Image
 +
+** JVM
++
 [source]
 ----
 ./docker-build.sh
+----
++
+** Native (it's not working yet, see <<Issues>>)
++
+[source]
+----
+./docker-build.sh native
 ----
 
 * Environment Variables
@@ -111,7 +125,7 @@ docker-compose ps
 |Specify port of the `Redis` to use (default `6379`)
 |===
 
-* Run `restaurant-api` docker container, joining it to docker-compose network
+* Run `restaurant-api` docker container (for instance, using `redis` profile), joining it to docker-compose network
 +
 [source]
 ----
@@ -121,7 +135,7 @@ docker run -d --rm -p 8080:8080 --name restaurant-api \
   docker.mycompany.com/restaurant-api:1.0.0
 ----
 
-== Applications URLs
+== Application URL
 
 |===
 |Application |URL
@@ -207,28 +221,185 @@ docker-compose down -v
 
 * In a terminal, make sure you are inside `springboot-caching-neo4j` root folder
 
-* Execute one of the commands below
+* Start the tests by picking one on the following cache providers
 +
-|===
-|Profile |Cache Provider |Command
+** `Simple` cache provider
++
+[source]
+----
+./mvnw clean verify
+----
++
+** `Caffeine` cache provider
++
+[source]
+----
+./mvnw clean verify -DargLine="-Dspring.profiles.active=caffeine"
+----
++
+** `Redis` cache provider
++
+[source]
+----
+./mvnw clean verify -DargLine="-Dspring.profiles.active=redis"
+----
 
-|default
-|Simple
-|./mvnw clean verify
+== Generating missing configuration for native image
 
-|caffeine
-|Caffeine
-|./mvnw clean verify -DargLine="-Dspring.profiles.active=caffeine"
+IMPORTANT: You must have `GraalVM` and its tool `native-image` installed.
 
-|redis
-|Redis
-|./mvnw clean verify -DargLine="-Dspring.profiles.active=redis"
-|===
+TIP: For more information see https://docs.spring.io/spring-native/docs/current/reference/htmlsingle/#_missing_configuration[Spring Native documentation]
+
+- Run the following steps in a terminal and inside `springboot-caching-neo4j` root folder
++
+[source]
+----
+mkdir -p restaurant-api/src/main/resources/META-INF/native-image
+
+./mvnw clean package --projects restaurant-api -DskipTests
+
+cd restaurant-api
+
+java -jar -agentlib:native-image-agent=config-output-dir=src/main/resources/META-INF/native-image -Dserver.port=9080 target/restaurant-api-1.0.0.jar
+----
+
+- It should generate `JSON` files in `src/main/resources/META-INF/native-image` like `jni-config.json`, `proxy-config.json` etc.
 
 == TODO
 
 * Add AOP to log whenever the endpoint is called;
 * Create a bash script that uses Neo4j API to insert some data.
+
+== Issues
+
+* If the missing configuration for native image is generated using the `native-image-agent`, it's throwing the following error while building the Docker native image. It's fixed in this {issue #2951](https://github.com/oracle/graal/issues/2951). Waiting for `GraalVM 21.1` milestone be completed/released
++
+[source]
+----
+...
+[INFO]     [creator]     Error: type is not available in this platform: org.graalvm.compiler.hotspot.management.AggregatedMemoryPoolBean
+[INFO]     [creator]     Error: Use -H:+ReportExceptionStackTraces to print stacktrace of underlying exception
+[INFO]     [creator]     Error: Image build request failed with exit status 1
+[INFO]     [creator]     unable to invoke layer creator
+[INFO]     [creator]     unable to contribute native-image layer
+[INFO]     [creator]     error running build
+[INFO]     [creator]     exit status 1
+[INFO]     [creator]     ERROR: failed to build: exit status 1
+...
+----
+
+* If the missing configuration is NOT generated, the following exception is thrown while building the Docker native image
++
+[source]
+----
+[INFO]     [creator]     2 fatal errors detected:
+[INFO]     [creator]     Fatal error:java.lang.NoClassDefFoundError: javax/cache/annotation/CacheMethodDetails
+[INFO]     [creator]     	at java.base/java.lang.ClassLoader.defineClass1(Native Method)
+[INFO]     [creator]     	at java.base/java.lang.ClassLoader.defineClass(ClassLoader.java:1017)
+[INFO]     [creator]     	at java.base/java.security.SecureClassLoader.defineClass(SecureClassLoader.java:174)
+[INFO]     [creator]     	at java.base/java.net.URLClassLoader.defineClass(URLClassLoader.java:550)
+[INFO]     [creator]     	at java.base/java.net.URLClassLoader$1.run(URLClassLoader.java:458)
+[INFO]     [creator]     	at java.base/java.net.URLClassLoader$1.run(URLClassLoader.java:452)
+[INFO]     [creator]     	at java.base/java.security.AccessController.doPrivileged(Native Method)
+[INFO]     [creator]     	at java.base/java.net.URLClassLoader.findClass(URLClassLoader.java:451)
+[INFO]     [creator]     	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:589)
+[INFO]     [creator]     	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:522)
+[INFO]     [creator]     	at java.base/java.lang.ClassLoader.defineClass1(Native Method)
+[INFO]     [creator]     	at java.base/java.lang.ClassLoader.defineClass(ClassLoader.java:1017)
+[INFO]     [creator]     	at java.base/java.security.SecureClassLoader.defineClass(SecureClassLoader.java:174)
+[INFO]     [creator]     	at java.base/java.net.URLClassLoader.defineClass(URLClassLoader.java:550)
+[INFO]     [creator]     	at java.base/java.net.URLClassLoader$1.run(URLClassLoader.java:458)
+[INFO]     [creator]     	at java.base/java.net.URLClassLoader$1.run(URLClassLoader.java:452)
+[INFO]     [creator]     	at java.base/java.security.AccessController.doPrivileged(Native Method)
+[INFO]     [creator]     	at java.base/java.net.URLClassLoader.findClass(URLClassLoader.java:451)
+[INFO]     [creator]     	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:589)
+[INFO]     [creator]     	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:522)
+[INFO]     [creator]     	at java.base/java.lang.Class.forName0(Native Method)
+[INFO]     [creator]     	at java.base/java.lang.Class.forName(Class.java:398)
+[INFO]     [creator]     	at java.base/sun.reflect.generics.factory.CoreReflectionFactory.makeNamedType(CoreReflectionFactory.java:114)
+[INFO]     [creator]     	at java.base/sun.reflect.generics.visitor.Reifier.visitClassTypeSignature(Reifier.java:125)
+[INFO]     [creator]     	at java.base/sun.reflect.generics.tree.ClassTypeSignature.accept(ClassTypeSignature.java:49)
+[INFO]     [creator]     	at java.base/sun.reflect.generics.reflectiveObjects.LazyReflectiveObjectGenerator.reifyBounds(LazyReflectiveObjectGenerator.java:65)
+[INFO]     [creator]     	at java.base/sun.reflect.generics.reflectiveObjects.TypeVariableImpl.getBounds(TypeVariableImpl.java:125)
+[INFO]     [creator]     	at com.oracle.svm.core.hub.GuardedBoundsAccess.getBounds(SunReflectTypeSubstitutions.java:298)
+[INFO]     [creator]     	at com.oracle.svm.core.hub.TypeVariableBoundsComputer.compute(SunReflectTypeSubstitutions.java:139)
+[INFO]     [creator]     	at com.oracle.svm.hosted.substitute.ComputedValueField.readValue(ComputedValueField.java:269)
+[INFO]     [creator]     	at com.oracle.svm.core.meta.ReadableJavaField.readFieldValue(ReadableJavaField.java:35)
+[INFO]     [creator]     	at com.oracle.svm.hosted.ameta.AnalysisConstantReflectionProvider.readValue(AnalysisConstantReflectionProvider.java:99)
+[INFO]     [creator]     	at com.oracle.svm.hosted.ameta.AnalysisConstantReflectionProvider.readFieldValue(AnalysisConstantReflectionProvider.java:78)
+[INFO]     [creator]     	at com.oracle.graal.pointsto.ObjectScanner.scanField(ObjectScanner.java:178)
+[INFO]     [creator]     	at com.oracle.graal.pointsto.ObjectScanner.doScan(ObjectScanner.java:346)
+[INFO]     [creator]     	at com.oracle.graal.pointsto.ObjectScanner.access$400(ObjectScanner.java:60)
+[INFO]     [creator]     	at com.oracle.graal.pointsto.ObjectScanner$2$1.run(ObjectScanner.java:388)
+[INFO]     [creator]     	at com.oracle.graal.pointsto.util.CompletionExecutor.lambda$execute$0(CompletionExecutor.java:173)
+[INFO]     [creator]     	at java.base/java.util.concurrent.ForkJoinTask$RunnableExecuteAction.exec(ForkJoinTask.java:1426)
+[INFO]     [creator]     	at java.base/java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:290)
+[INFO]     [creator]     	at java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1020)
+[INFO]     [creator]     	at java.base/java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1656)
+[INFO]     [creator]     	at java.base/java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1594)
+[INFO]     [creator]     	at java.base/java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:183)
+[INFO]     [creator]     Caused by: java.lang.ClassNotFoundException: javax.cache.annotation.CacheMethodDetails
+[INFO]     [creator]     	at java.base/java.net.URLClassLoader.findClass(URLClassLoader.java:471)
+[INFO]     [creator]     	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:589)
+[INFO]     [creator]     	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:522)
+[INFO]     [creator]     	... 44 more
+[INFO]     [creator]     Fatal error:java.lang.NoClassDefFoundError: javax/cache/annotation/CacheMethodDetails
+[INFO]     [creator]     	at java.base/java.lang.ClassLoader.defineClass1(Native Method)
+[INFO]     [creator]     	at java.base/java.lang.ClassLoader.defineClass(ClassLoader.java:1017)
+[INFO]     [creator]     	at java.base/java.security.SecureClassLoader.defineClass(SecureClassLoader.java:174)
+[INFO]     [creator]     	at java.base/java.net.URLClassLoader.defineClass(URLClassLoader.java:550)
+[INFO]     [creator]     	at java.base/java.net.URLClassLoader$1.run(URLClassLoader.java:458)
+[INFO]     [creator]     	at java.base/java.net.URLClassLoader$1.run(URLClassLoader.java:452)
+[INFO]     [creator]     	at java.base/java.security.AccessController.doPrivileged(Native Method)
+[INFO]     [creator]     	at java.base/java.net.URLClassLoader.findClass(URLClassLoader.java:451)
+[INFO]     [creator]     	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:589)
+[INFO]     [creator]     	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:522)
+[INFO]     [creator]     	at java.base/java.lang.ClassLoader.defineClass1(Native Method)
+[INFO]     [creator]     	at java.base/java.lang.ClassLoader.defineClass(ClassLoader.java:1017)
+[INFO]     [creator]     	at java.base/java.security.SecureClassLoader.defineClass(SecureClassLoader.java:174)
+[INFO]     [creator]     	at java.base/java.net.URLClassLoader.defineClass(URLClassLoader.java:550)
+[INFO]     [creator]     	at java.base/java.net.URLClassLoader$1.run(URLClassLoader.java:458)
+[INFO]     [creator]     	at java.base/java.net.URLClassLoader$1.run(URLClassLoader.java:452)
+[INFO]     [creator]     	at java.base/java.security.AccessController.doPrivileged(Native Method)
+[INFO]     [creator]     	at java.base/java.net.URLClassLoader.findClass(URLClassLoader.java:451)
+[INFO]     [creator]     	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:589)
+[INFO]     [creator]     	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:522)
+[INFO]     [creator]     	at java.base/java.lang.Class.forName0(Native Method)
+[INFO]     [creator]     	at java.base/java.lang.Class.forName(Class.java:398)
+[INFO]     [creator]     	at java.base/sun.reflect.generics.factory.CoreReflectionFactory.makeNamedType(CoreReflectionFactory.java:114)
+[INFO]     [creator]     	at java.base/sun.reflect.generics.visitor.Reifier.visitClassTypeSignature(Reifier.java:125)
+[INFO]     [creator]     	at java.base/sun.reflect.generics.tree.ClassTypeSignature.accept(ClassTypeSignature.java:49)
+[INFO]     [creator]     	at java.base/sun.reflect.generics.reflectiveObjects.LazyReflectiveObjectGenerator.reifyBounds(LazyReflectiveObjectGenerator.java:65)
+[INFO]     [creator]     	at java.base/sun.reflect.generics.reflectiveObjects.TypeVariableImpl.getBounds(TypeVariableImpl.java:125)
+[INFO]     [creator]     	at com.oracle.svm.core.hub.GuardedBoundsAccess.getBounds(SunReflectTypeSubstitutions.java:298)
+[INFO]     [creator]     	at com.oracle.svm.core.hub.TypeVariableBoundsComputer.compute(SunReflectTypeSubstitutions.java:139)
+[INFO]     [creator]     	at com.oracle.svm.hosted.substitute.ComputedValueField.readValue(ComputedValueField.java:269)
+[INFO]     [creator]     	at com.oracle.svm.core.meta.ReadableJavaField.readFieldValue(ReadableJavaField.java:35)
+[INFO]     [creator]     	at com.oracle.svm.hosted.ameta.AnalysisConstantReflectionProvider.readValue(AnalysisConstantReflectionProvider.java:99)
+[INFO]     [creator]     	at com.oracle.svm.hosted.ameta.AnalysisConstantReflectionProvider.readFieldValue(AnalysisConstantReflectionProvider.java:78)
+[INFO]     [creator]     	at com.oracle.graal.pointsto.ObjectScanner.scanField(ObjectScanner.java:178)
+[INFO]     [creator]     	at com.oracle.graal.pointsto.ObjectScanner.doScan(ObjectScanner.java:346)
+[INFO]     [creator]     	at com.oracle.graal.pointsto.ObjectScanner.access$400(ObjectScanner.java:60)
+[INFO]     [creator]     	at com.oracle.graal.pointsto.ObjectScanner$2$1.run(ObjectScanner.java:388)
+[INFO]     [creator]     	at com.oracle.graal.pointsto.util.CompletionExecutor.lambda$execute$0(CompletionExecutor.java:173)
+[INFO]     [creator]     	at java.base/java.util.concurrent.ForkJoinTask$RunnableExecuteAction.exec(ForkJoinTask.java:1426)
+[INFO]     [creator]     	at java.base/java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:290)
+[INFO]     [creator]     	at java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1020)
+[INFO]     [creator]     	at java.base/java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1656)
+[INFO]     [creator]     	at java.base/java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1594)
+[INFO]     [creator]     	at java.base/java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:183)
+[INFO]     [creator]     Caused by: java.lang.ClassNotFoundException: javax.cache.annotation.CacheMethodDetails
+[INFO]     [creator]     	at java.base/java.net.URLClassLoader.findClass(URLClassLoader.java:471)
+[INFO]     [creator]     	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:589)
+[INFO]     [creator]     	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:522)
+[INFO]     [creator]     	... 44 more
+[INFO]     [creator]     Error: Image build request failed with exit status 1
+[INFO]     [creator]     unable to invoke layer creator
+[INFO]     [creator]     unable to contribute native-image layer
+[INFO]     [creator]     error running build
+[INFO]     [creator]     exit status 1
+[INFO]     [creator]     ERROR: failed to build: exit status 1
+----
 
 == Reference
 
