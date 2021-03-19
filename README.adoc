@@ -18,18 +18,14 @@ The caching is applied at controller level. For instance, if you call `GET /api/
 
 [source]
 ----
-{
-    "name": "Happy Pizza", "city": {"id": 1, "name": "Berlin"}, "dishes": []
-}
+{ "name": "Happy Pizza", "city": {"id": 1, "name": "Berlin"}, "dishes": [] }
 ----
 
 Before the endpoint finishes and returns the result, the key and its payload are saved in `RESTAURANTS` cache
 
 [source]
 ----
-{
-    "123" = {"name": "Happy Pizza", "city": {"id": 1, "name": "Berlin"}, "dishes": []}
-}
+{ "123" = {"name": "Happy Pizza", "city": {"id": 1, "name": "Berlin"}, "dishes": []} }
 ----
 
 On subsequents calls to `GET /api/restaurants/123` (and as far as the data is not evicted), the application just needs to go to the cache and get the value.
@@ -109,19 +105,19 @@ docker-compose ps
 |===
 |Environment Variable |Description
 
-|SPRING_PROFILES_ACTIVE
+|`SPRING_PROFILES_ACTIVE`
 |Specify the type of profile to run the application. To use `Redis` provider for caching set `redis`. To use `Caffeine` for caching set `caffeine`. The default profile will use `Simple` caching.
 
-|NEO4J_HOST
+|`NEO4J_HOST`
 |Specify host of the `Neo4j` to use (default `localhost`)
 
-|NEO4J_PORT
+|`NEO4J_PORT`
 |Specify port of the `Neo4j` to use (default `7687`)
 
-|REDIS_HOST
+|`REDIS_HOST`
 |Specify host of the `Redis` to use (default `localhost`)
 
-|REDIS_PORT
+|`REDIS_PORT`
 |Specify port of the `Redis` to use (default `6379`)
 |===
 

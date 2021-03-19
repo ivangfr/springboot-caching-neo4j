@@ -8,10 +8,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 import java.util.Optional;
 
@@ -21,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 class CityIT extends AbstractTestcontainers {
 
     @Autowired
@@ -46,11 +48,17 @@ class CityIT extends AbstractTestcontainers {
 
     @Test
     void testGetCities() {
-        ResponseEntity<String> responseEntity = testRestTemplate.getForEntity(API_CITIES_URL, String.class);
+        ParameterizedTypeReference<RestResponsePageImpl<City>> responseType = new ParameterizedTypeReference<>() {
+        };
+        ResponseEntity<RestResponsePageImpl<City>> responseEntity = testRestTemplate.exchange(API_CITIES_URL, HttpMethod.GET, null, responseType);
 
-        // Expected to be HttpStatus.INTERNAL_SERVER_ERROR because there is a bug https://github.com/spring-projects/spring-data-neo4j/issues/2175
-        // Once it's solved, should get http status HttpStatus.OK
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertNotNull(responseEntity.getBody());
+
+        // @DirtiesContext is not working
+        // --
+        // assertEquals(0, responseEntity.getBody().getTotalElements());
+        // assertEquals(0, responseEntity.getBody().getContent().size());
     }
 
     @Test

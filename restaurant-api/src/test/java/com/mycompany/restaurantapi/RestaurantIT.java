@@ -12,11 +12,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 import java.util.Optional;
 
@@ -26,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 class RestaurantIT extends AbstractTestcontainers {
 
     @Autowired
@@ -65,11 +67,17 @@ class RestaurantIT extends AbstractTestcontainers {
 
     @Test
     void testGetRestaurants() {
-        ResponseEntity<String> responseEntity = testRestTemplate.getForEntity(API_RESTAURANTS_URL, String.class);
+        ParameterizedTypeReference<RestResponsePageImpl<Restaurant>> responseType = new ParameterizedTypeReference<>() {
+        };
+        ResponseEntity<RestResponsePageImpl<Restaurant>> responseEntity = testRestTemplate.exchange(API_RESTAURANTS_URL, HttpMethod.GET, null, responseType);
 
-        // Expected to be HttpStatus.INTERNAL_SERVER_ERROR because there is a bug https://github.com/spring-projects/spring-data-neo4j/issues/2175
-        // Once it's solved, should get http status HttpStatus.OK
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertNotNull(responseEntity.getBody());
+
+        // @DirtiesContext is not working
+        // --
+        // assertEquals(0, responseEntity.getBody().getTotalElements());
+        // assertEquals(0, responseEntity.getBody().getContent().size());
     }
 
     @Test
@@ -162,9 +170,9 @@ class RestaurantIT extends AbstractTestcontainers {
     }
 
     private City saveDefaultCity(String name) {
-        City c = new City();
-        c.setName(name);
-        return cityRepository.save(c);
+        City city = new City();
+        city.setName(name);
+        return cityRepository.save(city);
     }
 
     private Restaurant saveDefaultRestaurant() {
