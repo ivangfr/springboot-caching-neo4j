@@ -284,7 +284,7 @@ java -jar -agentlib:native-image-agent=config-output-dir=src/main/resources/META
 ...
 ----
 
-* If the missing configuration is NOT generated, the following exception is thrown while building the Docker native image
+* If the missing configuration for native image is NOT generated using the `native-image-agent`, the following exception is thrown while building the Docker native image
 +
 [source]
 ----
