@@ -7,6 +7,7 @@ import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
+import org.springframework.data.neo4j.core.schema.Relationship.Direction;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -24,7 +25,7 @@ public class City {
 
     private String name;
 
-    @Relationship(type = "LOCATED_IN")
+    @Relationship(type = "LOCATED_IN", direction = Direction.INCOMING)
     private Set<Restaurant> restaurants = new LinkedHashSet<>();
 
 }
