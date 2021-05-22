@@ -121,9 +121,9 @@ docker-compose ps
 |Specify port of the `Redis` to use (default `6379`)
 |===
 
-* Run `restaurant-api` docker container (for instance, using `redis` profile), joining it to docker-compose network
+* Run Docker Container (for instance, using `redis` profile)
 +
-WARNING: Native Docker image is not working yet, see <<Issues>>
+WARNING: Native is not working yet, see <<Issues>>
 +
 [source]
 ----
@@ -263,7 +263,7 @@ java -jar -agentlib:native-image-agent=config-merge-dir=src/main/resources/META-
 
 == Issues
 
-* The Docker native image is built successfully. However, the following exception is thrown at startup
+* The Docker native image is built successfully. However, the following exception is thrown at startup. An instance of `CacheManager` (used in `CacheManagerCheckRunner`) is not instantiated.
 +
 [source]
 ----
