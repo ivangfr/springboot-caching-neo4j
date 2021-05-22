@@ -93,7 +93,7 @@ docker-compose ps
 ./docker-build.sh
 ----
 +
-** Native (it's not working yet, see <<Issues>>)
+** Native
 +
 [source]
 ----
@@ -123,10 +123,12 @@ docker-compose ps
 
 * Run `restaurant-api` docker container (for instance, using `redis` profile), joining it to docker-compose network
 +
+WARNING: Native Docker image is not working yet, see <<Issues>>
++
 [source]
 ----
-docker run -d --rm -p 8080:8080 --name restaurant-api \
-  --env NEO4J_HOST=neo4j --env REDIS_HOST=redis --env SPRING_PROFILES_ACTIVE=redis \
+docker run --rm --name restaurant-api -p 8080:8080 \
+  -e NEO4J_HOST=neo4j -e REDIS_HOST=redis -e SPRING_PROFILES_ACTIVE=redis \
   --network=springboot-caching-neo4j_default \
   ivanfranchin/restaurant-api:1.0.0
 ----
@@ -196,17 +198,8 @@ image::images/redis-commander-ui.png[]
 
 == Shutdown
 
-* To stop `restaurant-api` application
-+
-** If it was started with `Maven`, go to the terminal where it is running and press `Ctrl+C`
-** If it was started as a Docker container, run in a terminal the command below
-+
-[source]
-----
-docker stop restaurant-api
-----
-
-* To stop and remove docker-compose containers, network and volumes, in a terminal and inside `springboot-caching-neo4j` root folder, run the following command
+* To stop `restaurant-api` application, go to the terminal where it is running and press `Ctrl+C`
+* To stop and remove docker-compose containers, network and volumes, go to a terminal and inside `springboot-caching-neo4j` root folder, run the following command
 +
 [source]
 ----
@@ -240,11 +233,11 @@ docker-compose down -v
 ./mvnw clean verify -DargLine="-Dspring.profiles.active=redis"
 ----
 
-== Generating missing configuration for native image
+== Using Tracing Agent to generate the missing configuration for native image
 
-IMPORTANT: You must have `GraalVM` and its tool `native-image` installed.
+IMPORTANT: The environment variable `JAVA_HOME` must be set to a `GraalVM` installation directory (https://www.graalvm.org/docs/getting-started/#install-graalvm[Install GraalVM]), and the `native-image` tool must be installed (https://www.graalvm.org/reference-manual/native-image/#install-native-image[Install Native Image]).
 
-TIP: For more information see https://docs.spring.io/spring-native/docs/current/reference/htmlsingle/#_missing_configuration[Spring Native documentation]
+TIP: For more information about `Tracing Agent` see https://docs.spring.io/spring-native/docs/current/reference/htmlsingle/#tracing-agent[Spring Native documentation]
 
 - Run the following steps in a terminal and inside `springboot-caching-neo4j` root folder
 +
@@ -256,10 +249,12 @@ mkdir -p restaurant-api/src/main/resources/META-INF/native-image
 
 cd restaurant-api
 
-java -jar -agentlib:native-image-agent=config-output-dir=src/main/resources/META-INF/native-image -Dserver.port=9080 target/restaurant-api-1.0.0.jar
+java -jar -agentlib:native-image-agent=config-merge-dir=src/main/resources/META-INF/native-image target/restaurant-api-1.0.0.jar
 ----
 
-- It should generate `JSON` files in `src/main/resources/META-INF/native-image` like `jni-config.json`, `proxy-config.json` etc.
+- Once the application is running, exercise it by calling its endpoints using `curl` and `Swagger` so that `Tracing Agent` observes the behavior of the application running on Java HotSpot VM and writes configuration files for reflection, JNI, resource, and proxy usage to automatically configure the native image generator.
+
+- It should generate `JSON` files in `restaurant-api/src/main/resources/META-INF/native-image` such as: `jni-config.json`, `proxy-config.json`, `reflect-config.json`, `resource-config.json` and `serialization-config.json`.
 
 == TODO
 
@@ -268,133 +263,40 @@ java -jar -agentlib:native-image-agent=config-output-dir=src/main/resources/META
 
 == Issues
 
-* If the missing configuration for native image is generated using the `native-image-agent`, it's throwing the following error while building the Docker native image. It's fixed in this {issue #2951](https://github.com/oracle/graal/issues/2951). Waiting for `GraalVM 21.1` milestone be completed/released
+* The Docker native image is built successfully. However, the following exception is thrown at startup
 +
 [source]
 ----
-...
-[INFO]     [creator]     Error: type is not available in this platform: org.graalvm.compiler.hotspot.management.AggregatedMemoryPoolBean
-[INFO]     [creator]     Error: Use -H:+ReportExceptionStackTraces to print stacktrace of underlying exception
-[INFO]     [creator]     Error: Image build request failed with exit status 1
-[INFO]     [creator]     unable to invoke layer creator
-[INFO]     [creator]     unable to contribute native-image layer
-[INFO]     [creator]     error running build
-[INFO]     [creator]     exit status 1
-[INFO]     [creator]     ERROR: failed to build: exit status 1
-...
-----
+ERROR 1 --- [           main] o.s.boot.SpringApplication               : Application run failed
 
-* If the missing configuration for native image is NOT generated using the `native-image-agent`, the following exception is thrown while building the Docker native image
-+
-[source]
-----
-[INFO]     [creator]     2 fatal errors detected:
-[INFO]     [creator]     Fatal error:java.lang.NoClassDefFoundError: javax/cache/annotation/CacheMethodDetails
-[INFO]     [creator]     	at java.base/java.lang.ClassLoader.defineClass1(Native Method)
-[INFO]     [creator]     	at java.base/java.lang.ClassLoader.defineClass(ClassLoader.java:1017)
-[INFO]     [creator]     	at java.base/java.security.SecureClassLoader.defineClass(SecureClassLoader.java:174)
-[INFO]     [creator]     	at java.base/java.net.URLClassLoader.defineClass(URLClassLoader.java:550)
-[INFO]     [creator]     	at java.base/java.net.URLClassLoader$1.run(URLClassLoader.java:458)
-[INFO]     [creator]     	at java.base/java.net.URLClassLoader$1.run(URLClassLoader.java:452)
-[INFO]     [creator]     	at java.base/java.security.AccessController.doPrivileged(Native Method)
-[INFO]     [creator]     	at java.base/java.net.URLClassLoader.findClass(URLClassLoader.java:451)
-[INFO]     [creator]     	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:589)
-[INFO]     [creator]     	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:522)
-[INFO]     [creator]     	at java.base/java.lang.ClassLoader.defineClass1(Native Method)
-[INFO]     [creator]     	at java.base/java.lang.ClassLoader.defineClass(ClassLoader.java:1017)
-[INFO]     [creator]     	at java.base/java.security.SecureClassLoader.defineClass(SecureClassLoader.java:174)
-[INFO]     [creator]     	at java.base/java.net.URLClassLoader.defineClass(URLClassLoader.java:550)
-[INFO]     [creator]     	at java.base/java.net.URLClassLoader$1.run(URLClassLoader.java:458)
-[INFO]     [creator]     	at java.base/java.net.URLClassLoader$1.run(URLClassLoader.java:452)
-[INFO]     [creator]     	at java.base/java.security.AccessController.doPrivileged(Native Method)
-[INFO]     [creator]     	at java.base/java.net.URLClassLoader.findClass(URLClassLoader.java:451)
-[INFO]     [creator]     	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:589)
-[INFO]     [creator]     	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:522)
-[INFO]     [creator]     	at java.base/java.lang.Class.forName0(Native Method)
-[INFO]     [creator]     	at java.base/java.lang.Class.forName(Class.java:398)
-[INFO]     [creator]     	at java.base/sun.reflect.generics.factory.CoreReflectionFactory.makeNamedType(CoreReflectionFactory.java:114)
-[INFO]     [creator]     	at java.base/sun.reflect.generics.visitor.Reifier.visitClassTypeSignature(Reifier.java:125)
-[INFO]     [creator]     	at java.base/sun.reflect.generics.tree.ClassTypeSignature.accept(ClassTypeSignature.java:49)
-[INFO]     [creator]     	at java.base/sun.reflect.generics.reflectiveObjects.LazyReflectiveObjectGenerator.reifyBounds(LazyReflectiveObjectGenerator.java:65)
-[INFO]     [creator]     	at java.base/sun.reflect.generics.reflectiveObjects.TypeVariableImpl.getBounds(TypeVariableImpl.java:125)
-[INFO]     [creator]     	at com.oracle.svm.core.hub.GuardedBoundsAccess.getBounds(SunReflectTypeSubstitutions.java:298)
-[INFO]     [creator]     	at com.oracle.svm.core.hub.TypeVariableBoundsComputer.compute(SunReflectTypeSubstitutions.java:139)
-[INFO]     [creator]     	at com.oracle.svm.hosted.substitute.ComputedValueField.readValue(ComputedValueField.java:269)
-[INFO]     [creator]     	at com.oracle.svm.core.meta.ReadableJavaField.readFieldValue(ReadableJavaField.java:35)
-[INFO]     [creator]     	at com.oracle.svm.hosted.ameta.AnalysisConstantReflectionProvider.readValue(AnalysisConstantReflectionProvider.java:99)
-[INFO]     [creator]     	at com.oracle.svm.hosted.ameta.AnalysisConstantReflectionProvider.readFieldValue(AnalysisConstantReflectionProvider.java:78)
-[INFO]     [creator]     	at com.oracle.graal.pointsto.ObjectScanner.scanField(ObjectScanner.java:178)
-[INFO]     [creator]     	at com.oracle.graal.pointsto.ObjectScanner.doScan(ObjectScanner.java:346)
-[INFO]     [creator]     	at com.oracle.graal.pointsto.ObjectScanner.access$400(ObjectScanner.java:60)
-[INFO]     [creator]     	at com.oracle.graal.pointsto.ObjectScanner$2$1.run(ObjectScanner.java:388)
-[INFO]     [creator]     	at com.oracle.graal.pointsto.util.CompletionExecutor.lambda$execute$0(CompletionExecutor.java:173)
-[INFO]     [creator]     	at java.base/java.util.concurrent.ForkJoinTask$RunnableExecuteAction.exec(ForkJoinTask.java:1426)
-[INFO]     [creator]     	at java.base/java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:290)
-[INFO]     [creator]     	at java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1020)
-[INFO]     [creator]     	at java.base/java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1656)
-[INFO]     [creator]     	at java.base/java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1594)
-[INFO]     [creator]     	at java.base/java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:183)
-[INFO]     [creator]     Caused by: java.lang.ClassNotFoundException: javax.cache.annotation.CacheMethodDetails
-[INFO]     [creator]     	at java.base/java.net.URLClassLoader.findClass(URLClassLoader.java:471)
-[INFO]     [creator]     	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:589)
-[INFO]     [creator]     	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:522)
-[INFO]     [creator]     	... 44 more
-[INFO]     [creator]     Fatal error:java.lang.NoClassDefFoundError: javax/cache/annotation/CacheMethodDetails
-[INFO]     [creator]     	at java.base/java.lang.ClassLoader.defineClass1(Native Method)
-[INFO]     [creator]     	at java.base/java.lang.ClassLoader.defineClass(ClassLoader.java:1017)
-[INFO]     [creator]     	at java.base/java.security.SecureClassLoader.defineClass(SecureClassLoader.java:174)
-[INFO]     [creator]     	at java.base/java.net.URLClassLoader.defineClass(URLClassLoader.java:550)
-[INFO]     [creator]     	at java.base/java.net.URLClassLoader$1.run(URLClassLoader.java:458)
-[INFO]     [creator]     	at java.base/java.net.URLClassLoader$1.run(URLClassLoader.java:452)
-[INFO]     [creator]     	at java.base/java.security.AccessController.doPrivileged(Native Method)
-[INFO]     [creator]     	at java.base/java.net.URLClassLoader.findClass(URLClassLoader.java:451)
-[INFO]     [creator]     	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:589)
-[INFO]     [creator]     	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:522)
-[INFO]     [creator]     	at java.base/java.lang.ClassLoader.defineClass1(Native Method)
-[INFO]     [creator]     	at java.base/java.lang.ClassLoader.defineClass(ClassLoader.java:1017)
-[INFO]     [creator]     	at java.base/java.security.SecureClassLoader.defineClass(SecureClassLoader.java:174)
-[INFO]     [creator]     	at java.base/java.net.URLClassLoader.defineClass(URLClassLoader.java:550)
-[INFO]     [creator]     	at java.base/java.net.URLClassLoader$1.run(URLClassLoader.java:458)
-[INFO]     [creator]     	at java.base/java.net.URLClassLoader$1.run(URLClassLoader.java:452)
-[INFO]     [creator]     	at java.base/java.security.AccessController.doPrivileged(Native Method)
-[INFO]     [creator]     	at java.base/java.net.URLClassLoader.findClass(URLClassLoader.java:451)
-[INFO]     [creator]     	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:589)
-[INFO]     [creator]     	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:522)
-[INFO]     [creator]     	at java.base/java.lang.Class.forName0(Native Method)
-[INFO]     [creator]     	at java.base/java.lang.Class.forName(Class.java:398)
-[INFO]     [creator]     	at java.base/sun.reflect.generics.factory.CoreReflectionFactory.makeNamedType(CoreReflectionFactory.java:114)
-[INFO]     [creator]     	at java.base/sun.reflect.generics.visitor.Reifier.visitClassTypeSignature(Reifier.java:125)
-[INFO]     [creator]     	at java.base/sun.reflect.generics.tree.ClassTypeSignature.accept(ClassTypeSignature.java:49)
-[INFO]     [creator]     	at java.base/sun.reflect.generics.reflectiveObjects.LazyReflectiveObjectGenerator.reifyBounds(LazyReflectiveObjectGenerator.java:65)
-[INFO]     [creator]     	at java.base/sun.reflect.generics.reflectiveObjects.TypeVariableImpl.getBounds(TypeVariableImpl.java:125)
-[INFO]     [creator]     	at com.oracle.svm.core.hub.GuardedBoundsAccess.getBounds(SunReflectTypeSubstitutions.java:298)
-[INFO]     [creator]     	at com.oracle.svm.core.hub.TypeVariableBoundsComputer.compute(SunReflectTypeSubstitutions.java:139)
-[INFO]     [creator]     	at com.oracle.svm.hosted.substitute.ComputedValueField.readValue(ComputedValueField.java:269)
-[INFO]     [creator]     	at com.oracle.svm.core.meta.ReadableJavaField.readFieldValue(ReadableJavaField.java:35)
-[INFO]     [creator]     	at com.oracle.svm.hosted.ameta.AnalysisConstantReflectionProvider.readValue(AnalysisConstantReflectionProvider.java:99)
-[INFO]     [creator]     	at com.oracle.svm.hosted.ameta.AnalysisConstantReflectionProvider.readFieldValue(AnalysisConstantReflectionProvider.java:78)
-[INFO]     [creator]     	at com.oracle.graal.pointsto.ObjectScanner.scanField(ObjectScanner.java:178)
-[INFO]     [creator]     	at com.oracle.graal.pointsto.ObjectScanner.doScan(ObjectScanner.java:346)
-[INFO]     [creator]     	at com.oracle.graal.pointsto.ObjectScanner.access$400(ObjectScanner.java:60)
-[INFO]     [creator]     	at com.oracle.graal.pointsto.ObjectScanner$2$1.run(ObjectScanner.java:388)
-[INFO]     [creator]     	at com.oracle.graal.pointsto.util.CompletionExecutor.lambda$execute$0(CompletionExecutor.java:173)
-[INFO]     [creator]     	at java.base/java.util.concurrent.ForkJoinTask$RunnableExecuteAction.exec(ForkJoinTask.java:1426)
-[INFO]     [creator]     	at java.base/java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:290)
-[INFO]     [creator]     	at java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1020)
-[INFO]     [creator]     	at java.base/java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1656)
-[INFO]     [creator]     	at java.base/java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1594)
-[INFO]     [creator]     	at java.base/java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:183)
-[INFO]     [creator]     Caused by: java.lang.ClassNotFoundException: javax.cache.annotation.CacheMethodDetails
-[INFO]     [creator]     	at java.base/java.net.URLClassLoader.findClass(URLClassLoader.java:471)
-[INFO]     [creator]     	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:589)
-[INFO]     [creator]     	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:522)
-[INFO]     [creator]     	... 44 more
-[INFO]     [creator]     Error: Image build request failed with exit status 1
-[INFO]     [creator]     unable to invoke layer creator
-[INFO]     [creator]     unable to contribute native-image layer
-[INFO]     [creator]     error running build
-[INFO]     [creator]     exit status 1
-[INFO]     [creator]     ERROR: failed to build: exit status 1
+org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'cacheManagerCheckRunner' defined in class path resource [com/mycompany/restaurantapi/runner/CacheManagerCheckRunner.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'org.springframework.cache.CacheManager' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {}
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:800) ~[na:na]
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:229) ~[na:na]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1354) ~[na:na]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1204) ~[na:na]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:564) ~[na:na]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:524) ~[na:na]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:335) ~[na:na]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234) ~[na:na]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:333) ~[na:na]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:208) ~[na:na]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:944) ~[na:na]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:918) ~[na:na]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:583) ~[na:na]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:145) ~[na:na]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:758) ~[com.mycompany.restaurantapi.RestaurantApiApplication:2.5.0]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:438) ~[com.mycompany.restaurantapi.RestaurantApiApplication:2.5.0]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:337) ~[com.mycompany.restaurantapi.RestaurantApiApplication:2.5.0]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1336) ~[com.mycompany.restaurantapi.RestaurantApiApplication:2.5.0]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1325) ~[com.mycompany.restaurantapi.RestaurantApiApplication:2.5.0]
+	at com.mycompany.restaurantapi.RestaurantApiApplication.main(RestaurantApiApplication.java:27) ~[com.mycompany.restaurantapi.RestaurantApiApplication:na]
+Caused by: org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'org.springframework.cache.CacheManager' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {}
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.raiseNoMatchingBeanFound(DefaultListableBeanFactory.java:1790) ~[na:na]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1346) ~[na:na]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1300) ~[na:na]
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:887) ~[na:na]
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:791) ~[na:na]
+	... 19 common frames omitted
 ----
 
 == Reference
