@@ -86,6 +86,8 @@ docker-compose ps
 
 * Build Docker Image
 +
+In a terminal, make sure you are in `springboot-caching-neo4j` root folder
++
 ** JVM
 +
 [source]
@@ -244,16 +246,11 @@ TIP: For more information about `Tracing Agent` see https://docs.spring.io/sprin
 [source]
 ----
 mkdir -p restaurant-api/src/main/resources/META-INF/native-image
-
 ./mvnw clean package --projects restaurant-api -DskipTests
-
 cd restaurant-api
-
 java -jar -agentlib:native-image-agent=config-merge-dir=src/main/resources/META-INF/native-image target/restaurant-api-1.0.0.jar
 ----
-
 - Once the application is running, exercise it by calling its endpoints using `curl` and `Swagger` so that `Tracing Agent` observes the behavior of the application running on Java HotSpot VM and writes configuration files for reflection, JNI, resource, and proxy usage to automatically configure the native image generator.
-
 - It should generate `JSON` files in `restaurant-api/src/main/resources/META-INF/native-image` such as: `jni-config.json`, `proxy-config.json`, `reflect-config.json`, `resource-config.json` and `serialization-config.json`.
 
 == TODO
@@ -263,18 +260,15 @@ java -jar -agentlib:native-image-agent=config-merge-dir=src/main/resources/META-
 
 == Issues
 
-* The Docker native image is built successfully. However, the following exception is thrown at startup. An instance of `CacheManager` (used in `CacheManagerCheckRunner`) is not instantiated.
+* The Docker native image is built successfully. However, the following exception is thrown at startup. Maybe, caching is still not supported, see [Issue](https://github.com/spring-projects-experimental/spring-native/issues/465)
 +
 [source]
 ----
 ERROR 1 --- [           main] o.s.boot.SpringApplication               : Application run failed
 
-org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'cacheManagerCheckRunner' defined in class path resource [com/mycompany/restaurantapi/runner/CacheManagerCheckRunner.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'org.springframework.cache.CacheManager' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {}
-	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:800) ~[na:na]
-	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:229) ~[na:na]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1354) ~[na:na]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1204) ~[na:na]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:564) ~[na:na]
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'cacheAutoConfigurationValidator' defined in class path resource [org/springframework/boot/autoconfigure/cache/CacheAutoConfiguration.class]: Invocation of init method failed; nested exception is java.lang.IllegalArgumentException: No cache manager could be auto-configured, check your configuration (caching type is 'REDIS')
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1786) ~[na:na]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:602) ~[na:na]
 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:524) ~[na:na]
 	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:335) ~[na:na]
 	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234) ~[na:na]
@@ -289,14 +283,13 @@ org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:337) ~[com.mycompany.restaurantapi.RestaurantApiApplication:2.5.0]
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1336) ~[com.mycompany.restaurantapi.RestaurantApiApplication:2.5.0]
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1325) ~[com.mycompany.restaurantapi.RestaurantApiApplication:2.5.0]
-	at com.mycompany.restaurantapi.RestaurantApiApplication.main(RestaurantApiApplication.java:27) ~[com.mycompany.restaurantapi.RestaurantApiApplication:na]
-Caused by: org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'org.springframework.cache.CacheManager' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {}
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.raiseNoMatchingBeanFound(DefaultListableBeanFactory.java:1790) ~[na:na]
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1346) ~[na:na]
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1300) ~[na:na]
-	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:887) ~[na:na]
-	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:791) ~[na:na]
-	... 19 common frames omitted
+	at com.mycompany.restaurantapi.RestaurantApiApplication.main(RestaurantApiApplication.java:18) ~[com.mycompany.restaurantapi.RestaurantApiApplication:na]
+Caused by: java.lang.IllegalArgumentException: No cache manager could be auto-configured, check your configuration (caching type is 'REDIS')
+	at org.springframework.util.Assert.notNull(Assert.java:219) ~[na:na]
+	at org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration$CacheManagerValidator.afterPropertiesSet(CacheAutoConfiguration.java:109) ~[com.mycompany.restaurantapi.RestaurantApiApplication:2.5.0]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1845) ~[na:na]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1782) ~[na:na]
+	... 16 common frames omitted
 ----
 
 == Reference
