@@ -15,10 +15,10 @@ import java.util.List;
 @Testcontainers
 public abstract class AbstractTestcontainers {
 
-    private static final Neo4jContainer<?> neo4jContainer = new Neo4jContainer<>("neo4j:4.2.6")
+    private static final Neo4jContainer<?> neo4jContainer = new Neo4jContainer<>("neo4j:4.3.0")
             .withoutAuthentication();
 
-    public static final GenericContainer<?> redisContainer = new GenericContainer<>(DockerImageName.parse("redis:6.2.3"))
+    public static final GenericContainer<?> redisContainer = new GenericContainer<>(DockerImageName.parse("redis:6.2.4"))
             .withExposedPorts(6379);
 
     @DynamicPropertySource
