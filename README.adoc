@@ -207,12 +207,13 @@ image::images/redis-commander-ui.png[]
 ----
 docker-compose down -v
 ----
-* To remove the docker images created by this project, run
-+
-[source]
-----
-./remove-docker-images.sh
-----
+
+== Cleanup
+
+To remove the Docker image created by this project, go to a terminal and run the following command
+```
+docker rmi ivanfranchin/restaurant-api:1.0.0
+```
 
 == Running Unit And Integration Test Cases
 
@@ -297,7 +298,7 @@ org.springframework.beans.factory.BeanCreationException: Error creating bean wit
 	at com.mycompany.restaurantapi.RestaurantApiApplication.main(RestaurantApiApplication.java:15) ~[com.mycompany.restaurantapi.RestaurantApiApplication:na]
 Caused by: java.lang.IllegalArgumentException: No cache manager could be auto-configured, check your configuration (caching type is 'REDIS')
 	at org.springframework.util.Assert.notNull(Assert.java:219) ~[na:na]
-	at org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration$CacheManagerValidator.afterPropertiesSet(CacheAutoConfiguration.java:109) ~[com.mycompany.restaurantapi.RestaurantApiApplication:2.5.1]
+	at org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration$CacheManagerValidator.afterPropertiesSet(CacheAutoConfiguration.java:109) ~[com.mycompany.restaurantapi.RestaurantApiApplication:2.5.3]
 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1845) ~[na:na]
 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1782) ~[na:na]
 	... 16 common frames omitted
