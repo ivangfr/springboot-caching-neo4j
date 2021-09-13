@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Data
-public class CityDto implements Serializable {
+public class CityResponse implements Serializable {
 
     private UUID id;
     private String name;

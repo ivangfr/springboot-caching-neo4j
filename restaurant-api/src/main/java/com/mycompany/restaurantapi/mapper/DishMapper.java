@@ -1,9 +1,9 @@
 package com.mycompany.restaurantapi.mapper;
 
 import com.mycompany.restaurantapi.model.Dish;
-import com.mycompany.restaurantapi.rest.dto.CreateDishDto;
-import com.mycompany.restaurantapi.rest.dto.DishDto;
-import com.mycompany.restaurantapi.rest.dto.UpdateDishDto;
+import com.mycompany.restaurantapi.rest.dto.CreateDishRequest;
+import com.mycompany.restaurantapi.rest.dto.DishResponse;
+import com.mycompany.restaurantapi.rest.dto.UpdateDishRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
@@ -14,10 +14,9 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 )
 public interface DishMapper {
 
-    DishDto toDishDto(Dish dish);
+    DishResponse toDishResponse(Dish dish);
 
-    Dish toDish(CreateDishDto createDishDto);
+    Dish toDish(CreateDishRequest createDishRequest);
 
-    void updateDishFromDto(UpdateDishDto updateDishDto, @MappingTarget Dish dish);
-
+    void updateDishFromRequest(UpdateDishRequest updateDishRequest, @MappingTarget Dish dish);
 }

@@ -18,5 +18,4 @@ public interface RestaurantService {
     Restaurant validateAndGetRestaurant(UUID restaurantId);
 
     Dish validateAndGetDish(Restaurant restaurant, UUID dishId);
-
 }

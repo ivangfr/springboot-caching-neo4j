@@ -50,5 +50,4 @@ public class RestaurantServiceImpl implements RestaurantService {
                 .findFirst()
                 .orElseThrow(() -> new DishNotFoundException(dishId));
     }
-
 }

@@ -5,8 +5,8 @@ import com.mycompany.restaurantapi.mapper.CityMapperImpl;
 import com.mycompany.restaurantapi.mapper.RestaurantMapperImpl;
 import com.mycompany.restaurantapi.model.City;
 import com.mycompany.restaurantapi.model.Restaurant;
-import com.mycompany.restaurantapi.rest.dto.CreateRestaurantDto;
-import com.mycompany.restaurantapi.rest.dto.UpdateRestaurantDto;
+import com.mycompany.restaurantapi.rest.dto.CreateRestaurantRequest;
+import com.mycompany.restaurantapi.rest.dto.UpdateRestaurantRequest;
 import com.mycompany.restaurantapi.service.CityService;
 import com.mycompany.restaurantapi.service.RestaurantService;
 import org.junit.jupiter.api.BeforeAll;
@@ -26,16 +26,18 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.atMostOnce;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisabledIf(expression = "#{environment.acceptsProfiles('redis')}", loadContext = true)
+@DisabledIf("#{environment.acceptsProfiles('redis')}")
 @AutoConfigureDataNeo4j /* The @AutoConfigureDataNeo4j annotation is used instead of @DataNeo4jTest because both
                            @DataNeo4jTest and @WebMvcTest set @BootstrapWith annotation and having two @BootstrapWith
                            annotations in a test class is not supported. */
@@ -67,7 +69,7 @@ class RestaurantControllerTest {
     @Test
     void testGetRestaurantCaching() throws Exception {
         Restaurant restaurant = getDefaultRestaurant();
-        given(restaurantService.validateAndGetRestaurant(restaurant.getId())).willReturn(restaurant);
+        when(restaurantService.validateAndGetRestaurant(any(UUID.class))).thenReturn(restaurant);
 
         //-- restaurantId cached in CITIES
         mockMvc.perform(get(API_RESTAURANTS_RESTAURANT_ID_URL, restaurant.getId())).andExpect(status().isOk());
@@ -75,17 +77,17 @@ class RestaurantControllerTest {
         //-- restaurantId already cached in CITIES
         mockMvc.perform(get(API_RESTAURANTS_RESTAURANT_ID_URL, restaurant.getId())).andExpect(status().isOk());
 
-        verify(restaurantService, times(1)).validateAndGetRestaurant(restaurant.getId());
+        verify(restaurantService, atMostOnce()).validateAndGetRestaurant(restaurant.getId());
     }
 
     @Test
     void testCreateRestaurantCaching() throws Exception {
         Restaurant restaurant = getDefaultRestaurant();
-        CreateRestaurantDto createRestaurantDto = getDefaultCreateRestaurantDto();
+        CreateRestaurantRequest createRestaurantRequest = new CreateRestaurantRequest(city.getId(), "Happy Pizza");
 
-        given(restaurantService.validateAndGetRestaurant(restaurant.getId())).willReturn(restaurant);
-        given(restaurantService.saveRestaurant(any(Restaurant.class))).willReturn(restaurant);
-        given(cityService.validateAndGetCity(city.getId())).willReturn(city);
+        when(restaurantService.validateAndGetRestaurant(any(UUID.class))).thenReturn(restaurant);
+        when(restaurantService.saveRestaurant(any(Restaurant.class))).thenReturn(restaurant);
+        when(cityService.validateAndGetCity(any(UUID.class))).thenReturn(city);
 
         //-- cityId cached in CITIES
         mockMvc.perform(get(API_CITIES_CITY_ID_URL, city.getId())).andExpect(status().isOk());
@@ -93,8 +95,8 @@ class RestaurantControllerTest {
         //-- create restaurant and put restaurantId in RESTAURANTS
         //-- evict cityId of CITIES
         mockMvc.perform(post(API_RESTAURANTS_URL)
-                .contentType((MediaType.APPLICATION_JSON))
-                .content(objectMapper.writeValueAsString(createRestaurantDto)))
+                        .contentType((MediaType.APPLICATION_JSON))
+                        .content(objectMapper.writeValueAsString(createRestaurantRequest)))
                 .andExpect(status().isCreated());
 
         //-- restaurantId already cached in RESTAURANTS
@@ -106,18 +108,18 @@ class RestaurantControllerTest {
         //-- cityId already cached in CITIES
         mockMvc.perform(get(API_CITIES_CITY_ID_URL, city.getId())).andExpect(status().isOk());
 
-        verify(restaurantService, times(0)).validateAndGetRestaurant(restaurant.getId());
+        verify(restaurantService, never()).validateAndGetRestaurant(restaurant.getId());
         verify(cityService, times(3)).validateAndGetCity(city.getId());
     }
 
     @Test
     void testUpdateRestaurantCaching() throws Exception {
         Restaurant restaurant = getDefaultRestaurant();
-        UpdateRestaurantDto updateRestaurantDto = getDefaultUpdateRestaurantDto();
+        UpdateRestaurantRequest updateRestaurantRequest = new UpdateRestaurantRequest(city.getId(), "Happy Burger");
 
-        given(restaurantService.validateAndGetRestaurant(restaurant.getId())).willReturn(restaurant);
-        given(restaurantService.saveRestaurant(any(Restaurant.class))).willReturn(restaurant);
-        given(cityService.validateAndGetCity(city.getId())).willReturn(city);
+        when(restaurantService.validateAndGetRestaurant(any(UUID.class))).thenReturn(restaurant);
+        when(restaurantService.saveRestaurant(any(Restaurant.class))).thenReturn(restaurant);
+        when(cityService.validateAndGetCity(any(UUID.class))).thenReturn(city);
 
         //-- cityId cached in CITIES
         mockMvc.perform(get(API_CITIES_CITY_ID_URL, city.getId())).andExpect(status().isOk());
@@ -125,8 +127,8 @@ class RestaurantControllerTest {
         //-- restaurantId updated in RESTAURANTS
         //-- evict cityId of CITIES
         mockMvc.perform(put(API_RESTAURANTS_RESTAURANT_ID_URL, restaurant.getId())
-                .contentType((MediaType.APPLICATION_JSON))
-                .content(objectMapper.writeValueAsString(updateRestaurantDto)))
+                        .contentType((MediaType.APPLICATION_JSON))
+                        .content(objectMapper.writeValueAsString(updateRestaurantRequest)))
                 .andExpect(status().isOk());
 
         //-- restaurantId already cached in RESTAURANTS
@@ -138,7 +140,7 @@ class RestaurantControllerTest {
         //-- cityId already cached in CITIES
         mockMvc.perform(get(API_CITIES_CITY_ID_URL, city.getId())).andExpect(status().isOk());
 
-        verify(restaurantService, times(1)).validateAndGetRestaurant(restaurant.getId());
+        verify(restaurantService, atMostOnce()).validateAndGetRestaurant(restaurant.getId());
         verify(cityService, times(3)).validateAndGetCity(city.getId());
     }
 
@@ -146,8 +148,8 @@ class RestaurantControllerTest {
     void testDeleteRestaurantCaching() throws Exception {
         Restaurant restaurant = getDefaultRestaurant();
 
-        given(restaurantService.validateAndGetRestaurant(restaurant.getId())).willReturn(restaurant);
-        given(cityService.validateAndGetCity(city.getId())).willReturn(city);
+        when(restaurantService.validateAndGetRestaurant(any(UUID.class))).thenReturn(restaurant);
+        when(cityService.validateAndGetCity(any(UUID.class))).thenReturn(city);
 
         //-- cityId cached in CITIES
         mockMvc.perform(get(API_CITIES_CITY_ID_URL, city.getId())).andExpect(status().isOk());
@@ -183,20 +185,6 @@ class RestaurantControllerTest {
         return restaurant;
     }
 
-    private CreateRestaurantDto getDefaultCreateRestaurantDto() {
-        CreateRestaurantDto createRestaurantDto = new CreateRestaurantDto();
-        createRestaurantDto.setCityId(city.getId());
-        createRestaurantDto.setName("Happy Pizza");
-        return createRestaurantDto;
-    }
-
-    private UpdateRestaurantDto getDefaultUpdateRestaurantDto() {
-        UpdateRestaurantDto updateRestaurantDto = new UpdateRestaurantDto();
-        updateRestaurantDto.setCityId(city.getId());
-        updateRestaurantDto.setName("Happy Burger");
-        return updateRestaurantDto;
-    }
-
     private static City getDefaultCity() {
         City city = new City();
         city.setId(UUID.fromString("c0b8602c-225e-4995-8724-035c504f8c84"));
@@ -207,5 +195,4 @@ class RestaurantControllerTest {
     private static final String API_CITIES_CITY_ID_URL = "/api/cities/{cityId}";
     private static final String API_RESTAURANTS_URL = "/api/restaurants";
     private static final String API_RESTAURANTS_RESTAURANT_ID_URL = "/api/restaurants/{restaurantId}";
-
 }

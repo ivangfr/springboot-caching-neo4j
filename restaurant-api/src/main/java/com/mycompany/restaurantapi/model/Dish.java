@@ -17,7 +17,5 @@ public class Dish {
     private UUID id;
 
     private String name;
-
     private BigDecimal price;
-
 }

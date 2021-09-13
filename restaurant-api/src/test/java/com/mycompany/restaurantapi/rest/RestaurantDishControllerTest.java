@@ -6,8 +6,8 @@ import com.mycompany.restaurantapi.mapper.RestaurantMapperImpl;
 import com.mycompany.restaurantapi.model.City;
 import com.mycompany.restaurantapi.model.Dish;
 import com.mycompany.restaurantapi.model.Restaurant;
-import com.mycompany.restaurantapi.rest.dto.CreateDishDto;
-import com.mycompany.restaurantapi.rest.dto.UpdateDishDto;
+import com.mycompany.restaurantapi.rest.dto.CreateDishRequest;
+import com.mycompany.restaurantapi.rest.dto.UpdateDishRequest;
 import com.mycompany.restaurantapi.service.CityService;
 import com.mycompany.restaurantapi.service.DishService;
 import com.mycompany.restaurantapi.service.RestaurantService;
@@ -29,16 +29,17 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisabledIf(expression = "#{environment.acceptsProfiles('redis')}", loadContext = true)
+@DisabledIf("#{environment.acceptsProfiles('redis')}")
 @AutoConfigureDataNeo4j /* The @AutoConfigureDataNeo4j annotation is used instead of @DataNeo4jTest because both
                            @DataNeo4jTest and @WebMvcTest set @BootstrapWith annotation and having two @BootstrapWith
                            annotations in a test class is not supported. */
@@ -77,8 +78,8 @@ class RestaurantDishControllerTest {
         Dish dish = getDefaultDish();
         restaurant.getDishes().add(dish);
 
-        given(restaurantService.validateAndGetRestaurant(restaurant.getId())).willReturn(restaurant);
-        given(restaurantService.validateAndGetDish(restaurant, dish.getId())).willReturn(dish);
+        when(restaurantService.validateAndGetRestaurant(any(UUID.class))).thenReturn(restaurant);
+        when(restaurantService.validateAndGetDish(any(Restaurant.class), any(UUID.class))).thenReturn(dish);
 
         //-- {restaurantId,dishId} cached in DISHES
         mockMvc.perform(get(API_RESTAURANTS_RESTAURANT_ID_DISHES_DISH_ID_URL, restaurant.getId(), dish.getId()))
@@ -88,7 +89,7 @@ class RestaurantDishControllerTest {
         mockMvc.perform(get(API_RESTAURANTS_RESTAURANT_ID_DISHES_DISH_ID_URL, restaurant.getId(), dish.getId()))
                 .andExpect(status().isOk());
 
-        verify(restaurantService, times(1)).validateAndGetRestaurant(restaurant.getId());
+        verify(restaurantService, atMostOnce()).validateAndGetRestaurant(restaurant.getId());
     }
 
     @Test
@@ -96,7 +97,7 @@ class RestaurantDishControllerTest {
         Dish dish = getDefaultDish();
         restaurant.getDishes().add(dish);
 
-        given(restaurantService.validateAndGetRestaurant(restaurant.getId())).willReturn(restaurant);
+        when(restaurantService.validateAndGetRestaurant(any(UUID.class))).thenReturn(restaurant);
 
         //-- restaurantId cached in DISHES
         mockMvc.perform(get(API_RESTAURANTS_RESTAURANT_ID_DISHES_URL, restaurant.getId())).andExpect(status().isOk());
@@ -104,18 +105,18 @@ class RestaurantDishControllerTest {
         //-- restaurantId already cached in DISHES
         mockMvc.perform(get(API_RESTAURANTS_RESTAURANT_ID_DISHES_URL, restaurant.getId())).andExpect(status().isOk());
 
-        verify(restaurantService, times(1)).validateAndGetRestaurant(restaurant.getId());
+        verify(restaurantService, atMostOnce()).validateAndGetRestaurant(restaurant.getId());
     }
 
     @Test
     void testCreateRestaurantDish() throws Exception {
         Dish dish = getDefaultDish();
         restaurant.getDishes().add(dish);
-        CreateDishDto createDishDto = getDefaultCreateDishDto();
+        CreateDishRequest createDishRequest = new CreateDishRequest("Pizza Salami", BigDecimal.valueOf(7.5));
 
-        given(restaurantService.validateAndGetRestaurant(restaurant.getId())).willReturn(restaurant);
-        given(dishService.saveDish(any(Dish.class))).willReturn(dish);
-        given(restaurantService.saveRestaurant(any(Restaurant.class))).willReturn(restaurant);
+        when(restaurantService.validateAndGetRestaurant(restaurant.getId())).thenReturn(restaurant);
+        when(dishService.saveDish(any(Dish.class))).thenReturn(dish);
+        when(restaurantService.saveRestaurant(any(Restaurant.class))).thenReturn(restaurant);
 
         //-- restaurantId cached in DISHES
         mockMvc.perform(get(API_RESTAURANTS_RESTAURANT_ID_DISHES_URL, restaurant.getId())).andExpect(status().isOk());
@@ -127,8 +128,8 @@ class RestaurantDishControllerTest {
         //-- evict restaurantId of DISHES
         //-- evict restaurantId of RESTAURANTS
         mockMvc.perform(post(API_RESTAURANTS_RESTAURANT_ID_DISHES_URL, restaurant.getId())
-                .contentType((MediaType.APPLICATION_JSON))
-                .content(objectMapper.writeValueAsString(createDishDto)))
+                        .contentType((MediaType.APPLICATION_JSON))
+                        .content(objectMapper.writeValueAsString(createDishRequest)))
                 .andExpect(status().isCreated());
 
         //-- {restaurantId,dishId} already cached in DISHES
@@ -154,12 +155,12 @@ class RestaurantDishControllerTest {
     void testUpdateRestaurantDish() throws Exception {
         Dish dish = getDefaultDish();
         restaurant.getDishes().add(dish);
-        UpdateDishDto updateDishDto = getDefaultUpdateDishDto();
+        UpdateDishRequest updateDishRequest = new UpdateDishRequest("Pizza Pepperoni", BigDecimal.valueOf(6.5));
 
-        given(dishService.saveDish(any(Dish.class))).willReturn(dish);
-        given(restaurantService.validateAndGetRestaurant(restaurant.getId())).willReturn(restaurant);
-        given(restaurantService.validateAndGetDish(restaurant, dish.getId())).willReturn(dish);
-        given(restaurantService.saveRestaurant(any(Restaurant.class))).willReturn(restaurant);
+        when(dishService.saveDish(any(Dish.class))).thenReturn(dish);
+        when(restaurantService.validateAndGetRestaurant(any(UUID.class))).thenReturn(restaurant);
+        when(restaurantService.validateAndGetDish(any(Restaurant.class), any(UUID.class))).thenReturn(dish);
+        when(restaurantService.saveRestaurant(any(Restaurant.class))).thenReturn(restaurant);
 
         //-- {restaurantId,dishId} cached in DISHES
         mockMvc.perform(get(API_RESTAURANTS_RESTAURANT_ID_DISHES_DISH_ID_URL, restaurant.getId(), dish.getId()))
@@ -175,8 +176,8 @@ class RestaurantDishControllerTest {
         //-- evict restaurantId of DISHES
         //-- evict restaurantId of RESTAURANTS
         mockMvc.perform(put(API_RESTAURANTS_RESTAURANT_ID_DISHES_DISH_ID_URL, restaurant.getId(), dish.getId())
-                .contentType((MediaType.APPLICATION_JSON))
-                .content(objectMapper.writeValueAsString(updateDishDto)))
+                        .contentType((MediaType.APPLICATION_JSON))
+                        .content(objectMapper.writeValueAsString(updateDishRequest)))
                 .andExpect(status().isOk());
 
         //-- {restaurantId,dishId} already cached in DISHES
@@ -203,8 +204,8 @@ class RestaurantDishControllerTest {
         Dish dish = getDefaultDish();
         restaurant.getDishes().add(dish);
 
-        given(restaurantService.validateAndGetRestaurant(restaurant.getId())).willReturn(restaurant);
-        given(restaurantService.validateAndGetDish(restaurant, dish.getId())).willReturn(dish);
+        when(restaurantService.validateAndGetRestaurant(any(UUID.class))).thenReturn(restaurant);
+        when(restaurantService.validateAndGetDish(any(Restaurant.class), any(UUID.class))).thenReturn(dish);
 
         //-- {restaurantId,dishId} cached in DISHES
         mockMvc.perform(get(API_RESTAURANTS_RESTAURANT_ID_DISHES_DISH_ID_URL, restaurant.getId(), dish.getId()))
@@ -249,20 +250,6 @@ class RestaurantDishControllerTest {
         dish.setName("Pizza Salami");
         dish.setPrice(BigDecimal.valueOf(7.5));
         return dish;
-    }
-
-    private CreateDishDto getDefaultCreateDishDto() {
-        CreateDishDto createDishDto = new CreateDishDto();
-        createDishDto.setName("Pizza Salami");
-        createDishDto.setPrice(BigDecimal.valueOf(7.5));
-        return createDishDto;
-    }
-
-    private UpdateDishDto getDefaultUpdateDishDto() {
-        UpdateDishDto updateDishDto = new UpdateDishDto();
-        updateDishDto.setName("Pizza Pepperoni");
-        updateDishDto.setPrice(BigDecimal.valueOf(6.5));
-        return updateDishDto;
     }
 
     private static City getDefaultCity() {

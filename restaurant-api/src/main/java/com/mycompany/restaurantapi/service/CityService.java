@@ -15,5 +15,4 @@ public interface CityService {
     void deleteCity(City city);
 
     City validateAndGetCity(UUID cityId);
-
 }

@@ -3,7 +3,7 @@ package com.mycompany.restaurantapi.rest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mycompany.restaurantapi.mapper.CityMapperImpl;
 import com.mycompany.restaurantapi.model.City;
-import com.mycompany.restaurantapi.rest.dto.CreateCityDto;
+import com.mycompany.restaurantapi.rest.dto.CreateCityRequest;
 import com.mycompany.restaurantapi.service.CityService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,15 +21,17 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.atMostOnce;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisabledIf(expression = "#{environment.acceptsProfiles('redis')}", loadContext = true)
+@DisabledIf("#{environment.acceptsProfiles('redis')}")
 @AutoConfigureDataNeo4j /* The @AutoConfigureDataNeo4j annotation is used instead of @DataNeo4jTest because both
                            @DataNeo4jTest and @WebMvcTest set @BootstrapWith annotation and having two @BootstrapWith
                            annotations in a test class is not supported. */
@@ -51,7 +53,7 @@ class CityControllerTest {
     @Test
     void testGetCityCaching() throws Exception {
         City city = getDefaultCity();
-        given(cityService.validateAndGetCity(city.getId())).willReturn(city);
+        when(cityService.validateAndGetCity(any(UUID.class))).thenReturn(city);
 
         //-- cityId cached in CITIES
         mockMvc.perform(get(API_CITIES_CITY_ID_URL, city.getId())).andExpect(status().isOk());
@@ -59,34 +61,33 @@ class CityControllerTest {
         //-- cityId already cached in CITIES
         mockMvc.perform(get(API_CITIES_CITY_ID_URL, city.getId())).andExpect(status().isOk());
 
-        verify(cityService, times(1)).validateAndGetCity(city.getId());
+        verify(cityService, atMostOnce()).validateAndGetCity(city.getId());
     }
 
     @Test
     void testCreateCityCaching() throws Exception {
         City city = getDefaultCity();
-        CreateCityDto createCityDto = getDefaultCreateCityDto();
+        CreateCityRequest createCityRequest = new CreateCityRequest("Porto");
 
-        given(cityService.validateAndGetCity(city.getId())).willReturn(city);
-        given(cityService.saveCity(any(City.class))).willReturn(city);
+        when(cityService.validateAndGetCity(any(UUID.class))).thenReturn(city);
+        when(cityService.saveCity(any(City.class))).thenReturn(city);
 
         //-- create city and put cityId in CITIES
         mockMvc.perform(post(API_CITIES_URL)
                 .contentType((MediaType.APPLICATION_JSON))
-                .content(objectMapper.writeValueAsString(createCityDto)))
+                .content(objectMapper.writeValueAsString(createCityRequest)))
                 .andExpect(status().isCreated());
 
         //-- cityId already cached in CITIES
         mockMvc.perform(get(API_CITIES_CITY_ID_URL, city.getId())).andExpect(status().isOk());
 
-        verify(cityService, times(0)).validateAndGetCity(city.getId());
+        verify(cityService, never()).validateAndGetCity(city.getId());
     }
 
     @Test
     void testDeleteCityCaching() throws Exception {
         City city = getDefaultCity();
-
-        given(cityService.validateAndGetCity(city.getId())).willReturn(city);
+        when(cityService.validateAndGetCity(any(UUID.class))).thenReturn(city);
 
         //-- cityId cached in CITIES
         mockMvc.perform(get(API_CITIES_CITY_ID_URL, city.getId())).andExpect(status().isOk());
@@ -108,12 +109,6 @@ class CityControllerTest {
         city.setId(UUID.fromString("c0b8602c-225e-4995-8724-035c504f8c84"));
         city.setName("Porto");
         return city;
-    }
-
-    private CreateCityDto getDefaultCreateCityDto() {
-        CreateCityDto createCityDto = new CreateCityDto();
-        createCityDto.setName("Porto");
-        return createCityDto;
     }
 
     private static final String API_CITIES_URL = "/api/cities";

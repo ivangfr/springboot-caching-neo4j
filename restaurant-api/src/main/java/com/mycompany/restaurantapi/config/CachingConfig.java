@@ -10,5 +10,4 @@ public class CachingConfig {
     public static final String CITIES = "CITIES";
     public static final String RESTAURANTS = "RESTAURANTS";
     public static final String DISHES = "DISHES";
-
 }

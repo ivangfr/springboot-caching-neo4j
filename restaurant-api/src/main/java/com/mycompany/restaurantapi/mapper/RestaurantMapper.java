@@ -1,9 +1,9 @@
 package com.mycompany.restaurantapi.mapper;
 
 import com.mycompany.restaurantapi.model.Restaurant;
-import com.mycompany.restaurantapi.rest.dto.CreateRestaurantDto;
-import com.mycompany.restaurantapi.rest.dto.RestaurantDto;
-import com.mycompany.restaurantapi.rest.dto.UpdateRestaurantDto;
+import com.mycompany.restaurantapi.rest.dto.CreateRestaurantRequest;
+import com.mycompany.restaurantapi.rest.dto.RestaurantResponse;
+import com.mycompany.restaurantapi.rest.dto.UpdateRestaurantRequest;
 import com.mycompany.restaurantapi.service.CityService;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
@@ -19,12 +19,12 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 )
 public interface RestaurantMapper {
 
-    RestaurantDto toRestaurantDto(Restaurant restaurant);
+    RestaurantResponse toRestaurantResponse(Restaurant restaurant);
 
     @Mapping(target = "city", source = "cityId")
-    Restaurant toRestaurant(CreateRestaurantDto createRestaurantDto);
+    Restaurant toRestaurant(CreateRestaurantRequest createRestaurantRequest);
 
     @Mapping(target = "city", source = "cityId")
-    void updateRestaurantFromDto(UpdateRestaurantDto updateRestaurantDto, @MappingTarget Restaurant restaurant);
-
+    void updateRestaurantFromRequest(UpdateRestaurantRequest updateRestaurantRequest,
+                                     @MappingTarget Restaurant restaurant);
 }

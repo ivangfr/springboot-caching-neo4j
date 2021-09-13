@@ -2,8 +2,8 @@ package com.mycompany.restaurantapi.rest;
 
 import com.mycompany.restaurantapi.mapper.CityMapper;
 import com.mycompany.restaurantapi.model.City;
-import com.mycompany.restaurantapi.rest.dto.CityDto;
-import com.mycompany.restaurantapi.rest.dto.CreateCityDto;
+import com.mycompany.restaurantapi.rest.dto.CityResponse;
+import com.mycompany.restaurantapi.rest.dto.CreateCityRequest;
 import com.mycompany.restaurantapi.service.CityService;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.api.annotations.ParameterObject;
@@ -39,9 +39,9 @@ public class CityController {
 
     @Cacheable(key = "#cityId")
     @GetMapping("/{cityId}")
-    public CityDto getCity(@PathVariable UUID cityId) {
+    public CityResponse getCity(@PathVariable UUID cityId) {
         City city = cityService.validateAndGetCity(cityId);
-        return cityMapper.toCityDto(city);
+        return cityMapper.toCityResponse(city);
     }
 
     @GetMapping
@@ -52,10 +52,10 @@ public class CityController {
     @CachePut(key = "#result.id")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public CityDto createCity(@Valid @RequestBody CreateCityDto createCityDto) {
-        City city = cityMapper.toCity(createCityDto);
+    public CityResponse createCity(@Valid @RequestBody CreateCityRequest createCityRequest) {
+        City city = cityMapper.toCity(createCityRequest);
         city = cityService.saveCity(city);
-        return cityMapper.toCityDto(city);
+        return cityMapper.toCityResponse(city);
     }
 
     @CacheEvict(key = "#cityId")
@@ -64,5 +64,4 @@ public class CityController {
         City city = cityService.validateAndGetCity(cityId);
         cityService.deleteCity(city);
     }
-
 }

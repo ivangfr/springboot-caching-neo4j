@@ -3,9 +3,9 @@ package com.mycompany.restaurantapi.rest;
 import com.mycompany.restaurantapi.mapper.RestaurantMapper;
 import com.mycompany.restaurantapi.model.City;
 import com.mycompany.restaurantapi.model.Restaurant;
-import com.mycompany.restaurantapi.rest.dto.CreateRestaurantDto;
-import com.mycompany.restaurantapi.rest.dto.RestaurantDto;
-import com.mycompany.restaurantapi.rest.dto.UpdateRestaurantDto;
+import com.mycompany.restaurantapi.rest.dto.CreateRestaurantRequest;
+import com.mycompany.restaurantapi.rest.dto.RestaurantResponse;
+import com.mycompany.restaurantapi.rest.dto.UpdateRestaurantRequest;
 import com.mycompany.restaurantapi.service.CityService;
 import com.mycompany.restaurantapi.service.RestaurantService;
 import lombok.RequiredArgsConstructor;
@@ -44,9 +44,9 @@ public class RestaurantController {
 
     @Cacheable(cacheNames = RESTAURANTS, key = "#restaurantId")
     @GetMapping("/{restaurantId}")
-    public RestaurantDto getRestaurant(@PathVariable UUID restaurantId) {
+    public RestaurantResponse getRestaurant(@PathVariable UUID restaurantId) {
         Restaurant restaurant = restaurantService.validateAndGetRestaurant(restaurantId);
-        return restaurantMapper.toRestaurantDto(restaurant);
+        return restaurantMapper.toRestaurantResponse(restaurant);
     }
 
     @GetMapping
@@ -60,15 +60,15 @@ public class RestaurantController {
     )
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public RestaurantDto createRestaurant(@Valid @RequestBody CreateRestaurantDto createRestaurantDto) {
-        Restaurant restaurant = restaurantMapper.toRestaurant(createRestaurantDto);
+    public RestaurantResponse createRestaurant(@Valid @RequestBody CreateRestaurantRequest createRestaurantRequest) {
+        Restaurant restaurant = restaurantMapper.toRestaurant(createRestaurantRequest);
         restaurant = restaurantService.saveRestaurant(restaurant);
 
         City city = restaurant.getCity();
         city.getRestaurants().add(restaurant);
         cityService.saveCity(city);
 
-        return restaurantMapper.toRestaurantDto(restaurant);
+        return restaurantMapper.toRestaurantResponse(restaurant);
     }
 
     @Caching(
@@ -76,17 +76,18 @@ public class RestaurantController {
             evict = @CacheEvict(cacheNames = CITIES, key = "#result.city.id")
     )
     @PutMapping("/{restaurantId}")
-    public RestaurantDto updateRestaurant(@PathVariable UUID restaurantId, @Valid @RequestBody UpdateRestaurantDto updateRestaurantDto) {
+    public RestaurantResponse updateRestaurant(@PathVariable UUID restaurantId,
+                                               @Valid @RequestBody UpdateRestaurantRequest updateRestaurantRequest) {
         Restaurant restaurant = restaurantService.validateAndGetRestaurant(restaurantId);
 
-        boolean handleCitySwap = updateRestaurantDto.getCityId() != null && !restaurant.getCity().getId().equals(updateRestaurantDto.getCityId());
+        boolean handleCitySwap = updateRestaurantRequest.getCityId() != null && !restaurant.getCity().getId().equals(updateRestaurantRequest.getCityId());
         if (handleCitySwap) {
             City oldCity = restaurant.getCity();
             oldCity.getRestaurants().remove(restaurant);
             cityService.saveCity(oldCity);
         }
 
-        restaurantMapper.updateRestaurantFromDto(updateRestaurantDto, restaurant);
+        restaurantMapper.updateRestaurantFromRequest(updateRestaurantRequest, restaurant);
         restaurant = restaurantService.saveRestaurant(restaurant);
 
         if (handleCitySwap) {
@@ -95,7 +96,7 @@ public class RestaurantController {
             cityService.saveCity(city);
         }
 
-        return restaurantMapper.toRestaurantDto(restaurant);
+        return restaurantMapper.toRestaurantResponse(restaurant);
     }
 
     @Caching(evict = {
@@ -104,10 +105,9 @@ public class RestaurantController {
             @CacheEvict(cacheNames = CITIES, key = "#result.city.id")
     })
     @DeleteMapping("/{restaurantId}")
-    public RestaurantDto deleteRestaurant(@PathVariable UUID restaurantId) {
+    public RestaurantResponse deleteRestaurant(@PathVariable UUID restaurantId) {
         Restaurant restaurant = restaurantService.validateAndGetRestaurant(restaurantId);
         restaurantService.deleteRestaurant(restaurant);
-        return restaurantMapper.toRestaurantDto(restaurant);
+        return restaurantMapper.toRestaurantResponse(restaurant);
     }
-
 }

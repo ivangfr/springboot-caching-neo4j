@@ -35,5 +35,4 @@ public class CityServiceImpl implements CityService {
     public City validateAndGetCity(UUID cityId) {
         return cityRepository.findById(cityId).orElseThrow(() -> new CityNotFoundException(cityId));
     }
-
 }

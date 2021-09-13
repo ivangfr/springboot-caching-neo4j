@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Data
-public class RestaurantDto implements Serializable {
+public class RestaurantResponse implements Serializable {
 
     private UUID id;
     private String name;
@@ -25,5 +25,4 @@ public class RestaurantDto implements Serializable {
         private UUID id;
         private String name;
     }
-
 }

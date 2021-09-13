@@ -20,5 +20,4 @@ public class DishServiceImpl implements DishService {
     public void deleteDish(Dish dish) {
         dishRepository.delete(dish);
     }
-
 }

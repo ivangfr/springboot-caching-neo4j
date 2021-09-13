@@ -27,5 +27,4 @@ public class City {
 
     @Relationship(type = "LOCATED_IN", direction = Direction.INCOMING)
     private Set<Restaurant> restaurants = new LinkedHashSet<>();
-
 }

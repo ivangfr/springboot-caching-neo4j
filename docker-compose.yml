@@ -12,13 +12,14 @@ services:
       - NEO4J_AUTH=none
     healthcheck:
       test: "wget --quiet --tries=1 --spider http://localhost:7474 || exit 1"
-      start_period: 10s
 
   redis:
     image: redis:6.2.5
     container_name: redis
     ports:
       - "6379:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli","ping" ]
 
   redis-commander:
     container_name: redis-commander

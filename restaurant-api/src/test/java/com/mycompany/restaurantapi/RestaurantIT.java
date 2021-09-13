@@ -4,9 +4,9 @@ import com.mycompany.restaurantapi.model.City;
 import com.mycompany.restaurantapi.model.Restaurant;
 import com.mycompany.restaurantapi.repository.CityRepository;
 import com.mycompany.restaurantapi.repository.RestaurantRepository;
-import com.mycompany.restaurantapi.rest.dto.CreateRestaurantDto;
-import com.mycompany.restaurantapi.rest.dto.RestaurantDto;
-import com.mycompany.restaurantapi.rest.dto.UpdateRestaurantDto;
+import com.mycompany.restaurantapi.rest.dto.CreateRestaurantRequest;
+import com.mycompany.restaurantapi.rest.dto.RestaurantResponse;
+import com.mycompany.restaurantapi.rest.dto.UpdateRestaurantRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +22,7 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
@@ -54,82 +51,85 @@ class RestaurantIT extends AbstractTestcontainers {
         Restaurant restaurant = saveDefaultRestaurant();
 
         String url = String.format(API_RESTAURANTS_RESTAURANT_ID_URL, restaurant.getId());
-        ResponseEntity<RestaurantDto> responseEntity = testRestTemplate.getForEntity(url, RestaurantDto.class);
+        ResponseEntity<RestaurantResponse> responseEntity = testRestTemplate.getForEntity(url, RestaurantResponse.class);
 
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertNotNull(responseEntity.getBody());
-        assertEquals(restaurant.getId(), responseEntity.getBody().getId());
-        assertEquals(restaurant.getName(), responseEntity.getBody().getName());
-        assertEquals(restaurant.getCity().getId(), responseEntity.getBody().getCity().getId());
-        assertEquals(restaurant.getCity().getName(), responseEntity.getBody().getCity().getName());
-        assertEquals(0, responseEntity.getBody().getDishes().size());
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getBody()).isNotNull();
+        assertThat(responseEntity.getBody().getId()).isEqualTo(restaurant.getId());
+        assertThat(responseEntity.getBody().getName()).isEqualTo(restaurant.getName());
+        assertThat(responseEntity.getBody().getCity().getId()).isEqualTo(restaurant.getCity().getId());
+        assertThat(responseEntity.getBody().getCity().getName()).isEqualTo(restaurant.getCity().getName());
+        assertThat(responseEntity.getBody().getDishes().size()).isEqualTo(0);
     }
 
     @Test
     void testGetRestaurants() {
         ParameterizedTypeReference<RestResponsePageImpl<Restaurant>> responseType = new ParameterizedTypeReference<>() {
         };
-        ResponseEntity<RestResponsePageImpl<Restaurant>> responseEntity = testRestTemplate.exchange(API_RESTAURANTS_URL, HttpMethod.GET, null, responseType);
+        ResponseEntity<RestResponsePageImpl<Restaurant>> responseEntity = testRestTemplate.exchange(
+                API_RESTAURANTS_URL, HttpMethod.GET, null, responseType);
 
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertNotNull(responseEntity.getBody());
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getBody()).isNotNull();
 
         // @DirtiesContext is not working
         // --
-        // assertEquals(0, responseEntity.getBody().getTotalElements());
-        // assertEquals(0, responseEntity.getBody().getContent().size());
+        // assertThat(responseEntity.getBody().getTotalElements()).isEqualTo(0);
+        // assertThat(responseEntity.getBody().getContent().size()).isEqualTo(0);
     }
 
     @Test
     void testCreateRestaurant() {
-        CreateRestaurantDto createRestaurantDto = getDefaultCreateRestaurantDto();
+        CreateRestaurantRequest createRestaurantRequest = new CreateRestaurantRequest(city.getId(), "Happy Pizza");
 
-        ResponseEntity<RestaurantDto> responseEntity = testRestTemplate.postForEntity(API_RESTAURANTS_URL, createRestaurantDto, RestaurantDto.class);
+        ResponseEntity<RestaurantResponse> responseEntity = testRestTemplate.postForEntity(
+                API_RESTAURANTS_URL, createRestaurantRequest, RestaurantResponse.class);
 
-        assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
-        assertNotNull(responseEntity.getBody());
-        assertNotNull(responseEntity.getBody().getId());
-        assertEquals(createRestaurantDto.getName(), responseEntity.getBody().getName());
-        assertEquals(createRestaurantDto.getCityId(), responseEntity.getBody().getCity().getId());
-        assertEquals(0, responseEntity.getBody().getDishes().size());
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(responseEntity.getBody()).isNotNull();
+        assertThat(responseEntity.getBody().getId()).isNotNull();
+        assertThat(responseEntity.getBody().getName()).isEqualTo(createRestaurantRequest.getName());
+        assertThat(responseEntity.getBody().getCity().getId()).isEqualTo(createRestaurantRequest.getCityId());
+        assertThat(responseEntity.getBody().getDishes().size()).isEqualTo(0);
 
         Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(responseEntity.getBody().getId());
-        assertTrue(optionalRestaurant.isPresent());
-        optionalRestaurant.ifPresent(r -> assertNotNull(r.getCity()));
+        assertThat(optionalRestaurant.isPresent()).isTrue();
+        optionalRestaurant.ifPresent(r -> assertThat(r.getCity()).isNotNull());
 
         Optional<City> optionalCity = cityRepository.findById(city.getId());
-        assertTrue(optionalCity.isPresent());
-        optionalCity.ifPresent(c -> assertEquals(1, c.getRestaurants().size()));
+        assertThat(optionalCity.isPresent()).isTrue();
+        optionalCity.ifPresent(c -> assertThat(c.getRestaurants().size()).isEqualTo(1));
     }
 
     @Test
     void testUpdateRestaurant() {
         Restaurant restaurant = saveDefaultRestaurant();
 
-        UpdateRestaurantDto updateRestaurantDto = getDefaultUpdateRestaurantDto();
+        UpdateRestaurantRequest updateRestaurantRequest = new UpdateRestaurantRequest(city2.getId(), "Happy Burger");
 
         String url = String.format(API_RESTAURANTS_RESTAURANT_ID_URL, restaurant.getId());
-        HttpEntity<UpdateRestaurantDto> requestUpdate = new HttpEntity<>(updateRestaurantDto);
-        ResponseEntity<RestaurantDto> responseEntity = testRestTemplate.exchange(url, HttpMethod.PUT, requestUpdate, RestaurantDto.class);
+        HttpEntity<UpdateRestaurantRequest> requestUpdate = new HttpEntity<>(updateRestaurantRequest);
+        ResponseEntity<RestaurantResponse> responseEntity = testRestTemplate.exchange(
+                url, HttpMethod.PUT, requestUpdate, RestaurantResponse.class);
 
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertNotNull(responseEntity.getBody());
-        assertEquals(restaurant.getId(), responseEntity.getBody().getId());
-        assertEquals(updateRestaurantDto.getName(), responseEntity.getBody().getName());
-        assertEquals(updateRestaurantDto.getCityId(), responseEntity.getBody().getCity().getId());
-        assertEquals(0, responseEntity.getBody().getDishes().size());
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getBody()).isNotNull();
+        assertThat(responseEntity.getBody().getId()).isEqualTo(restaurant.getId());
+        assertThat(responseEntity.getBody().getName()).isEqualTo(updateRestaurantRequest.getName());
+        assertThat(responseEntity.getBody().getCity().getId()).isEqualTo(updateRestaurantRequest.getCityId());
+        assertThat(responseEntity.getBody().getDishes().size()).isEqualTo(0);
 
         Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(restaurant.getId());
-        assertTrue(optionalRestaurant.isPresent());
-        optionalRestaurant.ifPresent(r -> assertNotNull(r.getCity()));
+        assertThat(optionalRestaurant.isPresent()).isTrue();
+        optionalRestaurant.ifPresent(r -> assertThat(r.getCity()).isNotNull());
 
         Optional<City> optionalCity = cityRepository.findById(city.getId());
-        assertTrue(optionalCity.isPresent());
-        optionalCity.ifPresent(c -> assertEquals(0, c.getRestaurants().size()));
+        assertThat(optionalCity.isPresent()).isTrue();
+        optionalCity.ifPresent(c -> assertThat(c.getRestaurants().size()).isEqualTo(0));
 
         Optional<City> optionalCity2 = cityRepository.findById(city2.getId());
-        assertTrue(optionalCity2.isPresent());
-        optionalCity2.ifPresent(c -> assertEquals(1, c.getRestaurants().size()));
+        assertThat(optionalCity2.isPresent()).isTrue();
+        optionalCity2.ifPresent(c -> assertThat(c.getRestaurants().size()).isEqualTo(1));
     }
 
     @Test
@@ -137,36 +137,23 @@ class RestaurantIT extends AbstractTestcontainers {
         Restaurant restaurant = saveDefaultRestaurant();
 
         String url = String.format(API_RESTAURANTS_RESTAURANT_ID_URL, restaurant.getId());
-        ResponseEntity<RestaurantDto> responseEntity = testRestTemplate.exchange(url, HttpMethod.DELETE, null, RestaurantDto.class);
+        ResponseEntity<RestaurantResponse> responseEntity = testRestTemplate.exchange(
+                url, HttpMethod.DELETE, null, RestaurantResponse.class);
 
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertNotNull(responseEntity.getBody());
-        assertEquals(restaurant.getId(), responseEntity.getBody().getId());
-        assertEquals(restaurant.getName(), responseEntity.getBody().getName());
-        assertEquals(restaurant.getCity().getId(), responseEntity.getBody().getCity().getId());
-        assertEquals(restaurant.getCity().getName(), responseEntity.getBody().getCity().getName());
-        assertEquals(0, responseEntity.getBody().getDishes().size());
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getBody()).isNotNull();
+        assertThat(responseEntity.getBody().getId()).isEqualTo(restaurant.getId());
+        assertThat(responseEntity.getBody().getName()).isEqualTo(restaurant.getName());
+        assertThat(responseEntity.getBody().getCity().getId()).isEqualTo(restaurant.getCity().getId());
+        assertThat(responseEntity.getBody().getCity().getName()).isEqualTo(restaurant.getCity().getName());
+        assertThat(responseEntity.getBody().getDishes().size()).isEqualTo(0);
 
         Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(restaurant.getId());
-        assertFalse(optionalRestaurant.isPresent());
+        assertThat(optionalRestaurant.isPresent()).isFalse();
 
         Optional<City> optionalCity = cityRepository.findById(city.getId());
-        assertTrue(optionalCity.isPresent());
-        optionalCity.ifPresent(c -> assertEquals(0, c.getRestaurants().size()));
-    }
-
-    private CreateRestaurantDto getDefaultCreateRestaurantDto() {
-        CreateRestaurantDto createRestaurantDto = new CreateRestaurantDto();
-        createRestaurantDto.setName("Happy Pizza");
-        createRestaurantDto.setCityId(city.getId());
-        return createRestaurantDto;
-    }
-
-    private UpdateRestaurantDto getDefaultUpdateRestaurantDto() {
-        UpdateRestaurantDto updateRestaurantDto = new UpdateRestaurantDto();
-        updateRestaurantDto.setName("Happy Burger");
-        updateRestaurantDto.setCityId(city2.getId());
-        return updateRestaurantDto;
+        assertThat(optionalCity.isPresent()).isTrue();
+        optionalCity.ifPresent(c -> assertThat(c.getRestaurants().size()).isEqualTo(0));
     }
 
     private City saveDefaultCity(String name) {
@@ -188,5 +175,4 @@ class RestaurantIT extends AbstractTestcontainers {
 
     private static final String API_RESTAURANTS_URL = "/api/restaurants";
     private static final String API_RESTAURANTS_RESTAURANT_ID_URL = "/api/restaurants/%s";
-
 }

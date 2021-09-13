@@ -9,6 +9,5 @@ import java.util.List;
 @Data
 public class RestaurantMenu implements Serializable {
 
-    private List<DishDto> dishes = new ArrayList<>();
-
+    private List<DishResponse> dishes = new ArrayList<>();
 }

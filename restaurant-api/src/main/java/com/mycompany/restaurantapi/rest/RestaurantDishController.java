@@ -4,10 +4,10 @@ import com.mycompany.restaurantapi.exception.DishNotFoundException;
 import com.mycompany.restaurantapi.mapper.DishMapper;
 import com.mycompany.restaurantapi.model.Dish;
 import com.mycompany.restaurantapi.model.Restaurant;
-import com.mycompany.restaurantapi.rest.dto.CreateDishDto;
-import com.mycompany.restaurantapi.rest.dto.DishDto;
+import com.mycompany.restaurantapi.rest.dto.CreateDishRequest;
+import com.mycompany.restaurantapi.rest.dto.DishResponse;
 import com.mycompany.restaurantapi.rest.dto.RestaurantMenu;
-import com.mycompany.restaurantapi.rest.dto.UpdateDishDto;
+import com.mycompany.restaurantapi.rest.dto.UpdateDishRequest;
 import com.mycompany.restaurantapi.service.DishService;
 import com.mycompany.restaurantapi.service.RestaurantService;
 import lombok.RequiredArgsConstructor;
@@ -43,10 +43,10 @@ public class RestaurantDishController {
 
     @Cacheable(cacheNames = DISHES, key = "{#restaurantId,#dishId}")
     @GetMapping("/{dishId}")
-    public DishDto getRestaurantDish(@PathVariable UUID restaurantId, @PathVariable UUID dishId) {
+    public DishResponse getRestaurantDish(@PathVariable UUID restaurantId, @PathVariable UUID dishId) {
         Restaurant restaurant = restaurantService.validateAndGetRestaurant(restaurantId);
         Dish dish = restaurantService.validateAndGetDish(restaurant, dishId);
-        return dishMapper.toDishDto(dish);
+        return dishMapper.toDishResponse(dish);
     }
 
     @Cacheable(cacheNames = DISHES, key = "#restaurantId")
@@ -55,7 +55,7 @@ public class RestaurantDishController {
         Restaurant restaurant = restaurantService.validateAndGetRestaurant(restaurantId);
 
         RestaurantMenu restaurantMenu = new RestaurantMenu();
-        restaurant.getDishes().forEach(dish -> restaurantMenu.getDishes().add(dishMapper.toDishDto(dish)));
+        restaurant.getDishes().forEach(dish -> restaurantMenu.getDishes().add(dishMapper.toDishResponse(dish)));
         return restaurantMenu;
     }
 
@@ -68,14 +68,15 @@ public class RestaurantDishController {
     )
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public DishDto createRestaurantDish(@PathVariable UUID restaurantId, @Valid @RequestBody CreateDishDto createDishDto) {
+    public DishResponse createRestaurantDish(@PathVariable UUID restaurantId,
+                                             @Valid @RequestBody CreateDishRequest createDishRequest) {
         Restaurant restaurant = restaurantService.validateAndGetRestaurant(restaurantId);
-        Dish dish = dishMapper.toDish(createDishDto);
+        Dish dish = dishMapper.toDish(createDishRequest);
         dish = dishService.saveDish(dish);
 
         restaurant.getDishes().add(dish);
         restaurantService.saveRestaurant(restaurant);
-        return dishMapper.toDishDto(dish);
+        return dishMapper.toDishResponse(dish);
     }
 
     @Caching(
@@ -86,14 +87,14 @@ public class RestaurantDishController {
             }
     )
     @PutMapping("/{dishId}")
-    public DishDto updateRestaurantDish(@PathVariable UUID restaurantId, @PathVariable UUID dishId,
-                                        @Valid @RequestBody UpdateDishDto updateDishDto) {
+    public DishResponse updateRestaurantDish(@PathVariable UUID restaurantId, @PathVariable UUID dishId,
+                                             @Valid @RequestBody UpdateDishRequest updateDishRequest) {
         Restaurant restaurant = restaurantService.validateAndGetRestaurant(restaurantId);
         Dish dish = restaurantService.validateAndGetDish(restaurant, dishId);
 
-        dishMapper.updateDishFromDto(updateDishDto, dish);
+        dishMapper.updateDishFromRequest(updateDishRequest, dish);
         dish = dishService.saveDish(dish);
-        return dishMapper.toDishDto(dish);
+        return dishMapper.toDishResponse(dish);
     }
 
     @Caching(evict = {
@@ -102,12 +103,11 @@ public class RestaurantDishController {
             @CacheEvict(cacheNames = RESTAURANTS, key = "#restaurantId")
     })
     @DeleteMapping("/{dishId}")
-    public DishDto deleteRestaurantDish(@PathVariable UUID restaurantId, @PathVariable UUID dishId) {
+    public DishResponse deleteRestaurantDish(@PathVariable UUID restaurantId, @PathVariable UUID dishId) {
         Restaurant restaurant = restaurantService.validateAndGetRestaurant(restaurantId);
         Dish dish = restaurant.getDishes().stream()
                 .filter(m -> m.getId().equals(dishId)).findFirst().orElseThrow(() -> new DishNotFoundException(dishId));
         dishService.deleteDish(dish);
-        return dishMapper.toDishDto(dish);
+        return dishMapper.toDishResponse(dish);
     }
-
 }

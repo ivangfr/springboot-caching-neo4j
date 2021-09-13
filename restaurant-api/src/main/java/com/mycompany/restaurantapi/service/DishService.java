@@ -7,5 +7,4 @@ public interface DishService {
     Dish saveDish(Dish dish);
 
     void deleteDish(Dish dish);
-
 }

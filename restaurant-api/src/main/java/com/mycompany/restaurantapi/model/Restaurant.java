@@ -32,5 +32,4 @@ public class Restaurant {
     @JsonIgnore
     @Relationship(type = "HAS")
     private Set<Dish> dishes = new LinkedHashSet<>();
-
 }

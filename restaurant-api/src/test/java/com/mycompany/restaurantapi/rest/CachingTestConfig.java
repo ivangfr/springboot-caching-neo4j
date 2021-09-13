@@ -37,5 +37,4 @@ public class CachingTestConfig {
                 .expireAfterWrite(5, TimeUnit.MINUTES));
         return cacheManager;
     }
-
 }
