@@ -13,8 +13,8 @@ import java.util.List;
 @Testcontainers
 public abstract class AbstractTestcontainers {
 
-    private static final Neo4jContainer<?> neo4jContainer = new Neo4jContainer<>("neo4j:4.3.3");
-    public static final GenericContainer<?> redisContainer = new GenericContainer<>(DockerImageName.parse("redis:6.2.5"));
+    private static final Neo4jContainer<?> neo4jContainer = new Neo4jContainer<>("neo4j:4.3.7");
+    public static final GenericContainer<?> redisContainer = new GenericContainer<>(DockerImageName.parse("redis:6.2.6"));
 
     @DynamicPropertySource
     private static void dynamicProperties(DynamicPropertyRegistry registry) {

@@ -8,7 +8,7 @@ The goal of this project is to explore how caching works. For it, we are going t
 +
 `Spring Boot` Web Java application that has endpoints to manage restaurants, cities (where the restaurants are located in) and dishes that restaurants have. Data is stored in `Neo4j` and caching handled by `Caffeine` or `Redis`.
 +
-image::images/restaurant-api-swagger.png[]
+image::documentation/restaurant-api-swagger.png[]
 
 == Caching
 
@@ -34,7 +34,7 @@ By the way, we have implemented more advanced caching logic as the one presented
 
 == Prerequisites
 
-* https://www.oracle.com/java/technologies/javase-jdk11-downloads.html[`Java 11+`]
+* https://www.oracle.com/java/technologies/downloads/#java11[`Java 11+`]
 * https://www.docker.com/[`Docker`]
 * https://docs.docker.com/compose/install/[`Docker-Compose`]
 * https://stedolan.github.io/jq[`jq`]
@@ -48,7 +48,7 @@ By the way, we have implemented more advanced caching logic as the one presented
 docker-compose up -d
 ----
 
-* Wait until the status of the Docker containers is `running (healthy)`. You can check it by running
+* Wait for Docker containers to be up and running. To check it, run
 +
 [source]
 ----
@@ -59,7 +59,7 @@ docker-compose ps
 
 * In a terminal, make sure you are inside `springboot-caching-neo4j` root folder
 
-* Start the application by picking one on the following cache providers
+* Start the application by picking one of the following cache providers
 +
 ** `Simple` cache provider
 +
@@ -190,13 +190,13 @@ curl -s http://localhost:8080/actuator/prometheus | grep cacheManager
 +
 `Neo4j` UI can be accessed at http://localhost:7474/browser
 +
-image::images/neo4j-ui.png[]
+image::documentation/neo4j-ui.png[]
 
 * **redis-commander**
 +
 `redis-commander` UI can be accessed at http://localhost:8081
 +
-image::images/redis-commander-ui.png[]
+image::documentation/redis-commander-ui.png[]
 
 == Shutdown
 
@@ -244,23 +244,6 @@ To remove the Docker image created by this project, go to a terminal and run the
 docker rmi ivanfranchin/restaurant-api:1.0.0
 ----
 
-== Using Tracing Agent to generate the missing configuration for native image
-
-IMPORTANT: The environment variable `JAVA_HOME` must be set to a `GraalVM` installation directory (https://www.graalvm.org/docs/getting-started/#install-graalvm[Install GraalVM]), and the `native-image` tool must be installed (https://www.graalvm.org/reference-manual/native-image/#install-native-image[Install Native Image]).
-
-TIP: For more information about `Tracing Agent` see https://docs.spring.io/spring-native/docs/current/reference/htmlsingle/#tracing-agent[Spring Native documentation]
-
-- Run the following steps in a terminal and inside `springboot-caching-neo4j` root folder
-+
-[source]
-----
-./mvnw clean package --projects restaurant-api -DskipTests
-cd restaurant-api
-java -jar -agentlib:native-image-agent=config-merge-dir=src/main/resources/META-INF/native-image target/restaurant-api-1.0.0.jar
-----
-- Once the application is running, exercise it by calling its endpoints using `curl` and `Swagger` so that `Tracing Agent` observes the behavior of the application running on Java HotSpot VM and writes configuration files for reflection, JNI, resource, and proxy usage to automatically configure the native image generator.
-- It should generate `JSON` files in `restaurant-api/src/main/resources/META-INF/native-image` such as: `jni-config.json`, `proxy-config.json`, `reflect-config.json`, `resource-config.json` and `serialization-config.json`.
-
 == TODO
 
 * Add AOP to log whenever the endpoint is called;
@@ -281,9 +264,9 @@ java -jar -agentlib:native-image-agent=config-merge-dir=src/main/resources/META-
 ERROR 1 --- [           main] o.s.boot.SpringApplication               : Application run failed
 
 org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'cacheAutoConfigurationValidator' defined in class path resource [org/springframework/boot/autoconfigure/cache/CacheAutoConfiguration.class]: Invocation of init method failed; nested exception is java.lang.IllegalArgumentException: No cache manager could be auto-configured, check your configuration (caching type is 'REDIS')
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1786) ~[na:na]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:602) ~[na:na]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:524) ~[na:na]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1804) ~[na:na]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:620) ~[na:na]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:542) ~[na:na]
 	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:335) ~[na:na]
 	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234) ~[na:na]
 	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:333) ~[na:na]
@@ -292,16 +275,16 @@ org.springframework.beans.factory.BeanCreationException: Error creating bean wit
 	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:918) ~[na:na]
 	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:583) ~[na:na]
 	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:145) ~[na:na]
-	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:754) ~[com.mycompany.restaurantapi.RestaurantApiApplication:2.5.4]
-	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:434) ~[com.mycompany.restaurantapi.RestaurantApiApplication:2.5.4]
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:338) ~[com.mycompany.restaurantapi.RestaurantApiApplication:2.5.4]
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1343) ~[com.mycompany.restaurantapi.RestaurantApiApplication:2.5.4]
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1332) ~[com.mycompany.restaurantapi.RestaurantApiApplication:2.5.4]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:754) ~[com.mycompany.restaurantapi.RestaurantApiApplication:2.5.6]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:434) ~[com.mycompany.restaurantapi.RestaurantApiApplication:2.5.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:338) ~[com.mycompany.restaurantapi.RestaurantApiApplication:2.5.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1343) ~[com.mycompany.restaurantapi.RestaurantApiApplication:2.5.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1332) ~[com.mycompany.restaurantapi.RestaurantApiApplication:2.5.6]
 	at com.mycompany.restaurantapi.RestaurantApiApplication.main(RestaurantApiApplication.java:21) ~[com.mycompany.restaurantapi.RestaurantApiApplication:na]
 Caused by: java.lang.IllegalArgumentException: No cache manager could be auto-configured, check your configuration (caching type is 'REDIS')
 	at org.springframework.util.Assert.notNull(Assert.java:219) ~[na:na]
-	at org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration$CacheManagerValidator.afterPropertiesSet(CacheAutoConfiguration.java:109) ~[com.mycompany.restaurantapi.RestaurantApiApplication:2.5.4]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1845) ~[na:na]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1782) ~[na:na]
+	at org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration$CacheManagerValidator.afterPropertiesSet(CacheAutoConfiguration.java:109) ~[com.mycompany.restaurantapi.RestaurantApiApplication:2.5.6]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1863) ~[na:na]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1800) ~[na:na]
 	... 16 common frames omitted
 ----
