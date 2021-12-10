@@ -21,7 +21,7 @@
         <repackage.classifier/>
         <spring-native.version>0.10.5</spring-native.version>
         <javax-cache-api.version>1.1.1</javax-cache-api.version>
-        <apache-log4j-core.version>2.14.1</apache-log4j-core.version>
+        <apache-log4j-core.version>2.15.0</apache-log4j-core.version>
         <jib-maven-plugin.version>3.1.4</jib-maven-plugin.version>
         <docker-image.prefix>ivanfranchin</docker-image.prefix>
     </properties>
