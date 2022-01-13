@@ -237,11 +237,11 @@ docker-compose down -v
 
 == Cleanup
 
-To remove the Docker image created by this project, go to a terminal and run the following command
+To remove the Docker image created by this project, go to a terminal and, inside `springboot-caching-neo4j` root folder, run the following script
 
 [source]
 ----
-docker rmi ivanfranchin/restaurant-api:1.0.0
+./remove-docker-images.sh
 ----
 
 == TODO
