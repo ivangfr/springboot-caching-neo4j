@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.6.2</version>
+        <version>2.6.3</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -21,8 +21,8 @@
         <repackage.classifier/>
         <spring-native.version>0.11.1</spring-native.version>
         <javax-cache-api.version>1.1.1</javax-cache-api.version>
-        <apache-log4j-core.version>2.17.0</apache-log4j-core.version>
-        <jib-maven-plugin.version>3.1.4</jib-maven-plugin.version>
+        <apache-log4j-core.version>2.17.1</apache-log4j-core.version>
+        <jib-maven-plugin.version>3.2.0</jib-maven-plugin.version>
         <docker-image.prefix>ivanfranchin</docker-image.prefix>
     </properties>
 
