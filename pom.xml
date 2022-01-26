@@ -19,7 +19,7 @@
     <properties>
         <java.version>11</java.version>
         <repackage.classifier/>
-        <spring-native.version>0.11.1</spring-native.version>
+        <spring-native.version>0.11.2</spring-native.version>
         <javax-cache-api.version>1.1.1</javax-cache-api.version>
         <apache-log4j-core.version>2.17.1</apache-log4j-core.version>
         <jib-maven-plugin.version>3.2.0</jib-maven-plugin.version>

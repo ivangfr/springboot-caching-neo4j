@@ -257,6 +257,18 @@ To remove the Docker image created by this project, go to a terminal and, inside
 
 == Issues
 
-Unable to run `restaurant-api` tests and to build the Docker native image as **Mockito** is still not supported in AOT.
+* Unable to run `restaurant-api` tests as **Mockito** is still not supported in AOT. See `spring-native` issues https://github.com/spring-projects-experimental/spring-native/issues/1343[#1343] and https://github.com/spring-projects-experimental/spring-native/issues/1063[#1063]
 
-See `spring-native` issues [#1343](https://github.com/spring-projects-experimental/spring-native/issues/1343) and [#1063](https://github.com/spring-projects-experimental/spring-native/issues/1063)
+* Unable to build Docker native image. It's throwing the following error
++
+[source]
+----
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR :
+[INFO] -------------------------------------------------------------
+[ERROR] /springboot-caching-neo4j/restaurant-api/target/generated-runtime-sources/spring-aot/src/main/java/org/springframework/cache/annotation/ContextBootstrapInitializer.java:[24,56] cannot find symbol
+  symbol:   method setConfigurers(java.lang.Object)
+  location: variable bean of type org.springframework.cache.jcache.config.ProxyJCacheConfiguration
+[INFO] 1 error
+[INFO] -------------------------------------------------------------
+----
