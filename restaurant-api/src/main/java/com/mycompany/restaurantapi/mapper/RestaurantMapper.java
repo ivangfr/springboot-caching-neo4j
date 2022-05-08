@@ -21,10 +21,13 @@ public interface RestaurantMapper {
 
     RestaurantResponse toRestaurantResponse(Restaurant restaurant);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "dishes", ignore = true)
     @Mapping(target = "city", source = "cityId")
     Restaurant toRestaurant(CreateRestaurantRequest createRestaurantRequest);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "dishes", ignore = true)
     @Mapping(target = "city", source = "cityId")
-    void updateRestaurantFromRequest(UpdateRestaurantRequest updateRestaurantRequest,
-                                     @MappingTarget Restaurant restaurant);
+    void updateRestaurantFromRequest(UpdateRestaurantRequest updateRestaurantRequest, @MappingTarget Restaurant restaurant);
 }
