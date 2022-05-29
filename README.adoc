@@ -125,8 +125,6 @@ In a terminal, make sure you are in `springboot-caching-neo4j` root folder
 
 * Run Docker Container (for instance, using `redis` profile)
 +
-WARNING: Native is not working yet, see <<Issues>>
-+
 [source]
 ----
 docker run --rm --name restaurant-api -p 8080:8080 \
