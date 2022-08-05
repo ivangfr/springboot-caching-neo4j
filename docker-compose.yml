@@ -3,7 +3,7 @@ version: '3.8'
 services:
 
   neo4j:
-    image: neo4j:4.4.7
+    image: neo4j:4.4.8
     container_name: neo4j
     ports:
       - "7474:7474"
@@ -14,7 +14,7 @@ services:
       test: "wget --quiet --tries=1 --spider http://localhost:7474 || exit 1"
 
   redis:
-    image: redis:7.0.0
+    image: redis:7.0.4
     container_name: redis
     ports:
       - "6379:6379"
