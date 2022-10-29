@@ -2,11 +2,10 @@ package com.ivanfranchin.restaurantapi.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ivanfranchin.restaurantapi.mapper.CityMapperImpl;
-import com.ivanfranchin.restaurantapi.service.CityService;
 import com.ivanfranchin.restaurantapi.model.City;
 import com.ivanfranchin.restaurantapi.rest.dto.CreateCityRequest;
+import com.ivanfranchin.restaurantapi.service.CityService;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.neo4j.AutoConfigureDataNeo4j;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -15,7 +14,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.DisabledIf;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.UUID;
@@ -35,7 +33,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureDataNeo4j /* The @AutoConfigureDataNeo4j annotation is used instead of @DataNeo4jTest because both
                            @DataNeo4jTest and @WebMvcTest set @BootstrapWith annotation and having two @BootstrapWith
                            annotations in a test class is not supported. */
-@ExtendWith(SpringExtension.class)
 @WebMvcTest(CityController.class)
 @Import({CityMapperImpl.class, CachingTestConfig.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -74,8 +71,8 @@ class CityControllerTest {
 
         //-- create city and put cityId in CITIES
         mockMvc.perform(post(API_CITIES_URL)
-                .contentType((MediaType.APPLICATION_JSON))
-                .content(objectMapper.writeValueAsString(createCityRequest)))
+                        .contentType((MediaType.APPLICATION_JSON))
+                        .content(objectMapper.writeValueAsString(createCityRequest)))
                 .andExpect(status().isCreated());
 
         //-- cityId already cached in CITIES
