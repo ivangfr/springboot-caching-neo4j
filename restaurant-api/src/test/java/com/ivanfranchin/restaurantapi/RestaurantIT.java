@@ -97,9 +97,9 @@ class RestaurantIT extends AbstractTestcontainers {
     @Test
     void testUpdateRestaurant() {
         City city = saveCity("Porto");
-        City city2 = saveCity("Berlin");
         Restaurant restaurant = saveRestaurant(city);
 
+        City city2 = saveCity("Berlin");
         UpdateRestaurantRequest updateRestaurantRequest = new UpdateRestaurantRequest(city2.getId(), "Happy Burger");
 
         String url = String.format(API_RESTAURANTS_RESTAURANT_ID_URL, restaurant.getId());

@@ -65,22 +65,17 @@ class RestaurantDishControllerTest {
     @MockBean
     private DishService dishService;
 
-    private City city;
-    private Restaurant restaurant;
-
     @BeforeEach
     void setUp() {
         cacheManager.getCache(DISHES).clear();
         cacheManager.getCache(RESTAURANTS).clear();
-
-        city = getDefaultCity();
-        restaurant = getDefaultRestaurant();
     }
 
     @Test
     void testGetRestaurantDish() throws Exception {
-        Dish dish = getDefaultDish();
-        restaurant.getDishes().add(dish);
+        City city = getDefaultCity();
+        Restaurant restaurant = getDefaultRestaurant(city);
+        Dish dish = getDefaultDish(restaurant);
 
         when(restaurantService.validateAndGetRestaurant(any(UUID.class))).thenReturn(restaurant);
         when(restaurantService.validateAndGetDish(any(Restaurant.class), any(UUID.class))).thenReturn(dish);
@@ -98,8 +93,9 @@ class RestaurantDishControllerTest {
 
     @Test
     void testGetRestaurantDishes() throws Exception {
-        Dish dish = getDefaultDish();
-        restaurant.getDishes().add(dish);
+        City city = getDefaultCity();
+        Restaurant restaurant = getDefaultRestaurant(city);
+        Dish dish = getDefaultDish(restaurant);
 
         when(restaurantService.validateAndGetRestaurant(any(UUID.class))).thenReturn(restaurant);
 
@@ -114,8 +110,10 @@ class RestaurantDishControllerTest {
 
     @Test
     void testCreateRestaurantDish() throws Exception {
-        Dish dish = getDefaultDish();
-        restaurant.getDishes().add(dish);
+        City city = getDefaultCity();
+        Restaurant restaurant = getDefaultRestaurant(city);
+        Dish dish = getDefaultDish(restaurant);
+
         CreateDishRequest createDishRequest = new CreateDishRequest("Pizza Salami", BigDecimal.valueOf(7.5));
 
         when(restaurantService.validateAndGetRestaurant(restaurant.getId())).thenReturn(restaurant);
@@ -157,8 +155,10 @@ class RestaurantDishControllerTest {
 
     @Test
     void testUpdateRestaurantDish() throws Exception {
-        Dish dish = getDefaultDish();
-        restaurant.getDishes().add(dish);
+        City city = getDefaultCity();
+        Restaurant restaurant = getDefaultRestaurant(city);
+        Dish dish = getDefaultDish(restaurant);
+
         UpdateDishRequest updateDishRequest = new UpdateDishRequest("Pizza Pepperoni", BigDecimal.valueOf(6.5));
 
         when(dishService.saveDish(any(Dish.class))).thenReturn(dish);
@@ -205,8 +205,9 @@ class RestaurantDishControllerTest {
 
     @Test
     void testDeleteRestaurantDish() throws Exception {
-        Dish dish = getDefaultDish();
-        restaurant.getDishes().add(dish);
+        City city = getDefaultCity();
+        Restaurant restaurant = getDefaultRestaurant(city);
+        Dish dish = getDefaultDish(restaurant);
 
         when(restaurantService.validateAndGetRestaurant(any(UUID.class))).thenReturn(restaurant);
         when(restaurantService.validateAndGetDish(any(Restaurant.class), any(UUID.class))).thenReturn(dish);
@@ -248,9 +249,10 @@ class RestaurantDishControllerTest {
         verify(restaurantService, times(7)).validateAndGetRestaurant(restaurant.getId());
     }
 
-    private Dish getDefaultDish() {
+    private Dish getDefaultDish(Restaurant restaurant) {
         Dish dish = new Dish("Pizza Salami", BigDecimal.valueOf(7.5));
         dish.setId(UUID.fromString("f3e53136-4c34-484b-8d9e-128264707c66"));
+        restaurant.getDishes().add(dish);
         return dish;
     }
 
@@ -260,7 +262,7 @@ class RestaurantDishControllerTest {
         return city;
     }
 
-    private Restaurant getDefaultRestaurant() {
+    private Restaurant getDefaultRestaurant(City city) {
         Restaurant restaurant = new Restaurant("Happy Pizza", city);
         restaurant.setId(UUID.fromString("7ee00128-6f10-49ae-9edf-72495e77adf6"));
         return restaurant;

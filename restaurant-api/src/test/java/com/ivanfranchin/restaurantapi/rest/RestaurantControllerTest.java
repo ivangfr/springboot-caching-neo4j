@@ -60,19 +60,17 @@ class RestaurantControllerTest {
     @MockBean
     private RestaurantService restaurantService;
 
-    private City city;
-
     @BeforeEach
     void setUp() {
         cacheManager.getCache(RESTAURANTS).clear();
         cacheManager.getCache(CITIES).clear();
-
-        city = getDefaultCity();
     }
 
     @Test
     void testGetRestaurant() throws Exception {
-        Restaurant restaurant = getDefaultRestaurant();
+        City city = getDefaultCity();
+        Restaurant restaurant = getDefaultRestaurant(city);
+
         when(restaurantService.validateAndGetRestaurant(any(UUID.class))).thenReturn(restaurant);
 
         //-- restaurantId cached in CITIES
@@ -86,7 +84,9 @@ class RestaurantControllerTest {
 
     @Test
     void testCreateRestaurant() throws Exception {
-        Restaurant restaurant = getDefaultRestaurant();
+        City city = getDefaultCity();
+        Restaurant restaurant = getDefaultRestaurant(city);
+
         CreateRestaurantRequest createRestaurantRequest = new CreateRestaurantRequest(city.getId(), "Happy Pizza");
 
         when(restaurantService.validateAndGetRestaurant(any(UUID.class))).thenReturn(restaurant);
@@ -118,7 +118,9 @@ class RestaurantControllerTest {
 
     @Test
     void testUpdateRestaurant() throws Exception {
-        Restaurant restaurant = getDefaultRestaurant();
+        City city = getDefaultCity();
+        Restaurant restaurant = getDefaultRestaurant(city);
+
         UpdateRestaurantRequest updateRestaurantRequest = new UpdateRestaurantRequest(city.getId(), "Happy Burger");
 
         when(restaurantService.validateAndGetRestaurant(any(UUID.class))).thenReturn(restaurant);
@@ -150,7 +152,8 @@ class RestaurantControllerTest {
 
     @Test
     void testDeleteRestaurant() throws Exception {
-        Restaurant restaurant = getDefaultRestaurant();
+        City city = getDefaultCity();
+        Restaurant restaurant = getDefaultRestaurant(city);
 
         when(restaurantService.validateAndGetRestaurant(any(UUID.class))).thenReturn(restaurant);
         when(cityService.validateAndGetCity(any(UUID.class))).thenReturn(city);
@@ -181,7 +184,7 @@ class RestaurantControllerTest {
         verify(cityService, times(2)).validateAndGetCity(city.getId());
     }
 
-    private Restaurant getDefaultRestaurant() {
+    private Restaurant getDefaultRestaurant(City city) {
         Restaurant restaurant = new Restaurant("Happy Pizza", city);
         restaurant.setId(UUID.fromString("7ee00128-6f10-49ae-9edf-72495e77adf6"));
         return restaurant;
