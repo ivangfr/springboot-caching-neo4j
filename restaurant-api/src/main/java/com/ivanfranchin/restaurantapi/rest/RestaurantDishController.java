@@ -1,6 +1,5 @@
 package com.ivanfranchin.restaurantapi.rest;
 
-import com.ivanfranchin.restaurantapi.exception.DishNotFoundException;
 import com.ivanfranchin.restaurantapi.mapper.DishMapper;
 import com.ivanfranchin.restaurantapi.model.Dish;
 import com.ivanfranchin.restaurantapi.model.Restaurant;
@@ -107,11 +106,8 @@ public class RestaurantDishController {
     @DeleteMapping("/{dishId}")
     public DishResponse deleteRestaurantDish(@PathVariable UUID restaurantId, @PathVariable UUID dishId) {
         Restaurant restaurant = restaurantService.validateAndGetRestaurant(restaurantId);
-        Dish dish = restaurant.getDishes()
-                .stream()
-                .filter(m -> m.getId().equals(dishId))
-                .findFirst()
-                .orElseThrow(() -> new DishNotFoundException(dishId));
+        Dish dish = restaurantService.validateAndGetDish(restaurant, dishId);
+
         dishService.deleteDish(dish);
         return dishMapper.toDishResponse(dish);
     }

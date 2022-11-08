@@ -46,7 +46,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     public Dish validateAndGetDish(Restaurant restaurant, UUID dishId) {
         return restaurant.getDishes()
                 .stream()
-                .filter(m -> m.getId().equals(dishId))
+                .filter(dish -> dish.getId().equals(dishId))
                 .findFirst()
                 .orElseThrow(() -> new DishNotFoundException(dishId));
     }
