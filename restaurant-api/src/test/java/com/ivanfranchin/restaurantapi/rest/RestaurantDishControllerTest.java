@@ -11,21 +11,23 @@ import com.ivanfranchin.restaurantapi.rest.dto.UpdateDishRequest;
 import com.ivanfranchin.restaurantapi.service.CityService;
 import com.ivanfranchin.restaurantapi.service.DishService;
 import com.ivanfranchin.restaurantapi.service.RestaurantService;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.neo4j.AutoConfigureDataNeo4j;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.DisabledIf;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
+import static com.ivanfranchin.restaurantapi.config.CachingConfig.DISHES;
+import static com.ivanfranchin.restaurantapi.config.CachingConfig.RESTAURANTS;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.times;
@@ -43,11 +45,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
                            annotations in a test class is not supported. */
 @WebMvcTest(controllers = {RestaurantDishController.class, RestaurantController.class})
 @Import({RestaurantMapperImpl.class, DishMapperImpl.class, CachingTestConfig.class})
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class RestaurantDishControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private CacheManager cacheManager;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -61,11 +65,14 @@ class RestaurantDishControllerTest {
     @MockBean
     private DishService dishService;
 
-    private static City city;
-    private static Restaurant restaurant;
+    private City city;
+    private Restaurant restaurant;
 
-    @BeforeAll
-    static void setUp() {
+    @BeforeEach
+    void setUp() {
+        cacheManager.getCache(DISHES).clear();
+        cacheManager.getCache(RESTAURANTS).clear();
+
         city = getDefaultCity();
         restaurant = getDefaultRestaurant();
     }
@@ -249,14 +256,14 @@ class RestaurantDishControllerTest {
         return dish;
     }
 
-    private static City getDefaultCity() {
+    private City getDefaultCity() {
         City city = new City();
         city.setId(UUID.fromString("c0b8602c-225e-4995-8724-035c504f8c84"));
         city.setName("Porto");
         return city;
     }
 
-    private static Restaurant getDefaultRestaurant() {
+    private Restaurant getDefaultRestaurant() {
         Restaurant restaurant = new Restaurant();
         restaurant.setId(UUID.fromString("7ee00128-6f10-49ae-9edf-72495e77adf6"));
         restaurant.setName("Happy Pizza");

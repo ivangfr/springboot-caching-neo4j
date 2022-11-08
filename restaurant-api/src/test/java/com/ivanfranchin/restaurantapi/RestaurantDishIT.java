@@ -1,11 +1,11 @@
 package com.ivanfranchin.restaurantapi;
 
-import com.ivanfranchin.restaurantapi.repository.CityRepository;
-import com.ivanfranchin.restaurantapi.repository.DishRepository;
-import com.ivanfranchin.restaurantapi.repository.RestaurantRepository;
 import com.ivanfranchin.restaurantapi.model.City;
 import com.ivanfranchin.restaurantapi.model.Dish;
 import com.ivanfranchin.restaurantapi.model.Restaurant;
+import com.ivanfranchin.restaurantapi.repository.CityRepository;
+import com.ivanfranchin.restaurantapi.repository.DishRepository;
+import com.ivanfranchin.restaurantapi.repository.RestaurantRepository;
 import com.ivanfranchin.restaurantapi.rest.dto.CreateDishRequest;
 import com.ivanfranchin.restaurantapi.rest.dto.DishResponse;
 import com.ivanfranchin.restaurantapi.rest.dto.RestaurantMenu;
@@ -19,7 +19,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.annotation.DirtiesContext;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -27,7 +26,6 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class RestaurantDishIT extends AbstractTestcontainers {
 
     @Autowired
@@ -47,6 +45,10 @@ class RestaurantDishIT extends AbstractTestcontainers {
 
     @BeforeEach
     void setUp() {
+        dishRepository.deleteAll();
+        restaurantRepository.deleteAll();
+        cityRepository.deleteAll();
+
         city = saveDefaultCity();
         restaurant = saveDefaultRestaurant();
     }

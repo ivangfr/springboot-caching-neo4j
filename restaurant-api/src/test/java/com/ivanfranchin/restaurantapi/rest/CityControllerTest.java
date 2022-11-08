@@ -5,19 +5,21 @@ import com.ivanfranchin.restaurantapi.mapper.CityMapperImpl;
 import com.ivanfranchin.restaurantapi.model.City;
 import com.ivanfranchin.restaurantapi.rest.dto.CreateCityRequest;
 import com.ivanfranchin.restaurantapi.service.CityService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.neo4j.AutoConfigureDataNeo4j;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.DisabledIf;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.UUID;
 
+import static com.ivanfranchin.restaurantapi.config.CachingConfig.CITIES;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.never;
@@ -35,17 +37,24 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
                            annotations in a test class is not supported. */
 @WebMvcTest(CityController.class)
 @Import({CityMapperImpl.class, CachingTestConfig.class})
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class CityControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
+    private CacheManager cacheManager;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     @MockBean
     private CityService cityService;
+
+    @BeforeEach
+    void setUp() {
+        cacheManager.getCache(CITIES).clear();
+    }
 
     @Test
     void testGetCityCaching() throws Exception {

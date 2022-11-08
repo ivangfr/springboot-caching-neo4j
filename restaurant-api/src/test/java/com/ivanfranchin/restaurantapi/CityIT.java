@@ -1,9 +1,10 @@
 package com.ivanfranchin.restaurantapi;
 
-import com.ivanfranchin.restaurantapi.repository.CityRepository;
 import com.ivanfranchin.restaurantapi.model.City;
+import com.ivanfranchin.restaurantapi.repository.CityRepository;
 import com.ivanfranchin.restaurantapi.rest.dto.CityResponse;
 import com.ivanfranchin.restaurantapi.rest.dto.CreateCityRequest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,15 +13,12 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 class CityIT extends AbstractTestcontainers {
 
     @Autowired
@@ -28,6 +26,11 @@ class CityIT extends AbstractTestcontainers {
 
     @Autowired
     private CityRepository cityRepository;
+
+    @BeforeEach
+    void setUp() {
+        cityRepository.deleteAll();
+    }
 
     @Test
     void testGetCity() {
@@ -52,11 +55,8 @@ class CityIT extends AbstractTestcontainers {
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(responseEntity.getBody()).isNotNull();
-
-        // @DirtiesContext is not working
-        // --
-        // assertThat(responseEntity.getBody().getTotalElements()).isEqualTo(0);
-        // assertThat(responseEntity.getBody().getContent().size()).isEqualTo(0);
+        assertThat(responseEntity.getBody().getTotalElements()).isEqualTo(0);
+        assertThat(responseEntity.getBody().getContent().size()).isEqualTo(0);
     }
 
     @Test
