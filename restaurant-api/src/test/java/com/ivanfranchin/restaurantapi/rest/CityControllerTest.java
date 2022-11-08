@@ -57,7 +57,7 @@ class CityControllerTest {
     }
 
     @Test
-    void testGetCityCaching() throws Exception {
+    void testGetCity() throws Exception {
         City city = getDefaultCity();
         when(cityService.validateAndGetCity(any(UUID.class))).thenReturn(city);
 
@@ -71,7 +71,7 @@ class CityControllerTest {
     }
 
     @Test
-    void testCreateCityCaching() throws Exception {
+    void testCreateCity() throws Exception {
         City city = getDefaultCity();
         CreateCityRequest createCityRequest = new CreateCityRequest("Porto");
 
@@ -91,7 +91,7 @@ class CityControllerTest {
     }
 
     @Test
-    void testDeleteCityCaching() throws Exception {
+    void testDeleteCity() throws Exception {
         City city = getDefaultCity();
         when(cityService.validateAndGetCity(any(UUID.class))).thenReturn(city);
 
@@ -111,9 +111,8 @@ class CityControllerTest {
     }
 
     private City getDefaultCity() {
-        City city = new City();
+        City city = new City("Porto");
         city.setId(UUID.fromString("c0b8602c-225e-4995-8724-035c504f8c84"));
-        city.setName("Porto");
         return city;
     }
 

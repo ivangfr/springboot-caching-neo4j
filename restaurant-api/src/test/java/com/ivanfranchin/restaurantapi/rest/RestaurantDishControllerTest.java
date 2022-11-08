@@ -249,25 +249,20 @@ class RestaurantDishControllerTest {
     }
 
     private Dish getDefaultDish() {
-        Dish dish = new Dish();
+        Dish dish = new Dish("Pizza Salami", BigDecimal.valueOf(7.5));
         dish.setId(UUID.fromString("f3e53136-4c34-484b-8d9e-128264707c66"));
-        dish.setName("Pizza Salami");
-        dish.setPrice(BigDecimal.valueOf(7.5));
         return dish;
     }
 
     private City getDefaultCity() {
-        City city = new City();
+        City city = new City("Porto");
         city.setId(UUID.fromString("c0b8602c-225e-4995-8724-035c504f8c84"));
-        city.setName("Porto");
         return city;
     }
 
     private Restaurant getDefaultRestaurant() {
-        Restaurant restaurant = new Restaurant();
+        Restaurant restaurant = new Restaurant("Happy Pizza", city);
         restaurant.setId(UUID.fromString("7ee00128-6f10-49ae-9edf-72495e77adf6"));
-        restaurant.setName("Happy Pizza");
-        restaurant.setCity(city);
         return restaurant;
     }
 

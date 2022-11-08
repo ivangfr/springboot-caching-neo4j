@@ -34,21 +34,16 @@ class RestaurantIT extends AbstractTestcontainers {
     @Autowired
     private RestaurantRepository restaurantRepository;
 
-    private City city;
-    private City city2;
-
     @BeforeEach
     void setUp() {
         restaurantRepository.deleteAll();
         cityRepository.deleteAll();
-
-        city = saveDefaultCity("Porto");
-        city2 = saveDefaultCity("Berlin");
     }
 
     @Test
     void testGetRestaurant() {
-        Restaurant restaurant = saveDefaultRestaurant();
+        City city = saveCity("Porto");
+        Restaurant restaurant = saveRestaurant(city);
 
         String url = String.format(API_RESTAURANTS_RESTAURANT_ID_URL, restaurant.getId());
         ResponseEntity<RestaurantResponse> responseEntity = testRestTemplate.getForEntity(url, RestaurantResponse.class);
@@ -77,6 +72,7 @@ class RestaurantIT extends AbstractTestcontainers {
 
     @Test
     void testCreateRestaurant() {
+        City city = saveCity("Porto");
         CreateRestaurantRequest createRestaurantRequest = new CreateRestaurantRequest(city.getId(), "Happy Pizza");
 
         ResponseEntity<RestaurantResponse> responseEntity = testRestTemplate.postForEntity(
@@ -100,7 +96,9 @@ class RestaurantIT extends AbstractTestcontainers {
 
     @Test
     void testUpdateRestaurant() {
-        Restaurant restaurant = saveDefaultRestaurant();
+        City city = saveCity("Porto");
+        City city2 = saveCity("Berlin");
+        Restaurant restaurant = saveRestaurant(city);
 
         UpdateRestaurantRequest updateRestaurantRequest = new UpdateRestaurantRequest(city2.getId(), "Happy Burger");
 
@@ -131,7 +129,8 @@ class RestaurantIT extends AbstractTestcontainers {
 
     @Test
     void testDeleteRestaurant() {
-        Restaurant restaurant = saveDefaultRestaurant();
+        City city = saveCity("Porto");
+        Restaurant restaurant = saveRestaurant(city);
 
         String url = String.format(API_RESTAURANTS_RESTAURANT_ID_URL, restaurant.getId());
         ResponseEntity<RestaurantResponse> responseEntity = testRestTemplate.exchange(
@@ -153,21 +152,15 @@ class RestaurantIT extends AbstractTestcontainers {
         optionalCity.ifPresent(c -> assertThat(c.getRestaurants().size()).isEqualTo(0));
     }
 
-    private City saveDefaultCity(String name) {
-        City city = new City();
-        city.setName(name);
-        return cityRepository.save(city);
+    private City saveCity(String name) {
+        return cityRepository.save(new City(name));
     }
 
-    private Restaurant saveDefaultRestaurant() {
-        Restaurant defaultRestaurant = new Restaurant();
-        defaultRestaurant.setName("Happy Pizza");
-        defaultRestaurant.setCity(city);
-
-        city.getRestaurants().add(defaultRestaurant);
+    private Restaurant saveRestaurant(City city) {
+        Restaurant restaurant = new Restaurant("Happy Pizza", city);
+        city.getRestaurants().add(restaurant);
         cityRepository.save(city);
-
-        return restaurantRepository.save(defaultRestaurant);
+        return restaurantRepository.save(restaurant);
     }
 
     private static final String API_RESTAURANTS_URL = "/api/restaurants";

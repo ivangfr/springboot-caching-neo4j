@@ -40,22 +40,18 @@ class RestaurantDishIT extends AbstractTestcontainers {
     @Autowired
     private RestaurantRepository restaurantRepository;
 
-    private City city;
-    private Restaurant restaurant;
-
     @BeforeEach
     void setUp() {
         dishRepository.deleteAll();
         restaurantRepository.deleteAll();
         cityRepository.deleteAll();
-
-        city = saveDefaultCity();
-        restaurant = saveDefaultRestaurant();
     }
 
     @Test
     void testGetRestaurantDish() {
-        Dish dish = saveDefaultDish();
+        City city = saveCity("Porto");
+        Restaurant restaurant = saveRestaurant(city);
+        Dish dish = saveDish(restaurant);
 
         String url = String.format(API_RESTAURANTS_RESTAURANT_ID_DISHES_DISH_ID_URL, restaurant.getId(), dish.getId());
         ResponseEntity<DishResponse> responseEntity = testRestTemplate.getForEntity(url, DishResponse.class);
@@ -69,7 +65,9 @@ class RestaurantDishIT extends AbstractTestcontainers {
 
     @Test
     void testGetRestaurantDishes() {
-        Dish dish = saveDefaultDish();
+        City city = saveCity("Porto");
+        Restaurant restaurant = saveRestaurant(city);
+        Dish dish = saveDish(restaurant);
 
         String url = String.format(API_RESTAURANTS_RESTAURANT_ID_DISHES_URL, restaurant.getId());
         ResponseEntity<RestaurantMenu> responseEntity = testRestTemplate.getForEntity(url, RestaurantMenu.class);
@@ -84,6 +82,9 @@ class RestaurantDishIT extends AbstractTestcontainers {
 
     @Test
     void testCreateRestaurantDish() {
+        City city = saveCity("Porto");
+        Restaurant restaurant = saveRestaurant(city);
+
         CreateDishRequest createDishRequest = new CreateDishRequest("Pizza Salami", BigDecimal.valueOf(7.5));
 
         String url = String.format(API_RESTAURANTS_RESTAURANT_ID_DISHES_URL, restaurant.getId());
@@ -106,7 +107,9 @@ class RestaurantDishIT extends AbstractTestcontainers {
 
     @Test
     void testUpdateRestaurantDish() {
-        Dish dish = saveDefaultDish();
+        City city = saveCity("Porto");
+        Restaurant restaurant = saveRestaurant(city);
+        Dish dish = saveDish(restaurant);
 
         UpdateDishRequest updateDishRequest = new UpdateDishRequest("Pizza Tuna", BigDecimal.valueOf(8.5));
 
@@ -132,7 +135,9 @@ class RestaurantDishIT extends AbstractTestcontainers {
 
     @Test
     void testDeleteRestaurantDish() {
-        Dish dish = saveDefaultDish();
+        City city = saveCity("Porto");
+        Restaurant restaurant = saveRestaurant(city);
+        Dish dish = saveDish(restaurant);
 
         String url = String.format(API_RESTAURANTS_RESTAURANT_ID_DISHES_DISH_ID_URL, restaurant.getId(), dish.getId());
         ResponseEntity<DishResponse> responseEntity = testRestTemplate.exchange(
@@ -153,32 +158,23 @@ class RestaurantDishIT extends AbstractTestcontainers {
         });
     }
 
-    private Dish saveDefaultDish() {
-        Dish defaultDish = new Dish();
-        defaultDish.setName("Pizza Salami");
-        defaultDish.setPrice(BigDecimal.valueOf(7.5));
-        defaultDish = dishRepository.save(defaultDish);
-
-        restaurant.getDishes().add(defaultDish);
+    private Dish saveDish(Restaurant restaurant) {
+        Dish dish = new Dish("Pizza Salami", BigDecimal.valueOf(7.5));
+        dish = dishRepository.save(dish);
+        restaurant.getDishes().add(dish);
         restaurantRepository.save(restaurant);
-        return defaultDish;
+        return dish;
     }
 
-    private Restaurant saveDefaultRestaurant() {
-        Restaurant defaultRestaurant = new Restaurant();
-        defaultRestaurant.setName("Happy Pizza");
-        defaultRestaurant.setCity(city);
-
-        city.getRestaurants().add(defaultRestaurant);
+    private Restaurant saveRestaurant(City city) {
+        Restaurant restaurant = new Restaurant("Happy Pizza", city);
+        city.getRestaurants().add(restaurant);
         cityRepository.save(city);
-
-        return restaurantRepository.save(defaultRestaurant);
+        return restaurantRepository.save(restaurant);
     }
 
-    private City saveDefaultCity() {
-        City defaultCity = new City();
-        defaultCity.setName("Porto");
-        return cityRepository.save(defaultCity);
+    private City saveCity(String name) {
+        return cityRepository.save(new City(name));
     }
 
     private static final String API_RESTAURANTS_RESTAURANT_ID_DISHES_URL = "/api/restaurants/%s/dishes";

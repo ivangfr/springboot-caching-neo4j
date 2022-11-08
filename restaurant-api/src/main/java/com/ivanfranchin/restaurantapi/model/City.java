@@ -2,6 +2,7 @@ package com.ivanfranchin.restaurantapi.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
@@ -14,6 +15,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Data
+@NoArgsConstructor
 @EqualsAndHashCode(exclude = "restaurants")
 @ToString(exclude = "restaurants")
 @Node
@@ -27,4 +29,8 @@ public class City {
 
     @Relationship(type = "LOCATED_IN", direction = Direction.INCOMING)
     private Set<Restaurant> restaurants = new LinkedHashSet<>();
+
+    public City(String name) {
+        this.name = name;
+    }
 }

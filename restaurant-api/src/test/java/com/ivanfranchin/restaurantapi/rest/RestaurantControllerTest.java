@@ -71,7 +71,7 @@ class RestaurantControllerTest {
     }
 
     @Test
-    void testGetRestaurantCaching() throws Exception {
+    void testGetRestaurant() throws Exception {
         Restaurant restaurant = getDefaultRestaurant();
         when(restaurantService.validateAndGetRestaurant(any(UUID.class))).thenReturn(restaurant);
 
@@ -85,7 +85,7 @@ class RestaurantControllerTest {
     }
 
     @Test
-    void testCreateRestaurantCaching() throws Exception {
+    void testCreateRestaurant() throws Exception {
         Restaurant restaurant = getDefaultRestaurant();
         CreateRestaurantRequest createRestaurantRequest = new CreateRestaurantRequest(city.getId(), "Happy Pizza");
 
@@ -117,7 +117,7 @@ class RestaurantControllerTest {
     }
 
     @Test
-    void testUpdateRestaurantCaching() throws Exception {
+    void testUpdateRestaurant() throws Exception {
         Restaurant restaurant = getDefaultRestaurant();
         UpdateRestaurantRequest updateRestaurantRequest = new UpdateRestaurantRequest(city.getId(), "Happy Burger");
 
@@ -149,7 +149,7 @@ class RestaurantControllerTest {
     }
 
     @Test
-    void testDeleteRestaurantCaching() throws Exception {
+    void testDeleteRestaurant() throws Exception {
         Restaurant restaurant = getDefaultRestaurant();
 
         when(restaurantService.validateAndGetRestaurant(any(UUID.class))).thenReturn(restaurant);
@@ -182,17 +182,14 @@ class RestaurantControllerTest {
     }
 
     private Restaurant getDefaultRestaurant() {
-        Restaurant restaurant = new Restaurant();
+        Restaurant restaurant = new Restaurant("Happy Pizza", city);
         restaurant.setId(UUID.fromString("7ee00128-6f10-49ae-9edf-72495e77adf6"));
-        restaurant.setName("Happy Pizza");
-        restaurant.setCity(city);
         return restaurant;
     }
 
     private City getDefaultCity() {
-        City city = new City();
+        City city = new City("Porto");
         city.setId(UUID.fromString("c0b8602c-225e-4995-8724-035c504f8c84"));
-        city.setName("Porto");
         return city;
     }
 

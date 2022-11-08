@@ -34,7 +34,7 @@ class CityIT extends AbstractTestcontainers {
 
     @Test
     void testGetCity() {
-        City city = saveDefaultCity();
+        City city = saveCity("Porto");
 
         String url = String.format(API_CITIES_CITY_ID_URL, city.getId());
         ResponseEntity<CityResponse> responseEntity = testRestTemplate.getForEntity(url, CityResponse.class);
@@ -78,7 +78,7 @@ class CityIT extends AbstractTestcontainers {
 
     @Test
     void testDeleteCity() {
-        City city = saveDefaultCity();
+        City city = saveCity("Porto");
 
         String url = String.format(API_CITIES_CITY_ID_URL, city.getId());
         ResponseEntity<Void> responseEntity = testRestTemplate.exchange(url, HttpMethod.DELETE, null, Void.class);
@@ -89,10 +89,8 @@ class CityIT extends AbstractTestcontainers {
         assertThat(optionalCity.isPresent()).isFalse();
     }
 
-    private City saveDefaultCity() {
-        City city = new City();
-        city.setName("Porto");
-        return cityRepository.save(city);
+    private City saveCity(String name) {
+        return cityRepository.save(new City(name));
     }
 
     private static final String API_CITIES_URL = "/api/cities";
