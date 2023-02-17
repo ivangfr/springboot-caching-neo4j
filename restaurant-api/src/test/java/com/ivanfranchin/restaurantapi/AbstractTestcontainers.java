@@ -23,8 +23,8 @@ public abstract class AbstractTestcontainers {
 
         if (hasRedisAsProfilesActive()) {
             redisContainer.withExposedPorts(6379).start();
-            registry.add("spring.redis.host", redisContainer::getHost);
-            registry.add("spring.redis.port", () -> redisContainer.getMappedPort(6379));
+            registry.add("spring.data.redis.host", redisContainer::getHost);
+            registry.add("spring.data.redis.port", () -> redisContainer.getMappedPort(6379));
         }
     }
 

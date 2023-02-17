@@ -95,7 +95,7 @@ In a terminal, make sure you are in `springboot-caching-neo4j` root folder
 ./docker-build.sh
 ----
 +
-** Native (it's not implemented yet)
+** Native
 +
 [source]
 ----
@@ -139,7 +139,7 @@ docker run --rm --name restaurant-api -p 8080:8080 \
 |Application |URL
 
 |restaurant-api
-|http://localhost:8080/swagger-ui/index.html
+|http://localhost:8080/swagger-ui.html
 |===
 
 == Simulation
