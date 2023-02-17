@@ -1,12 +1,13 @@
 package com.ivanfranchin.restaurantapi.rest;
 
 import com.ivanfranchin.restaurantapi.mapper.CityMapper;
-import com.ivanfranchin.restaurantapi.service.CityService;
 import com.ivanfranchin.restaurantapi.model.City;
 import com.ivanfranchin.restaurantapi.rest.dto.CityResponse;
 import com.ivanfranchin.restaurantapi.rest.dto.CreateCityRequest;
+import com.ivanfranchin.restaurantapi.service.CityService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springdoc.api.annotations.ParameterObject;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -23,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
 import java.util.UUID;
 
 import static com.ivanfranchin.restaurantapi.config.CachingConfig.CITIES;

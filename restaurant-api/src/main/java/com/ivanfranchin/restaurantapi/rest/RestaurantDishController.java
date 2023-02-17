@@ -9,6 +9,7 @@ import com.ivanfranchin.restaurantapi.rest.dto.RestaurantMenu;
 import com.ivanfranchin.restaurantapi.rest.dto.UpdateDishRequest;
 import com.ivanfranchin.restaurantapi.service.DishService;
 import com.ivanfranchin.restaurantapi.service.RestaurantService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -25,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 

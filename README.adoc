@@ -188,6 +188,8 @@ curl -s http://localhost:8080/actuator/prometheus | grep cacheManager
 +
 `Neo4j` UI can be accessed at http://localhost:7474/browser
 +
+No authentication is needed, just click `Connect` button
++
 image::documentation/neo4j-ui.jpeg[]
 
 * **redis-commander**
