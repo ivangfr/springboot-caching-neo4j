@@ -2,6 +2,10 @@
 
 The goal of this project is to explore how caching works. For it, we are going to implement a simple https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/[`Spring Boot`] application called `restaurant-api`. We are using https://neo4j.com[`Neo4j`] for storage and, for caching, we can pick one of the following providers: https://docs.spring.io/spring-boot/docs/current/reference/html/spring-boot-features.html#boot-features-caching-provider-simple[`Simple`], https://github.com/ben-manes/caffeine[`Caffeine`] or https://redis.io/[`Redis`].
 
+== Project Diagram
+
+image::documentation/project-diagram.jpeg[]
+
 == Applications
 
 * **restaurant-api**
