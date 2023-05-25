@@ -45,18 +45,11 @@ By the way, we have implemented more advanced caching logic as the one presented
 
 == Start Environment
 
-* Open a terminal and, inside `springboot-caching-neo4j` root folder, run
-+
+Open a terminal and, inside `springboot-caching-neo4j` root folder, run
+
 [source]
 ----
 docker-compose up -d
-----
-
-* Wait for Docker containers to be up and running. To check it, run
-+
-[source]
-----
-docker-compose ps
 ----
 
 == Running application using Maven
