@@ -10,11 +10,11 @@ public interface MyContainers {
 
     @Container
     @ServiceConnection
-    Neo4jContainer<?> neo4jContainer = new Neo4jContainer<>("neo4j:5.8.0")
+    Neo4jContainer<?> neo4jContainer = new Neo4jContainer<>("neo4j:5.12.0")
             .withoutAuthentication();
 
     @Container
     @ServiceConnection
-    GenericContainer<?> redisContainer = new GenericContainer<>(DockerImageName.parse("redis:7.0.11"))
+    GenericContainer<?> redisContainer = new GenericContainer<>(DockerImageName.parse("redis:7.2.0"))
             .withExposedPorts(6379);
 }
