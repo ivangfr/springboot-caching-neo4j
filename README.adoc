@@ -1,6 +1,6 @@
 = springboot-caching-neo4j
 
-The goal of this project is to explore how caching works. For it, we are going to implement a simple https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/[`Spring Boot`] application called `restaurant-api`. We are using https://neo4j.com[`Neo4j`] for storage and, for caching, we can pick one of the following providers: https://docs.spring.io/spring-boot/docs/current/reference/html/spring-boot-features.html#boot-features-caching-provider-simple[`Simple`], https://github.com/ben-manes/caffeine[`Caffeine`] or https://redis.io/[`Redis`].
+The goal of this project is to explore how caching works. For it, we are going to implement a simple https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/[`Spring Boot`] application called `restaurant-api`. We are using https://neo4j.com[`Neo4j`] for storage and, for caching, we can pick one of the following providers: https://docs.spring.io/spring-boot/docs/current/reference/html/io.html#io.caching.provider.simple[`Simple`], https://github.com/ben-manes/caffeine[`Caffeine`] or https://redis.io/[`Redis`].
 
 == Proof-of-Concepts & Articles
 
@@ -251,6 +251,6 @@ To remove the Docker image created by this project, go to a terminal and, inside
 
 == References
 
-* https://docs.spring.io/spring-boot/docs/current/reference/html/spring-boot-features.html#boot-features-caching
+* https://docs.spring.io/spring-boot/docs/current/reference/html/io.html#io.caching
 * https://github.com/spring-projects/spring-data-neo4j
 * https://neo4j.com/developer/spring-data-neo4j/
