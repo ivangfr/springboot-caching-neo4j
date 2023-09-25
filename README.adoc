@@ -44,7 +44,6 @@ By the way, we have implemented more advanced caching logic as the one presented
 
 * https://www.oracle.com/java/technologies/downloads/#java17[`Java 17+`]
 * https://www.docker.com/[`Docker`]
-* https://docs.docker.com/compose/install/[`Docker-Compose`]
 * https://stedolan.github.io/jq[`jq`]
 
 == Start Environment
@@ -53,7 +52,7 @@ Open a terminal and, inside `springboot-caching-neo4j` root folder, run
 
 [source]
 ----
-docker-compose up -d
+docker compose up -d
 ----
 
 == Running application using Maven
@@ -202,11 +201,11 @@ image::documentation/redis-commander-ui.jpeg[]
 == Shutdown
 
 * To stop `restaurant-api` application, go to the terminal where it is running and press `Ctrl+C`
-* To stop and remove docker-compose containers, network and volumes, go to a terminal and inside `springboot-caching-neo4j` root folder, run the following command
+* To stop and remove docker compose containers, network and volumes, go to a terminal and inside `springboot-caching-neo4j` root folder, run the following command
 +
 [source]
 ----
-docker-compose down -v
+docker compose down -v
 ----
 
 == Running Unit And Integration Test Cases
