@@ -6,6 +6,11 @@ The goal of this project is to explore how caching works. For it, we are going t
 
 On https://ivangfr.github.io[ivangfr.github.io], I have compiled my Proof-of-Concepts (PoCs) and articles. You can easily search for the technology you are interested in by using the filter. Who knows, perhaps I have already implemented a PoC or written an article about what you are looking for.
 
+== Additional Readings
+
+- [**Medium**] https://medium.com/javarevisited/implementing-cache-using-caffeine-in-a-spring-boot-api-that-uses-spring-data-jpa-and-postgresql-3220cabacdc7[**Implementing Cache using Caffeine in a Spring Boot API that uses Spring Data JPA and PostgreSQL**]
+- [**Medium**] https://medium.com/spring-boot/implementing-cache-using-redis-in-a-spring-boot-api-that-uses-spring-data-jpa-and-postgresql-1abc4493bfa2[**Implementing Cache using Redis in a Spring Boot API that uses Spring Data JPA and PostgreSQL**]
+
 == Project Diagram
 
 image::documentation/project-diagram.jpeg[]
