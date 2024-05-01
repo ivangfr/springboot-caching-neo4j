@@ -1,6 +1,6 @@
 = springboot-caching-neo4j
 
-The goal of this project is to explore how caching works. For it, we are going to implement a simple https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/[`Spring Boot`] application called `restaurant-api`. We are using https://neo4j.com[`Neo4j`] for storage and, for caching, we can pick one of the following providers: https://docs.spring.io/spring-boot/docs/current/reference/html/io.html#io.caching.provider.simple[`Simple`], https://github.com/ben-manes/caffeine[`Caffeine`] or https://redis.io/[`Redis`].
+The goal of this project is to explore how caching works. For it, we are going to implement a simple https://spring.io/projects/spring-boot[`Spring Boot`] application called `restaurant-api`. We are using https://neo4j.com[`Neo4j`] for storage and, for caching, we can pick one of the following providers: https://docs.spring.io/spring-boot/docs/current/reference/html/io.html#io.caching.provider.simple[`Simple`], https://github.com/ben-manes/caffeine[`Caffeine`] or https://redis.io/[`Redis`].
 
 == Proof-of-Concepts & Articles
 
@@ -27,14 +27,14 @@ image::documentation/restaurant-api-swagger.jpeg[]
 
 The application uses 3 caches: `CITIES`, `RESTAURANTS` and `DISHES`.
 
-The caching is applied at controller level. For instance, if you call `GET /api/restaurants/123` for the first time, the application will check whether the key `123` is present in the `RESTAURANTS` cache; if not, it must go to DB to get the information about the restaurant (payload). Let's say that the payload is
+The caching is applied at controller level. For instance, if you call `GET /api/restaurants/123` for the first time, the application will check whether the key `123` is present in the `RESTAURANTS` cache; if not, it must go to DB to get the information about the restaurant (payload). Let's say that the payload is:
 
 [source]
 ----
 { "name": "Happy Pizza", "city": {"id": 1, "name": "Berlin"}, "dishes": [] }
 ----
 
-Before the endpoint finishes and returns the result, the key and its payload are saved in `RESTAURANTS` cache
+Before the endpoint finishes and returns the result, the key and its payload are saved in `RESTAURANTS` cache:
 
 [source]
 ----
@@ -53,7 +53,7 @@ By the way, we have implemented more advanced caching logic as the one presented
 
 == Start Environment
 
-Open a terminal and, inside `springboot-caching-neo4j` root folder, run
+Open a terminal and, inside `springboot-caching-neo4j` root folder, run:
 
 [source]
 ----
@@ -62,9 +62,9 @@ docker compose up -d
 
 == Running application using Maven
 
-* In a terminal, make sure you are inside `springboot-caching-neo4j` root folder
+* In a terminal, make sure you are inside `springboot-caching-neo4j` root folder;
 
-* Start the application by picking one of the following cache providers
+* Start the application by picking one of the following cache providers:
 +
 ** `Simple` cache provider
 +
@@ -91,7 +91,7 @@ docker compose up -d
 
 * Build Docker Image
 +
-In a terminal, make sure you are in `springboot-caching-neo4j` root folder
+In a terminal, make sure you are in `springboot-caching-neo4j` root folder;
 +
 ** JVM
 +
@@ -149,7 +149,7 @@ docker run --rm --name restaurant-api -p 8080:8080 \
 
 == Simulation
 
-Open a terminal and run the following commands
+Open a terminal and run the following commands:
 
 * Create a city
 +
@@ -180,7 +180,7 @@ curl -i http://localhost:8080/api/restaurants/$RESTAURANT_ID/dishes/$DISH_ID
 
 == Checking Caching Statistics
 
-Caching statistics can be obtained by calling `/actuator/prometheus` endpoint
+Caching statistics can be obtained by calling `/actuator/prometheus` endpoint:
 
 [source]
 ----
@@ -191,7 +191,7 @@ curl -s http://localhost:8080/actuator/prometheus | grep cacheManager
 
 * **Neo4j**
 +
-`Neo4j` UI can be accessed at http://localhost:7474/browser
+`Neo4j` UI can be accessed at http://localhost:7474/browser.
 +
 No authentication is needed, just click `Connect` button
 +
@@ -199,14 +199,14 @@ image::documentation/neo4j-ui.jpeg[]
 
 * **redis-commander**
 +
-`redis-commander` UI can be accessed at http://localhost:8081
+`redis-commander` UI can be accessed at http://localhost:8081.
 +
 image::documentation/redis-commander-ui.jpeg[]
 
 == Shutdown
 
-* To stop `restaurant-api` application, go to the terminal where it is running and press `Ctrl+C`
-* To stop and remove docker compose containers, network and volumes, go to a terminal and inside `springboot-caching-neo4j` root folder, run the following command
+* To stop `restaurant-api` application, go to the terminal where it is running and press `Ctrl+C`;
+* To stop and remove docker compose containers, network and volumes, go to a terminal and inside `springboot-caching-neo4j` root folder, run the following command:
 +
 [source]
 ----
@@ -215,9 +215,9 @@ docker compose down -v
 
 == Running Unit And Integration Test Cases
 
-* In a terminal, make sure you are inside `springboot-caching-neo4j` root folder
+* In a terminal, make sure you are inside `springboot-caching-neo4j` root folder;
 
-* Start the tests by picking one on the following cache providers
+* Start the tests by picking one on the following cache providers:
 +
 ** `Simple` cache provider
 +
@@ -242,7 +242,7 @@ docker compose down -v
 
 == Cleanup
 
-To remove the Docker image created by this project, go to a terminal and, inside `springboot-caching-neo4j` root folder, run the following script
+To remove the Docker image created by this project, go to a terminal and, inside `springboot-caching-neo4j` root folder, run the following script:
 
 [source]
 ----
