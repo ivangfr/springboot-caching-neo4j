@@ -10,7 +10,7 @@ public interface MyContainers {
 
     @Container
     @ServiceConnection
-    Neo4jContainer<?> neo4jContainer = new Neo4jContainer<>("neo4j:5.12.0")
+    Neo4jContainer<?> neo4jContainer = new Neo4jContainer<>("neo4j:5.19.0")
             .withoutAuthentication();
 
     @Container
