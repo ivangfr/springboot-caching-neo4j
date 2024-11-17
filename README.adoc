@@ -1,6 +1,6 @@
 = springboot-caching-neo4j
 
-The goal of this project is to explore how caching works. For it, we are going to implement a simple https://spring.io/projects/spring-boot[`Spring Boot`] application called `restaurant-api`. We are using https://neo4j.com[`Neo4j`] for storage and, for caching, we can pick one of the following providers: https://docs.spring.io/spring-boot/docs/current/reference/html/io.html#io.caching.provider.simple[`Simple`], https://github.com/ben-manes/caffeine[`Caffeine`] or https://redis.io/[`Redis`].
+The goal of this project is to explore how caching works. For it, we are going to implement a simple https://docs.spring.io/spring-boot/index.html[`Spring Boot`] application called `restaurant-api`. We are using https://neo4j.com[`Neo4j`] for storage and, for caching, we can pick one of the following providers: https://docs.spring.io/spring-boot/reference/io/caching.html#io.caching.provider.simple[`Simple`], https://github.com/ben-manes/caffeine[`Caffeine`] or https://redis.io/[`Redis`].
 
 == Proof-of-Concepts & Articles
 
@@ -8,8 +8,8 @@ On https://ivangfr.github.io[ivangfr.github.io], I have compiled my Proof-of-Con
 
 == Additional Readings
 
-- [**Medium**] https://medium.com/javarevisited/implementing-cache-using-caffeine-in-a-spring-boot-api-that-uses-spring-data-jpa-and-postgresql-3220cabacdc7[**Implementing Cache using Caffeine in a Spring Boot API that uses Spring Data JPA and PostgreSQL**]
-- [**Medium**] https://medium.com/spring-boot/implementing-cache-using-redis-in-a-spring-boot-api-that-uses-spring-data-jpa-and-postgresql-1abc4493bfa2[**Implementing Cache using Redis in a Spring Boot API that uses Spring Data JPA and PostgreSQL**]
+- [**Medium**] https://medium.com/@ivangfr/implementing-cache-using-caffeine-in-a-spring-boot-api-that-uses-spring-data-jpa-and-postgresql-3220cabacdc7[**Implementing Cache using Caffeine in a Spring Boot API that uses Spring Data JPA and PostgreSQL**]
+- [**Medium**] https://medium.com/@ivangfr/implementing-cache-using-redis-in-a-spring-boot-api-that-uses-spring-data-jpa-and-postgresql-1abc4493bfa2[**Implementing Cache using Redis in a Spring Boot API that uses Spring Data JPA and PostgreSQL**]
 
 == Project Diagram
 
@@ -49,7 +49,7 @@ By the way, we have implemented more advanced caching logic as the one presented
 
 * https://www.oracle.com/java/technologies/downloads/#java17[`Java 17+`]
 * https://www.docker.com/[`Docker`]
-* https://stedolan.github.io/jq[`jq`]
+* https://jqlang.github.io/jq/[`jq`]
 
 == Start Environment
 
@@ -256,6 +256,6 @@ To remove the Docker image created by this project, go to a terminal and, inside
 
 == References
 
-* https://docs.spring.io/spring-boot/docs/current/reference/html/io.html#io.caching
+* https://docs.spring.io/spring-boot/reference/io/caching.html#io.caching
 * https://github.com/spring-projects/spring-data-neo4j
-* https://neo4j.com/developer/spring-data-neo4j/
+* https://docs.spring.io/spring-data/neo4j/reference/
