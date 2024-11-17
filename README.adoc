@@ -47,7 +47,7 @@ By the way, we have implemented more advanced caching logic as the one presented
 
 == Prerequisites
 
-* https://www.oracle.com/java/technologies/downloads/#java17[`Java 17+`]
+* https://www.oracle.com/java/technologies/downloads/#java21[`Java 21+`]
 * https://www.docker.com/[`Docker`]
 * https://jqlang.github.io/jq/[`jq`]
 
