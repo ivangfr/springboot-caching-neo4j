@@ -132,8 +132,11 @@ In a terminal, make sure you are in `springboot-caching-neo4j` root folder;
 +
 [source]
 ----
-docker run --rm --name restaurant-api -p 8080:8080 \
-  -e SPRING_PROFILES_ACTIVE=redis -e NEO4J_HOST=neo4j -e REDIS_HOST=redis \
+docker run --rm --name restaurant-api \
+  -p 8080:8080 \
+  -e SPRING_PROFILES_ACTIVE=redis \
+  -e NEO4J_HOST=neo4j \
+  -e REDIS_HOST=redis \
   --network=springboot-caching-neo4j_default \
   ivanfranchin/restaurant-api:1.0.0
 ----
