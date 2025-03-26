@@ -80,7 +80,7 @@ public class RestaurantController {
                                                @Valid @RequestBody UpdateRestaurantRequest updateRestaurantRequest) {
         Restaurant restaurant = restaurantService.validateAndGetRestaurant(restaurantId);
 
-        boolean handleCitySwap = updateRestaurantRequest.getCityId() != null && !restaurant.getCity().getId().equals(updateRestaurantRequest.getCityId());
+        boolean handleCitySwap = updateRestaurantRequest.cityId() != null && !restaurant.getCity().getId().equals(updateRestaurantRequest.cityId());
         if (handleCitySwap) {
             City oldCity = restaurant.getCity();
             oldCity.getRestaurants().remove(restaurant);

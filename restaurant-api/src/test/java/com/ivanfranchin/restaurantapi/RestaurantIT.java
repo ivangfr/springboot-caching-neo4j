@@ -83,8 +83,8 @@ class RestaurantIT {
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(responseEntity.getBody()).isNotNull();
         assertThat(responseEntity.getBody().id()).isNotNull();
-        assertThat(responseEntity.getBody().name()).isEqualTo(createRestaurantRequest.getName());
-        assertThat(responseEntity.getBody().city().id()).isEqualTo(createRestaurantRequest.getCityId());
+        assertThat(responseEntity.getBody().name()).isEqualTo(createRestaurantRequest.name());
+        assertThat(responseEntity.getBody().city().id()).isEqualTo(createRestaurantRequest.cityId());
         assertThat(responseEntity.getBody().dishes().size()).isEqualTo(0);
 
         Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(responseEntity.getBody().id());
@@ -112,8 +112,8 @@ class RestaurantIT {
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(responseEntity.getBody()).isNotNull();
         assertThat(responseEntity.getBody().id()).isEqualTo(restaurant.getId());
-        assertThat(responseEntity.getBody().name()).isEqualTo(updateRestaurantRequest.getName());
-        assertThat(responseEntity.getBody().city().id()).isEqualTo(updateRestaurantRequest.getCityId());
+        assertThat(responseEntity.getBody().name()).isEqualTo(updateRestaurantRequest.name());
+        assertThat(responseEntity.getBody().city().id()).isEqualTo(updateRestaurantRequest.cityId());
         assertThat(responseEntity.getBody().dishes().size()).isEqualTo(0);
 
         Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(restaurant.getId());

@@ -3,22 +3,11 @@ package com.ivanfranchin.restaurantapi.rest.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class CreateDishRequest {
-
-    @Schema(example = "Pizza Salami")
-    @NotBlank
-    private String name;
-
-    @Schema(example = "5.50")
-    @NotNull
-    private BigDecimal price;
+public record CreateDishRequest(
+        @Schema(example = "Pizza Salami") @NotBlank String name,
+        @Schema(example = "5.50") @NotNull BigDecimal price) implements Serializable {
 }

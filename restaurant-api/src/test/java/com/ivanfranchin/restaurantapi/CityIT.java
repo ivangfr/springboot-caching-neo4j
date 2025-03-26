@@ -71,7 +71,7 @@ class CityIT {
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(responseEntity.getBody()).isNotNull();
         assertThat(responseEntity.getBody().id()).isNotNull();
-        assertThat(responseEntity.getBody().name()).isEqualTo(createCityRequest.getName());
+        assertThat(responseEntity.getBody().name()).isEqualTo(createCityRequest.name());
         assertThat(responseEntity.getBody().restaurants().size()).isEqualTo(0);
 
         Optional<City> optionalCity = cityRepository.findById(responseEntity.getBody().id());
