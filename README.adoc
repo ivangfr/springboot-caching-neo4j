@@ -27,7 +27,7 @@ image::documentation/restaurant-api-swagger.jpeg[]
 
 The application uses 3 caches: `CITIES`, `RESTAURANTS` and `DISHES`.
 
-The caching is applied at controller level. For instance, if you call `GET /api/restaurants/123` for the first time, the application will check whether the key `123` is present in the `RESTAURANTS` cache; if not, it must go to DB to get the information about the restaurant (payload). Let's say that the payload is:
+Caching is applied at controller level. For instance, if you call `GET /api/restaurants/123` for the first time, the application will check whether the key `123` is present in the `RESTAURANTS` cache; if not, it must go to DB to get the information about the restaurant (payload). Let's say that the payload is:
 
 [source]
 ----
@@ -41,19 +41,19 @@ Before the endpoint finishes and returns the result, the key and its payload are
 { "123" = {"name": "Happy Pizza", "city": {"id": 1, "name": "Berlin"}, "dishes": []} }
 ----
 
-On subsequents calls to `GET /api/restaurants/123` (and as far as the data is not evicted), the application just needs to go to the cache and get the value.
+On subsequent calls to `GET /api/restaurants/123` (and as far as the data is not evicted), the application just needs to go to the cache and get the value.
 
-By the way, we have implemented more advanced caching logic as the one presented above. For example, imagine that you have a city cached in `CITIES` cache and a new restaurant is created in that city. In this case, the cache of the city is evicted of `CITIES` (because the list of restaurants in the city changed) and a new cache for the restaurant is put in `RESTAURANTS` cache. The same happens when a restaurant is deleted/update or a restaurant dish is added/deleted/updated.
+By the way, we have implemented more advanced caching logic than the one presented above. For example, imagine that you have a city cached in the `CITIES` cache and a new restaurant is created in that city. In this case, the cache of the city is evicted from `CITIES` (because the list of restaurants in the city changed) and a new cache for the restaurant is put in the `RESTAURANTS` cache. The same happens when a restaurant is deleted/updated or a restaurant dish is added/deleted/updated.
 
 == Prerequisites
 
-* https://www.oracle.com/java/technologies/downloads/#java21[`Java 21+`]
-* https://www.docker.com/[`Docker`]
+* https://www.oracle.com/java/technologies/downloads/#java21[`Java 21`] or higher
+* A containerization tool (e.g., https://www.docker.com[`Docker`], https://podman.io[`Podman`], etc.)
 * https://jqlang.github.io/jq/[`jq`]
 
 == Start Environment
 
-Open a terminal and, inside `springboot-caching-neo4j` root folder, run:
+Open a terminal and, inside the `springboot-caching-neo4j` root folder, run:
 
 [source]
 ----
@@ -62,7 +62,7 @@ docker compose up -d
 
 == Running application using Maven
 
-* In a terminal, make sure you are inside `springboot-caching-neo4j` root folder;
+* In a terminal, make sure you are inside the `springboot-caching-neo4j` root folder;
 
 * Start the application by picking one of the following cache providers:
 +
@@ -91,20 +91,20 @@ docker compose up -d
 
 * Build Docker Image
 +
-In a terminal, make sure you are in `springboot-caching-neo4j` root folder;
+In a terminal, make sure you are in the `springboot-caching-neo4j` root folder;
 +
 ** JVM
 +
 [source]
 ----
-./docker-build.sh
+./build-docker-images.sh
 ----
 +
 ** Native
 +
 [source]
 ----
-./docker-build.sh native
+./build-docker-images native
 ----
 
 * Environment Variables
@@ -209,7 +209,7 @@ image::documentation/redis-commander-ui.jpeg[]
 == Shutdown
 
 * To stop `restaurant-api` application, go to the terminal where it is running and press `Ctrl+C`;
-* To stop and remove docker compose containers, network and volumes, go to a terminal and inside `springboot-caching-neo4j` root folder, run the following command:
+* To stop and remove Docker Compose containers, network, and volumes, go to a terminal and inside the `springboot-caching-neo4j` root folder, run the following command:
 +
 [source]
 ----
@@ -218,7 +218,7 @@ docker compose down -v
 
 == Running Unit And Integration Test Cases
 
-* In a terminal, make sure you are inside `springboot-caching-neo4j` root folder;
+* In a terminal, make sure you are inside the `springboot-caching-neo4j` root folder;
 
 * Start the tests by picking one on the following cache providers:
 +
@@ -245,7 +245,7 @@ docker compose down -v
 
 == Cleanup
 
-To remove the Docker image created by this project, go to a terminal and, inside `springboot-caching-neo4j` root folder, run the following script:
+To remove the Docker image created by this project, go to a terminal and, inside the `springboot-caching-neo4j` root folder, run the following script:
 
 [source]
 ----
