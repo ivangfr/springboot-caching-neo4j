@@ -252,11 +252,6 @@ To remove the Docker image created by this project, go to a terminal and, inside
 ./remove-docker-images.sh
 ----
 
-== TODO
-
-* Add AOP to log whenever the endpoint is called;
-* Create a bash script that uses Neo4j API to insert some data.
-
 == References
 
 * https://docs.spring.io/spring-boot/reference/io/caching.html#io.caching

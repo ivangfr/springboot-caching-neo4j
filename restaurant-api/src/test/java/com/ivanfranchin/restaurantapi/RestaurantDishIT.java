@@ -77,9 +77,9 @@ class RestaurantDishIT {
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(responseEntity.getBody()).isNotNull();
         assertThat(responseEntity.getBody().dishes().size()).isEqualTo(1);
-        assertThat(responseEntity.getBody().dishes().get(0).id()).isEqualTo(dish.getId());
-        assertThat(responseEntity.getBody().dishes().get(0).name()).isEqualTo(dish.getName());
-        assertThat(responseEntity.getBody().dishes().get(0).price()).isEqualTo(dish.getPrice());
+        assertThat(responseEntity.getBody().dishes().getFirst().id()).isEqualTo(dish.getId());
+        assertThat(responseEntity.getBody().dishes().getFirst().name()).isEqualTo(dish.getName());
+        assertThat(responseEntity.getBody().dishes().getFirst().price()).isEqualTo(dish.getPrice());
     }
 
     @Test
