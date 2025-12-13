@@ -47,7 +47,7 @@ By the way, we have implemented more advanced caching logic than the one present
 
 == Prerequisites
 
-* https://www.oracle.com/java/technologies/downloads/#java21[`Java 21`] or higher
+* https://www.oracle.com/java/technologies/downloads/#java25[`Java 25`] or higher
 * A containerization tool (e.g., https://www.docker.com[`Docker`], https://podman.io[`Podman`], etc.)
 * https://jqlang.github.io/jq/[`jq`]
 
@@ -194,7 +194,7 @@ curl -s http://localhost:8080/actuator/prometheus | grep cacheManager
 
 * **Neo4j**
 +
-`Neo4j` UI can be accessed at http://localhost:7474/browser.
+`Neo4j` UI can be accessed at http://localhost:7474/browser
 +
 No authentication is needed, just click `Connect` button
 +
@@ -202,7 +202,7 @@ image::documentation/neo4j-ui.jpeg[]
 
 * **redis-commander**
 +
-`redis-commander` UI can be accessed at http://localhost:8081.
+`redis-commander` UI can be accessed at http://localhost:8081
 +
 image::documentation/redis-commander-ui.jpeg[]
 

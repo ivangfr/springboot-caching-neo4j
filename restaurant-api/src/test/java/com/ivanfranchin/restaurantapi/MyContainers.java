@@ -2,15 +2,15 @@ package com.ivanfranchin.restaurantapi;
 
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.neo4j.Neo4jContainer;
 import org.testcontainers.utility.DockerImageName;
 
 public interface MyContainers {
 
     @Container
     @ServiceConnection
-    Neo4jContainer<?> neo4jContainer = new Neo4jContainer<>("neo4j:2025.10.1")
+    Neo4jContainer neo4jContainer = new Neo4jContainer("neo4j:2025.10.1")
             .withoutAuthentication();
 
     @Container
