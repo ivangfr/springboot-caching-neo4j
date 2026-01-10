@@ -4,38 +4,20 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import tools.jackson.databind.JsonNode;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class RestResponsePageImpl<T> extends PageImpl<T> {
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
     public RestResponsePageImpl(@JsonProperty("content") List<T> content,
-                                @JsonProperty("number") int number,
-                                @JsonProperty("size") int size,
-                                @JsonProperty("totalElements") Long totalElements,
-                                @JsonProperty("pageable") JsonNode pageable,
-                                @JsonProperty("last") boolean last,
-                                @JsonProperty("totalPages") int totalPages,
-                                @JsonProperty("sort") JsonNode sort,
-                                @JsonProperty("first") boolean first,
-                                @JsonProperty("numberOfElements") int numberOfElements) {
-
-        super(content, PageRequest.of(number, size), totalElements);
-    }
-
-    public RestResponsePageImpl(List<T> content, Pageable pageable, long total) {
-        super(content, pageable, total);
-    }
-
-    public RestResponsePageImpl(List<T> content) {
-        super(content);
-    }
-
-    public RestResponsePageImpl() {
-        super(new ArrayList<>());
+                                @JsonProperty("number") Integer number,
+                                @JsonProperty("size") Integer size,
+                                @JsonProperty("totalElements") Long totalElements) {
+        super(
+                content,
+                PageRequest.of(number == null ? 0 : number, size == null ? 1 : size),
+                totalElements == null ? 0 : totalElements
+        );
     }
 }
